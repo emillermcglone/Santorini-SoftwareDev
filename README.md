@@ -1,1 +1,0 @@
-# gija-emmi
