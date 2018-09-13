@@ -1,4 +1,3 @@
 #!/bin/bash
-# My first script
 
-./Aux/2.py
+./Aux/2.py $1
