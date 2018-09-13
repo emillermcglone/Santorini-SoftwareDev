@@ -1,53 +1,54 @@
 import timeout_decorator
 from timeout_decorator.timeout_decorator import TimeoutError
-import json
+import sys, json, fileinput
 
-@timeout_decorator.timeout(5)
-def get_json_input():
-    return input()
+def is_json(value):
+    """ Is given value a valid JSON value? """
+    try:
+        json.loads(value)
+        return True
+    except:
+        return False
 
-def get_json_inputs():
+def get_json_inputs(inputs):
     """ 
-    Listen for JSON inputs
-    Note: time out after 5 seconds
+    Filters input source for valid JSON values 
+    Closes source when Enter or ^D are detected, or after 10 second timeout
     """
 
-    current_input = ""
+    compiled_input = ""
+    get_json_input = timeout_decorator.timeout(10)(inputs.readline)
     json_inputs = []
 
     while True:
-        try: 
-            json_input = get_json_input()
-            current_input += json_input
-            json.loads(current_input)
-            json_inputs.append(current_input)
-            current_input = ""
-        except EOFError:
+        try:
+            current_input = get_json_input().rstrip('\n')
+            compiled_input += current_input
+        except (TimeoutError, KeyboardInterrupt):
             break
-        except TimeoutError:
-            current_input = ""
-            print("Timeout: insert another JSON value")
-            continue
-        except json.JSONDecodeError:
-            continue
 
+        if current_input == "^D" or current_input == "": 
+            break
+
+        if is_json(compiled_input):
+            json_inputs.append(compiled_input)
+            compiled_input = ""
+
+    inputs.close()
     return json_inputs
 
 def concatenate_json_inputs(inputs):
-    """ Concatenate reverse positions of inputs """
+    """ Concatenate reverse positions to inputs """
+    if inputs is None: return []
+    return list(zip(reversed(range(len(inputs))), inputs))
 
-    length = len(inputs)
-    result = []
+def echo_json_inputs(inputs, output):
+    """ Echo JSON inputs to command line """
+    for position, json_input in concatenate_json_inputs(get_json_inputs(inputs)):
+        output.write("[%d, %s]\n" % (position, json_input))
 
-    for input in inputs:
-        result.append("[%d, %s]" % (length - 1, input))
-        length -= 1
-    
-    return result
-
-def echo_json_inputs():
-    for input in concatenate_json_inputs(get_json_inputs()):
-        print(input)
+def main():
+    echo_json_inputs(fileinput.input(), sys.stdout)
 
 if __name__ == "__main__":
-    echo_json_inputs()
+    main()
