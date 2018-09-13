@@ -36,6 +36,18 @@ def is_json(value):
     except:
         return False
 
+def parse_input_into_jsons(previous_input, value):
+    new_value = previous_input
+    json_list = []
+
+    for c in value:
+        new_value += c
+        if is_json(new_value):
+            json_list.append(new_value)
+            new_value = ""
+    
+    return (json_list, new_value)
+
 def get_json_inputs(inputs):
     """ 
     Filters input source for valid JSON values 
@@ -49,7 +61,9 @@ def get_json_inputs(inputs):
     while True:
         try:
             current_input = get_json_input().rstrip('\n')
-            compiled_input += current_input
+            (parsed_jsons, leftover) = parse_input_into_jsons(compiled_input, current_input)
+            json_inputs += parsed_jsons
+            compiled_input = leftover
         except (TimeoutError, KeyboardInterrupt):
             print("Terminated")
             break

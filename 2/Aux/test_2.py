@@ -48,6 +48,25 @@ class TestConcatenateJsonInputs(unittest.TestCase):
             self.assertEqual(len(element), 2)
             self.assertEqual(self.input_list[index], element[1])
 
+class TestParseInputIntoJsons(unittest.TestCase):
+    def test_empty_list_and_string_when_given_empty_arguments(self):
+        self.assertEqual(([], ""), two.parse_input_into_jsons("",""))
+    
+    def test_previous_input_given_empty_value(self):
+        self.assertEqual(([], "cs4500"), two.parse_input_into_jsons("cs4500", ""))
+
+    def test_expected_jsons_given_no_previous(self):
+        self.assertEqual((['[1, 2]', '[3, 4]'], ""), 
+            two.parse_input_into_jsons("", "[1, 2][3, 4]"))
+
+    def test_expected_jsons_and_leftover_given_everything(self):
+        self.assertEqual((['[1, 2]', '[3, 4]'], '[5'), 
+            two.parse_input_into_jsons("", "[1, 2][3, 4][5"))
+
+    def test_finish_leftover_json(self):
+        self.assertEqual((['[1, 2]'], ""),
+            two.parse_input_into_jsons("[1", ", 2]"))
+
 class TestEchoJsonInputs(unittest.TestCase):
     def setUp(self):
         self.mock_output = MockOutput()
@@ -94,6 +113,10 @@ class TestGetJsonInputs(unittest.TestCase):
         self.assertEqual(self.expected_output_edge_cases,
             two.get_json_inputs(open('sample-input-multiline', 'r+')))
 
+    def test_parses_multi_json_in_one_line(self):
+        self.assertEquals(['[1, 2]', '[3, 4]', '[5, 6]'],
+            two.get_json_inputs(open('sample-input-multi-json', 'r+')))
+
     def test_timeout_after_ten_seconds_of_inactivity(self):
         start = time.time()
         two.get_json_inputs(sys.stdin)
@@ -105,5 +128,6 @@ if __name__ == "__main__":
     suite2 = unittest.TestLoader().loadTestsFromTestCase(TestConcatenateJsonInputs)
     suite3 = unittest.TestLoader().loadTestsFromTestCase(TestEchoJsonInputs)
     suite4 = unittest.TestLoader().loadTestsFromTestCase(TestGetJsonInputs)
-    alltests = unittest.TestSuite([suite1, suite2, suite3, suite4])
+    suite5 = unittest.TestLoader().loadTestsFromTestCase(TestParseInputIntoJsons)
+    alltests = unittest.TestSuite([suite1, suite2, suite3, suite4, suite5])
     unittest.TextTestRunner(verbosity=2).run(alltests)
