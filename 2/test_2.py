@@ -1,4 +1,6 @@
 import unittest
+import time
+import sys
 from mock_output import MockOutput
 
 two = __import__('2')
@@ -60,9 +62,48 @@ class TestEchoJsonInputs(unittest.TestCase):
         two.echo_json_inputs(self.file, self.mock_output)
         self.assertTrue(self.mock_output.equal(self.expected_output))
 
+class TestGetJsonInputs(unittest.TestCase):
+    def setUp(self):
+        self.expected_output = ['[1, 2]', '[3,4,5]', '{"a": 1}']
+        self.expected_output_edge_cases = ['[1, 2]']
+
+    def test_empty_list_from_empty_source(self):
+        self.assertEqual([], two.get_json_inputs(open('sample-input-empty', 'r+')))
+
+    def test_expected_output_from_sample_input(self):
+        self.assertEqual(self.expected_output, 
+            two.get_json_inputs(open('sample-input', 'r+')))
+
+    def test_filter_out_non_json(self):
+        self.assertEqual(self.expected_output_edge_cases, 
+            two.get_json_inputs(open('sample-input-non-json', 'r+')))
+
+    def test_end_at_control_d(self):
+        self.assertEqual(self.expected_output_edge_cases,
+            two.get_json_inputs(open('sample-input-control-d', 'r+')))
+
+    def test_end_at_control_c(self):
+        self.assertEqual(self.expected_output_edge_cases,
+            two.get_json_inputs(open('sample-input-control-c', 'r+')))
+
+    def test_end_at_end_of_file(self):
+        self.assertEqual(self.expected_output_edge_cases,
+            two.get_json_inputs(open('sample-input-end-of-line', 'r+')))
+
+    def test_expected_output_from_multiline_json(self):
+        self.assertEqual(self.expected_output_edge_cases,
+            two.get_json_inputs(open('sample-input-multiline', 'r+')))
+
+    def test_timeout_after_ten_seconds_of_inactivity(self):
+        start = time.time()
+        two.get_json_inputs(sys.stdin)
+        end = time.time() - start
+        self.assertTrue(end >= 10)
+
 if __name__ == "__main__":
     suite1 = unittest.TestLoader().loadTestsFromTestCase(TestIsJson)
     suite2 = unittest.TestLoader().loadTestsFromTestCase(TestConcatenateJsonInputs)
     suite3 = unittest.TestLoader().loadTestsFromTestCase(TestEchoJsonInputs)
-    alltests = unittest.TestSuite([suite1, suite2, suite3])
+    suite4 = unittest.TestLoader().loadTestsFromTestCase(TestGetJsonInputs)
+    alltests = unittest.TestSuite([suite1, suite2, suite3, suite4])
     unittest.TextTestRunner(verbosity=2).run(alltests)

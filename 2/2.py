@@ -25,6 +25,7 @@ def get_json_inputs(inputs):
             current_input = get_json_input().rstrip('\n')
             compiled_input += current_input
         except (TimeoutError, KeyboardInterrupt):
+            print("Terminated")
             break
 
         if current_input == "^D" or current_input == "": 
