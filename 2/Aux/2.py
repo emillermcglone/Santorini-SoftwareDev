@@ -1,32 +1,8 @@
 #!/usr/bin/env python3.6
 
-from functools import wraps
-import errno
-import os
-import signal
+import timeout_decorator
+from timeout_decorator.timeout_decorator import TimeoutError
 import sys, json, fileinput
-
-class TimeoutError(Exception):
-    pass
-
-def timeout(seconds = 5, error_message = os.strerror(errno.ETIME)):
-    """ Function wrapper for timing out """
-    def decorator(func):
-        def _handle_timeout(signum, frame):
-            raise TimeoutError(error_message)
-
-        def wrapper(*args, **kwargs):
-            signal.signal(signal.SIGALRM, _handle_timeout)
-            signal.alarm(seconds)
-            try:
-                result = func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-            return result
-
-        return wraps(func)(wrapper)
-
-    return decorator
 
 def is_json(value):
     """ Is given value a valid JSON value? """
@@ -37,6 +13,7 @@ def is_json(value):
         return False
 
 def parse_input_into_jsons(previous_input, value):
+    """ Splits JSON values from value and return leftover """
     new_value = previous_input
     json_list = []
 
@@ -55,7 +32,7 @@ def get_json_inputs(inputs):
     """
 
     compiled_input = ""
-    get_json_input = timeout(10)(inputs.readline)
+    get_json_input = timeout_decorator.timeout(10)(inputs.readline)
     json_inputs = []
 
     while True:
@@ -83,13 +60,17 @@ def concatenate_json_inputs(inputs):
     if inputs is None: return []
     return list(zip(reversed(range(len(inputs))), inputs))
 
+def format_json_inputs(inputs):
+    result = ""
+    for position, json_input in concatenate_json_inputs(get_json_inputs(inputs)):
+        result += "[%d, %s]\n" % (position, json_input)
+
+    return result
+
 def echo_json_inputs(inputs, output):
     """ Echo JSON inputs to command line """
-    for position, json_input in concatenate_json_inputs(get_json_inputs(inputs)):
-        output.write("[%d, %s]\n" % (position, json_input))
-
-def main():
-    echo_json_inputs(fileinput.input(), sys.stdout)
+    for i in format_json_inputs(inputs):
+        output.write(i)
 
 if __name__ == "__main__":
-    main()
+    echo_json_inputs(fileinput.input(), sys.stdout)
