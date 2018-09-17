@@ -8,15 +8,18 @@ class Spreadsheet:
 
     def create_spreadsheet(self, path):
         """ 
-        Create coordinates and formulae mapping from csv that has only two columns
-        separated by semi-colons instead of commas. First contains coordinates as 
-        tuples and the second valid formulae. Any invalid values are skipped.
+        Create coordinates and formulae mapping from csv that has only two columns.
+        First contains coordinates and the second valid formulae. Any invalid values are skipped.
+        All cell references are tuples with the form '(x ; y)'. Commas are not permitted due
+        to the format of csv.
         """
         with open(path, newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=';')
+            reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 try:
-                    self.__table[make_tuple(row[0])] = row[1]
+                    tupled = row[0].replace(';', ',')
+                    semi_colon_replaced = row[1].replace(';', ',')
+                    self.__table[make_tuple(tupled)] = semi_colon_replaced
                 except:
                     continue
 
