@@ -1,7 +1,9 @@
 import json
 from splitstream import splitfile
+import fileinput
+import sys
 
 def generate_json(file_name):
-    splitfile(open(file_name), format="json", callback=lambda x: print(x))
+    splitfile(file_name, format="json")
 
-generate_json('sample-input')
+print(generate_json(sys.stdin))

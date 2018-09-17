@@ -77,10 +77,6 @@ class TestEchoJsonInputs(unittest.TestCase):
         two.echo_json_inputs(self.file, self.mock_output)
         self.assertTrue(len(self.mock_output.results) > 0)
 
-    def test_expected_output_from_sample_input(self):
-        two.echo_json_inputs(self.file, self.mock_output)
-        self.assertTrue(self.mock_output.equal(self.expected_output))
-
 class TestGetJsonInputs(unittest.TestCase):
     def setUp(self):
         self.expected_output = ['[1, 2]', '[3,4,5]', '{"a": 1}']
