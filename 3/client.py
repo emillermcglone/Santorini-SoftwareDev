@@ -1,19 +1,55 @@
-#!/usr/bin/env python
+import sys
+import fileinput
+import json
 
-import socket
+class Spreadsheet:
+    def __init__(self, rectangle):
+        pass
 
-TCP_IP = '127.0.0.1'
-TCP_PORT = 8000
-BUFFER_SIZE = 1024
-MESSAGE = "[1, 2][3, 4]".encode('utf-8')
+    def get_value(self, x, y):
+        pass
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def update(self, x, y, formula):
+        pass
 
-s.connect((TCP_IP, TCP_PORT))
-s.send(MESSAGE)
-s.send(MESSAGE)
+class Formula:
+    def __init__(self, string_formula):
+        pass
 
-data = s.recv(BUFFER_SIZE)
+    def get_references(self):
+        """ Get all cell references in this formula"""
+        pass
+
+    def evaluate(self, dictionary):
+        """ Evaluate formula with given mappings from references to values """
+        pass
+
+def at_request(req):
+    pass
+
+def set_request(req):
+    pass
+
+def create_request(req):
+
+    pass
+
+def pass_json_inputs(input_source):
+    try:
+        request = json.loads(input_source.readline())
+        request_type = request[0]
+    except: 
+        pass
+
+    if request_type == "sheet":
+        create_request(request)
+    elif request_type == "set":
+        set_request(request)
+    elif request_type == "at":
+        at_request(request)
+    else:
+        pass
 
 
-print("received data:", data)
+if __name__ == "__main__":
+    main()
