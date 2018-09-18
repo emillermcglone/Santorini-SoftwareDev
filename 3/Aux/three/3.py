@@ -7,6 +7,7 @@ import sys
 
 from two import format_json_inputs
 
+
 class TCPHandler(socketserver.BaseRequestHandler):
     """
     The request handler class for our server.
@@ -30,6 +31,6 @@ if __name__ == "__main__":
     HOST, PORT = "localhost", 8000
 
     # Create the server, binding to localhost on port 8000
-    with socketserver.TCPServer((HOST, PORT), TCPHandler) as server:
-        # Activate the server; this will keep running until interrupted with Ctrl-C
-        server.serve_forever()
+    server = socketserver.TCPServer((HOST, PORT), TCPHandler)
+    # Activate the server; this will keep running until interrupted with Ctrl-C
+    server.serve_forever()
