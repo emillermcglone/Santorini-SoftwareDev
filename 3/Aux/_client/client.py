@@ -1,20 +1,22 @@
 import sys
 import fileinput
 import json
-import io
+import io 
 
 from splitstream import splitfile
-from spreadsheet import Spreadsheet, Formula
 from oslash import Just, Maybe, Nothing
 
-sys.path.append('../2/Aux')
+sys.path.append('../../../2/Aux')
 two = __import__('2')
+
+from spreadsheet import Formula, Spreadsheet
 
 spreadsheets = {}
 
 def parse_json_formula(jf):
     """ Get the formula from the JSON format """
     json_value = json.loads(jf)
+    print(jf)
     if isinstance(json_value, int) and json_value >= 0:
         return str(json_value)
     elif isinstance(json_value, list) and json_value[0] == ">":
@@ -23,13 +25,14 @@ def parse_json_formula(jf):
         v1, v2 = parse_json_formula(json_value[0]), parse_json_formula(json_value[2])
         return "(" + v1 + json_value[1] + v2 + ")"
 
-
 def create_formula(jf):
     return Formula(parse_json_formula(str(jf)))
 
 
 def at_request(req, output):
     """ Get value of cell in an existing spreadsheet """
+    if req[1] not in spreadsheets:
+        return
     spreadsheet = spreadsheets[req[1]]
     value = spreadsheet.get_value(req[2], req[3])
     message = 'false' if value is None else value
@@ -65,7 +68,7 @@ def handle_requests(source, output):
     for j in splitfile(source, format='json'):
         try:
             json_val = json.loads(j)
-            request_handlers[json_val](json_val, output)
+            request_handlers[json_val[0]](json_val, output)
         except:
             continue            
 
