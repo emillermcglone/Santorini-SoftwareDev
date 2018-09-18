@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['3.py'],
-             pathex=['/Users/gino/Developer/cs4500/3/3'],
+             pathex=['/Users/gino/Developer/cs4500/3/Aux/three'],
              binaries=[],
              datas=[],
              hiddenimports=[],
