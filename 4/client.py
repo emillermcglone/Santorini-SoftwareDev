@@ -5,32 +5,35 @@ import json
 
 from splitstream import splitfile
 
-HOST, PORT = "localhost", 8000
-BUFFER_SIZE = 1024
+def connect(host, port):
+    """ 
+    Create and return socket connection instance to server
 
-
-def connect():
-    """ Create and return socket connection instance to server """
+    @param host: the IP address for server
+    @param port: the port number to connect to 
+    """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((HOST, PORT))
+    sock.connect((host, port))
     return sock
 
 
-def send(message):
+def send(host, port, message):
     """
     Send message to the server and return reply.
 
+    @param host: the IP address for server
+    @param port: the port number to connect to
     @param message: Message string sent to server
     @return: Response in utf-8 received from server
     """
-    sock = connect()
+    sock = connect(host, port)
     recv_data = ""
     data = True
 
     sock.sendall(message.encode())
 
     while data:
-        data = sock.recv(BUFFER_SIZE).decode()
+        data = sock.recv(1024).decode()
         if data == True:
             break
         recv_data += data
@@ -55,8 +58,8 @@ def get_json_inputs(source):
     return json_inputs
 
 
-def establish_connection(source, output):
-    internal_name = send("cs4500")
+def establish_connection(host, port, source, output):
+    internal_name = send(host, port, "cs4500")
     json_inputs = []
 
     while True:
@@ -65,17 +68,54 @@ def establish_connection(source, output):
             json_inputs.append(j)
             if isinstance(j, list) and j[0] == "at":
                 str_json_inputs = list(map(str, json_inputs))
-                output.write(send("\n".join(str_json_inputs)))
+                output.write(send(host, port, "\n".join(str_json_inputs)))
                 json_inputs = []
+
+def is_ip_address(address):
+    """
+    Check if given string is valid IP address
+
+    @param address: string IP address
+    @return: True if valid, False otherwise
+    """
+    try:
+        socket.inet_aton(address)
+        return True
+    except:
+        return False
+
+def is_file_found(path):
+    """
+    Check if given path to file exists
+
+    @param path: path to file
+    @return: True if exists, False otherwise
+    """
+    try:
+        file = open(path)
+        file.close()
+        return True
+    except:
+        return False
 
 
 def main():
-    try:
-        source = open(sys.argv[1])
-    except:
-        source = sys.stdin
-    establish_connection(source, sys.stdout)
+    host, port = "localhost", 8000
+    source = sys.stdin
 
+    if len(sys.argv) == 2:
+        if is_ip_address(sys.argv[1]):
+            host = sys.argv[1]
+        elif is_file_found(sys.argv[1]):
+            source = open(sys.argv[1])
+    elif len(sys.argv) >= 3:
+        if is_ip_address(sys.argv[1]):
+            host = sys.argv[1]
+            source = open(sys.argv[2]) if is_file_found(sys.argv[2]) else sys.stdin
+        elif is_file_found(sys.argv[1]):
+            source = open(sys.argv[1])
+            
+    establish_connection(host, port, source, sys.stdout)
 
 if __name__ == "__main__":
     main()
