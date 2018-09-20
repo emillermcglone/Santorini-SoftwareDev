@@ -17,9 +17,9 @@ def connect():
 
 
 def send(message):
-    """ 
+    """
     Send message to the server and return reply.
-    
+
     @param message: Message string sent to server
     @return: Response in utf-8 received from server
     """
@@ -40,8 +40,8 @@ def send(message):
 
 
 def get_json_inputs(source):
-    """ 
-    Get json inputs from source 
+    """
+    Get json inputs from source
 
     @param source: Source with 'read' attribute for json inputs
     @return: list of extracted json inputs
@@ -55,7 +55,7 @@ def get_json_inputs(source):
     return json_inputs
 
 
-def main(source, output):
+def establish_connection(source, output):
     internal_name = send("cs4500")
     json_inputs = []
 
@@ -69,9 +69,13 @@ def main(source, output):
                 json_inputs = []
 
 
-if __name__ == "__main__":
+def main():
     try:
         source = open(sys.argv[1])
     except:
         source = sys.stdin
-    main(source, sys.stdout)
+    establish_connection(source, sys.stdout)
+
+
+if __name__ == "__main__":
+    main()
