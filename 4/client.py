@@ -100,6 +100,12 @@ def is_file_found(path):
 
 
 def main():
+    """
+    Get command line arguments for host IP address and source of inputs.
+    First argument is IP address, second is file path. First argument is
+    file path if IP address is not given. These are optional arguments.
+    IP address defaults to 'localhost' and source to 'sys.stdin'.
+    """
     host, port = "localhost", 8000
     source = sys.stdin
 
@@ -114,7 +120,7 @@ def main():
             source = open(sys.argv[2]) if is_file_found(sys.argv[2]) else sys.stdin
         elif is_file_found(sys.argv[1]):
             source = open(sys.argv[1])
-            
+
     establish_connection(host, port, source, sys.stdout)
 
 if __name__ == "__main__":
