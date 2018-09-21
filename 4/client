@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 Aux/client.py $1 $2
+
+./Aux/dist/client/client $1 $2
