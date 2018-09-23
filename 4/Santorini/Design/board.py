@@ -1,5 +1,7 @@
+from abc import ABC, abstractmethod
+
 """
-Board is made of a zero-indexed 2D list of Cells.
+Board is made of a zero-indexed 2D list of Cells for a Santorini game. 
 
 Cell is one of (Floor, Level) and (Worker, Level)
 Floor is an empty class
@@ -24,7 +26,8 @@ BuildError is one of:
 """
 
 
-class Board:
+class Board(ABC):
+
     def __init__(self, win_callback, win_condition, rules, width=6, height=6):
         """
         Initialize board with the given dimensions, 6 x 6 by default, and
@@ -38,6 +41,7 @@ class Board:
         """
         pass
 
+    @abstractmethod
     def place_worker(self, worker, position):
         """ 
         Place worker on start position
@@ -50,6 +54,7 @@ class Board:
 
         pass
 
+    @abstractmethod
     def move_and_build(self, worker, move_direction, build_direction):
         """ 
         Move worker and build in the given directions.
