@@ -60,7 +60,7 @@ class Board(ABC):
 
         @return: [[Cell, ...] ...], the state of the game
         """
-        return copy.deepcopy(self.__board)
+        pass
 
     @abstractmethod
     def place_worker(self, worker, position):
