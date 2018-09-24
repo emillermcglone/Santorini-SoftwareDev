@@ -54,7 +54,12 @@ class Board(ABC):
         self.__board = [[(Floor(), 0)] * width] * height
 
     @abstractmethod
-    def get_board(self):
+    def get_state_of_game(self):
+        """
+        Provide a deep copy of the board representing state of game.
+
+        @return: [[Cell, ...] ...], the state of the game
+        """
         return copy.deepcopy(self.__board)
 
     @abstractmethod
