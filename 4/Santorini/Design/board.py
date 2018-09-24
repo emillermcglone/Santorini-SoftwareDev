@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import copy
 
 """
 Board is made of a zero-indexed 2D list of Cells for a Santorini game,
@@ -43,22 +44,26 @@ class Board(ABC):
 
         @param win_callback: (worker: Worker) -> void, callback function to call when win_condition is met
         @param win_condition: (board: [[Cell, ...] ...])
-        @param rules: list of Rules validating each move and build
-        @param width: number of cells horizontally
-        @param height: number of cells vertically
+        @param rules: [Rule, ], list of rules validating each move and build
+        @param width: N, number of cells horizontally
+        @param height: N, number of cells vertically
         """
         self.win_callback = win_callback
         self.win_condition = win_condition
         self.rules = rules
-        self.board = [[(Floor(), 0)] * width] * height
+        self.__board = [[(Floor(), 0)] * width] * height
+
+    @abstractmethod
+    def get_board(self):
+        return copy.deepcopy(self.__board)
 
     @abstractmethod
     def place_worker(self, worker, position):
         """ 
         Place worker on start position.
 
-        @param worker: id of worker to be placed
-        @param position: (x, y) coordinates
+        @param worker: N, id of worker to be placed
+        @param position: (N, N), coordinates
         @raise OutOfBounds: given position is out of the board
         @raise BlockingWorker: another worker is on given position 
         """
@@ -69,9 +74,9 @@ class Board(ABC):
         Move worker, build in the given directions, and evoke
         win callback if game has been won.
 
-        @param worker: id of worker
-        @move_direction: Direction for move
-        @build_direction: Direction for build
+        @param worker: N, id of worker
+        @move_direction: Direction, direction for move
+        @build_direction: Direction, direction for build
         @raise MoveError: invalid move
         @raise BuildError: invalid build
         """
@@ -80,14 +85,14 @@ class Board(ABC):
             self.win_callback(id)
 
     @abstractmethod
-    def __move_and_build__(self, worker, move_direction, build_direction):
+    def __move_and_build(self, worker, move_direction, build_direction):
         """ 
         Move worker and build in the given directions. Check if
         game has been won with the move.
 
-        @param worker: id of worker
-        @move_direction: Direction for move
-        @build_direction: Direction for build
+        @param worker: N, id of worker
+        @move_direction: Direction, direction for move
+        @build_direction: Direction, direction for build
         @raise MoveError: invalid move
         @raise BuildError: invalid build
         @return: -1 if move is successful and game continues, N representing winner's id otherwise
