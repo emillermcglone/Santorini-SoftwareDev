@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import copy
 
 """
 Board is made of a zero-indexed 2D list of Cells for a Santorini game,
@@ -100,6 +99,6 @@ class Board(ABC):
         @build_direction: Direction, direction for build
         @raise MoveError: invalid move
         @raise BuildError: invalid build
-        @return: -1 if move is successful and game continues, N representing winner's id otherwise
+        @return: -1 if game continues, N representing winner's id otherwise
         """
         pass
