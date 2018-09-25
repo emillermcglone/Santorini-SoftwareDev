@@ -5,10 +5,14 @@ Board is made of a zero-indexed 2D list of Cells for a Santorini game,
 and manages the placement of the game's pieces. 
 
 Cell is one of (Floor, Level) and (Worker, Level)
-Floor is an empty class
+Floor signifies a building floor
 Worker has id: N, and position: (x, y)
 N is a natural number
 Level ranges from 0 to 4 inclusive
+
+e.g.
+    (Floor, 0): the cell is on ground level
+    (Worker, 3): the worker is on the third floor
 
 Rule is a function (board: [[Cell, ...] ...], worker: int, move_direction: Direction, build_direction: Direction) -> bool
 that returns True if move is permitted and False otherwise
@@ -55,7 +59,7 @@ class Board(ABC):
     @abstractmethod
     def get_state_of_game(self):
         """
-        Provide a deep copy of the board representing state of game.
+        Provide a copy of the board representing state of game.
 
         @return: [[Cell, ...] ...], the state of the game
         """
