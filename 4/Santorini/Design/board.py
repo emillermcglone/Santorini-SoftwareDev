@@ -38,18 +38,20 @@ class Board(ABC):
         Initialize board with the given dimensions, 6 x 6 by default, and
         list of game rules.
 
-        :param rules: [Rule, ], list of rules validating each move and build
+        :param rules: Rules, the rule checking interface
         :param width: N, number of cells horizontally
         :param height: N, number of cells vertically
         """
         self.rules = rules
-        self._board = [[(Height(), 0)] * width] * height
+        self.workers = {}
+        self._board = [[Height(0)] * width] * height
 
     def is_game_over(self, win_condition):
         """
         Check if game has been won.
 
-        :param win_condition: (board: [[Cell, ...] ...]) -> bool, True for end of game
+        :param win_condition: (board: [[Cell, ...] ...]) -> N | -1, returns id of winning worker, -1 if game continues
+        :return: N | -1, id of winning worker or -1 if game continues
         """
         return win_condition(self.board)
 
@@ -69,10 +71,18 @@ class Board(ABC):
 
         :param worker: N, id of worker to be placed
         :param position: (N, N), coordinates
-        :raise OutOfBounds: given position is out of the board
-        :raise BlockingWorker: another worker is on given position 
+        :raise PlaceOutOfBounds: given position is out of the board
+        :raise PlaceBlockingWorker: another worker is on given position 
         """
-        pass
+        try: 
+            cell = self.board[position[0], position[1]]
+            if isinstance(cell, Worker):
+                raise PlaceBlockingWorker("Another worker on given position")
+        except IndexError:
+            raise PlaceOutOfBounds("Coordinates are outside of the board.")
+
+        self.board[position[0], position[1]] = Worker(worker, position)
+        self.workers[worker] = position
 
     @abstractmethod
     def move_and_build(self, worker, move_direction, build_direction):
@@ -86,4 +96,7 @@ class Board(ABC):
         :raise MoveError: invalid move
         :raise BuildError: invalid build
         """
-        pass
+        if self.rules.check(self.board, worker, move_direction, build_direction):
+            
+            
+

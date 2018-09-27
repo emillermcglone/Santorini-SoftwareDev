@@ -148,7 +148,7 @@ class Player(ABC):
         """
         Prompt the player for their move and build turn, given that their previous move and build invoked an error.
 
-        :param error: MoveError | BuildError, invalid move or build 
+        :param error: Exception | BuildError, invalid move or build 
         :param board: [[Cell, ...], ...], the current board of the game
         :param worker1_posn: (N, N), position of first worker
         :param worker2_posn: (N, N), position of second worker
@@ -164,4 +164,79 @@ class Player(ABC):
         :param win: bool, True if this Player won the game, False otherwise
         """
         pass
+class PlaceOutOfBounds(Exception):
+    """
+    The coordinates given to place the worker are out of bounds.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class PlaceBlockingWorker(Exception):
+    """
+    Another worker on coordinates.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class MoveBlockingWorker(Exception):
+    """
+    Another worker on coordinates.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class MoveHeightUnreachable(Exception):
+    """
+    Floor is more than one story higher.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class MoveOutOfBounds(Exception):
+    """
+    Direction leads to out of bounds coordinates.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class MoveStandingOnCoordinates(Exception):
+    """
+    Worker must move to different position than it's already on.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class MoveHeightFour(Exception):
+    """
+    Building has a fourth level
+    """
+    def __init__(self, message):
+        self.message = message
     
+class BuildBlockingWorker(Exception):
+    """
+    Cannot build when another worker is on coordinates.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class BuildOutOfBounds(Exception):
+    """
+    Direction leads to out of bounds coordinates.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class BuildStandingOnCoordinates(Exception):
+    """
+    Worker must build on a different cell than it's already on.
+    """
+    def __init__(self, message):
+        self.message = message
+
+class BuildHeightFour(Exception):
+    """
+    Building has a fourth level
+    """
+    def __init__(self, message):
+        self.message = message
