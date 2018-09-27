@@ -1,13 +1,10 @@
-from abc import ABC, abstractmethod
-import copy
-
 """
 Board is made of a zero-indexed 2D list of Cells for a Santorini game,
 and manages the placement of the game's pieces. 
 
 Cell is one of Height or Worker
 Height signifies a building floor: N, 0 to 4 inclusive
-Worker has id: N, position: (x, y), and height: N, 0 to 4 inclusive
+Worker has id: N, position: (N, N), and height: N, 0 to 4 inclusive
 N is a natural number
 Height of 0 signifies the ground floor 
 
@@ -30,10 +27,10 @@ BuildError is one of:
     HeightFour: can't build above the fourth floor
 """
 
+import copy
 
-class Height:
-    pass
-
+from Common.administrative_components import *
+from abc import ABC, abstractmethod
 
 class Board(ABC):
     def __init__(self, rules, width=6, height=6):

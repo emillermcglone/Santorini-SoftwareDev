@@ -5,7 +5,7 @@ in a Santorini game.
 Common data include physical game pieces, the rules of the game,
 and the player interface.
 
-N is a natural number 
+N is a natural number. 
 """
 
 from abc import ABC, abstractmethod
@@ -23,16 +23,18 @@ class Cell(ABC):
         :param height: N, 0 to 4 inclusive
         :raise AttributeError: if height is not from 0 to 4        
         """
-        self._height = height
+        pass
 
     @property
+    @abstractmethod
     def height(self):
         """
         Height of building.
         """
-        return self._height
+        pass
 
     @height.setter
+    @abstractmethod
     def height(self, new_height):
         """
         Set Cell's height to new_height.
@@ -40,9 +42,7 @@ class Cell(ABC):
         :param new_height: the new height of Cell
         :raise AttributeError: if height is not from 0 to 4
         """
-        if new_height < 0 and new_height > 4:
-            raise AttributeError
-        self._height = new_height
+        pass
 
 class Height(Cell):
     """
@@ -56,7 +56,7 @@ class Height(Cell):
         :param height: N, height of building, defaults to 0
         :raise AttributeError: if height is not from 0 to 4
         """
-        return super().__init__(height)
+        pass
 
 class Worker(Cell):
     """
@@ -69,20 +69,19 @@ class Worker(Cell):
         Initialize Worker with id, position, and height of building the worker is on.
 
         :param id: N, id of Worker
-        :param position: (x, y), the position of Worker
+        :param position: (N, N), the position of Worker
         :param height: N, height of building worker is on, defaults to 0
         :raise AttributeError: if height is not from 0 to 4        
         """
-        super().__init__(height)
-        self.id = id
-        self.position = position
+        pass
 
-class Rules:
+class Rules(ABC):
     """
     Set of rules for a Santorini game which both Santorini and players can use
     to validate their moves before making them.
     """
-
+    
+    @abstractmethod
     def __init__(self, rules):
         """
         Initalize Rules with list of Rule. 
@@ -90,8 +89,9 @@ class Rules:
   
         :param rules: [Rule, ...], list of rules for move and build 
         """
-        self.rules = rules
+        pass
 
+    @abstractmethod
     def check(self, board, worker, move_direction, build_direction):
         """
         Check if the move and build are valid.
@@ -101,4 +101,67 @@ class Rules:
         :param move_direction: Direction, direction for move
         :param build_direction: Direction, direction for build
         """
-        return all(list(map(lambda rule: rule(board, worker, move_direction, build_direction), self.rules)))
+        pass
+
+
+class Player(ABC):
+    """
+    Player component for Santorini, and intermediary between administrative
+    components and the player AI.
+    """
+
+    @abstractmethod
+    def __init__(self, id, worker1_id, worker2_id):
+        """"
+        Initialize the Player with id, worker1_id, and worker2_id.
+
+        :param id: N, id of Player
+        :param worker1_id: N, the id of the Player's first worker 
+        :param worker2_id: N, the id of the Player's second worker
+        """
+        pass
+
+    @abstractmethod
+    def place_worker(self, board):
+        """
+        Provide coordinates to place one of the workers on the given board.
+
+        :param board: [[Cell, ...], ...], the current board of the game
+        :return: (N, (N, N)), the worker id, and the x and y coordinates
+        """
+        pass
+
+    @abstractmethod
+    def prompt(self, board, worker1_posn, worker2_posn):
+        """
+        Prompt the player for their move and build turn. 
+
+        :param board: [[Cell, ...], ...], the current board of the game
+        :param worker1_posn: (N, N), position of first worker
+        :param worker2_posn: (N, N), position of second worker
+        :return: (N, Direction, Direction), the worker id, move direction, and build direction
+        """
+        pass
+
+    @abstractmethod
+    def exception(self, error, board, worker1_posn, worker2_posn):
+        """
+        Prompt the player for their move and build turn, given that their previous move and build invoked an error.
+
+        :param error: MoveError | BuildError, invalid move or build 
+        :param board: [[Cell, ...], ...], the current board of the game
+        :param worker1_posn: (N, N), position of first worker
+        :param worker2_posn: (N, N), position of second worker
+        :return: (N, Direction, Direction), the worker id, move direction, and build direction
+        """
+        pass
+
+    @abstractmethod
+    def game_over(self, win):
+        """
+        Notify player that game has ended.
+
+        :param win: bool, True if this Player won the game, False otherwise
+        """
+        pass
+    
