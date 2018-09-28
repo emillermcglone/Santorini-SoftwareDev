@@ -9,12 +9,13 @@ N is a natural number.
 """
 
 from abc import ABC, abstractmethod
+from enum import Enum
 
 class Cell(ABC):
     """
     Individual cell element with height on a Santorini board.
     """
-
+    
     @abstractmethod
     def __init__(self, height = 0):
         """
@@ -23,14 +24,14 @@ class Cell(ABC):
         :param height: 0 to 4 inclusive
         :raise AttributeError: height is not between 0 and 4 inclusive        
         """
-        pass
+        self._height = height
 
     @property
     def height(self):
         """
         Height of cell.
         """
-        pass
+        return self._height
 
     @height.setter
     def height(self, new_height):
@@ -40,7 +41,9 @@ class Cell(ABC):
         :param new_height: the new height
         :raise AttributeError: if height is not from 0 to 4
         """
-        pass
+        if new_height < 0 or new_height > 4:
+            raise AttributeError("New height must be between 0 and 4 inclusive")
+        self._height = new_height
 
 class Height(Cell):
     """
@@ -54,7 +57,8 @@ class Height(Cell):
         :param height: N, height of building, defaults to 0
         :raise AttributeError: if height is not from 0 to 4
         """
-        pass
+        super().__init__(height)
+        
 
 class Worker(Cell):
     """
@@ -62,16 +66,18 @@ class Worker(Cell):
     it is on.
     """
 
-    def __init__(self, id, position, height = 0):
+    def __init__(self, worker_id, position, height = 0):
         """
         Initialize with id, position, and height of building the worker is on.
 
-        :param id: N, id of Worker
+        :param worker_id: N, id of Worker
         :param position: (N, N), the position of Worker
         :param height: N, height of building worker is on, defaults to 0
         :raise AttributeError: if height is not from 0 to 4        
         """
-        pass
+        super().__init__(height)
+        self.id = worker_id
+        self.position = position
 
 
 class Rules(ABC):
@@ -89,7 +95,8 @@ class Rules(ABC):
         :param move_rules: [Rule, ...], list of rules for move
         :param build_rules: [Rule, ...], list of rules for build
         """
-        pass
+        self.move_rules = move_rules
+        self.build_rules = build_rules
 
     @abstractmethod
     def check_move(self, board, worker, move_direction):
@@ -100,7 +107,7 @@ class Rules(ABC):
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
         """
-        pass
+        return all(map(lambda f: f(board, worker, move_direction, self.move_rules)))
 
     @abstractmethod
     def check_build(self, board, worker, build_direction):
@@ -111,7 +118,7 @@ class Rules(ABC):
         :param worker: N, id of worker
         :param build_direction: Direction, direction for build
         """
-        pass
+        return all(map(lambda f: f(board, worker, build_direction, self.build_rules)))
 
 class Player(ABC):
     """
@@ -172,3 +179,19 @@ class Player(ABC):
         :param win: bool, True if this Player won the game, False otherwise
         """
         pass
+
+class Direction(Enum):
+    """
+    Direction for moving or building in a zero-indexed 2D list of Cell where
+    origin is on the top left corner. Going North means y - 1 and West means x - 1.
+    Each Enum maps to a function of type (c: (N, N)) -> (N, N) that gives the next
+    coordinates in its direction.
+    """
+    N = lambda c: (c[0], c[1] - 1)
+    S = lambda c: (c[0], c[1] + 1)
+    W = lambda c: (c[0] - 1, c[1])
+    E = lambda c: (c[0] + 1, c[1])
+    NW = lambda c: (c[0] - 1, c[1] - 1)
+    NE = lambda c: (c[0] + 1, c[1] - 1)
+    SW = lambda c: (c[0] - 1, c[1] + 1)
+    SE = lambda c: (c[0] + 1, c[1] + 1)
