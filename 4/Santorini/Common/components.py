@@ -166,7 +166,8 @@ class Player(ABC):
     @abstractmethod
     def game_over(self, win):
         """
-        Notify player that game has ended.
+        Notify player that game has ended either by victory on either side or by
+        player shutdown due to invalid move/build or connection lost.
 
         :param win: bool, True if this Player won the game, False otherwise
         """
