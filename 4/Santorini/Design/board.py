@@ -8,12 +8,12 @@ Worker has id: N, position: (N, N), and height: N, 0 to 4 inclusive
 N is a natural number
 Height of 0 signifies the ground floor 
 
-Direction is one of 'N', 'E', 'S', 'W', 'NE', 'NW', 'SE', 'SW'
+Direction is an Enum, one of 'N', 'E', 'S', 'W', 'NE', 'NW', 'SE', 'SW'
 """
 
 import copy
 
-from Common.administrative_components import *
+from Common.components import *
 from abc import ABC, abstractmethod
 
 class Board(ABC):
@@ -26,9 +26,11 @@ class Board(ABC):
         :param width: N, number of cells horizontally
         :param height: N, number of cells vertically
         """
-        self.rules = rules
-        self.workers = {}
+        self._rules = rules
+        self.width = width
+        self.height = height
         self._board = [[Height(0)] * width] * height
+        self._workers = {}
 
     def is_game_over(self, win_condition):
         """
@@ -48,25 +50,130 @@ class Board(ABC):
         """
         return copy.deepcopy(self._board)
 
-    @abstractmethod
-    def place_worker(self, worker, position):
+    def cell(self, x, y):
+        """
+        Get a copy of the cell on the given coordinates.
+
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :return: Cell, the cell on given coordinates
+        :raise ValueError: if given position is out of bounds
+        """
+        try:
+            return self.board[x][y]
+        except IndexError:
+            raise ValueError("Given position is out of bounds")
+
+    def _cell(self, x, y):
+        """
+        Get the cell on given coordinates.
+
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :return: Cell, the cell on given coordinates
+        :raise ValueError: if given position is out of bounds
+        """
+        try:
+            return self._board[x][y]
+        except IndexError:
+            raise ValueError("Given position is out of bounds")
+        
+
+    def _next_cell(self, x, y, direction):
         """ 
-        Place worker on start position.
+        Get the next cell in given direction.
+
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :param direction: Direction, direction for next position
+        :return: Cell, next cell
+        """
+        i, j = direction(x, y)
+        return self._cell(i, j)
+
+    def _update(self, x, y, new_cell):
+        """
+        Update the cell with the given new cell.
+
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :param new_cell: Cell, new cell
+        :raise ValueError: if cell is not of type Cell
+        """
+        if not isinstance(new_cell, Cell):
+            raise ValueError("Given cell is not of type Cell")
+        self.cell(x, y)
+        self._board[x][y] = new_cell
+
+
+    def _move(self, worker_id, x, y):
+        """
+        Moves the given worker to the new position.
+
+        :param worker_id: N, id of worker to be moved
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        """
+        to_cell = self.cell(x, y)
+        if isinstance(to_cell, Worker):
+            raise ValueError("Another worker on given position")
+        
+        # Updates from cell
+        worker = self._workers[worker_id]
+        i, j = worker.position
+        self._update(i, j, Height(worker.height))
+
+        # Updates to cell / move worker to cell
+        to_height = to_cell.height
+        worker.position = (x, y)
+        worker.height = to_height
+        self._update(x, y, worker)
+
+    def _build(self, x, y):
+        """
+        Builds another floor onto the building on given position
+
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :raise ValueError: if there is a Worker on given position
+        """
+        to_cell = self._cell(x, y)
+        if isinstance(to_cell, Worker):
+            raise ValueError("There is a worker on given position")
+        to_cell.height += 1
+
+
+    @abstractmethod
+    def place_worker(self, worker, x, y):
+        """ 
+        Place worker on position.
 
         :param worker: N, id of worker to be placed
-        :param position: (N, N), coordinates
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :raise ValueError: if another worker is on position
         """
-        pass
+        cell = self.cell(x, y)
+        if isinstance(cell, Worker):
+            raise ValueError("Another worker is on position")
+        self._update(x, y, Worker(worker, (x, y), cell.height))
 
     @abstractmethod
-    def move(self, worker, move_direction):
+    def move(self, worker, move_direction: Direction):
         """ 
         Move worker to given direction if rules are satisfied.
 
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
         """
-        pass
+        if not self._rules.check_move(self.board, worker, move_direction):
+            raise ValueError("Move is invalid")
+
+        worker = self.workers[worker]
+        x, y = worker.position
+        to_x, to_y = move_direction(x, y)
+        
+        self._move(worker, to_x, to_y)
 
     @abstractmethod
     def build(self, worker, build_direction):
@@ -76,4 +183,11 @@ class Board(ABC):
         :param worker: N, id of worker
         :param build_direction: Direction, direction for build
         """
-        pass
+        if not self.rules.check_build(self.board, worker, build_direction):
+            raise ValueError("Build is invalid")
+
+        worker = self.workers[worker]
+        x, y = worker.position
+        to_x, to_y = build_direction(x, y)
+
+        self._build(to_x, to_y)

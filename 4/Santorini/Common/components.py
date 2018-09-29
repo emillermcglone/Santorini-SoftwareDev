@@ -184,14 +184,14 @@ class Direction(Enum):
     """
     Direction for moving or building in a zero-indexed 2D list of Cell where
     origin is on the top left corner. Going North means y - 1 and West means x - 1.
-    Each Enum maps to a function of type (c: (N, N)) -> (N, N) that gives the next
+    Each Enum maps to a function of type (x, y: (N, N)) -> (N, N) that gives the next
     coordinates in its direction.
     """
-    N = lambda c: (c[0], c[1] - 1)
-    S = lambda c: (c[0], c[1] + 1)
-    W = lambda c: (c[0] - 1, c[1])
-    E = lambda c: (c[0] + 1, c[1])
-    NW = lambda c: (c[0] - 1, c[1] - 1)
-    NE = lambda c: (c[0] + 1, c[1] - 1)
-    SW = lambda c: (c[0] - 1, c[1] + 1)
-    SE = lambda c: (c[0] + 1, c[1] + 1)
+    N = lambda x, y: (x, y - 1)
+    S = lambda x, y: (x, y + 1)
+    W = lambda x, y: (x - 1, y)
+    E = lambda x, y: (x + 1, y)
+    NW = lambda x, y: (x - 1, y - 1)
+    NE = lambda x, y: (x + 1, y - 1)
+    SW = lambda x, y: (x - 1, y + 1)
+    SE = lambda x, y: (x + 1, y + 1)
