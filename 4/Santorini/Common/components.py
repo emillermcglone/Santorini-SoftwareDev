@@ -22,9 +22,9 @@ class Cell(ABC):
         Initialize cell with height, defaults to 0.
 
         :param height: 0 to 4 inclusive
-        :raise AttributeError: height is not between 0 and 4 inclusive        
+        :raise ValueError: height is not between 0 and 4 inclusive        
         """
-        self._height = height
+        self.height = height
 
     @property
     def height(self):
@@ -39,10 +39,10 @@ class Cell(ABC):
         Set cell's height to new_height.
 
         :param new_height: the new height
-        :raise AttributeError: if height is not from 0 to 4
+        :raise ValueError: if height is not from 0 to 4
         """
         if new_height < 0 or new_height > 4:
-            raise AttributeError("New height must be between 0 and 4 inclusive")
+            raise ValueError("New height must be between 0 and 4 inclusive")
         self._height = new_height
 
 class Height(Cell):
@@ -55,7 +55,7 @@ class Height(Cell):
         Initialize with height of building.
 
         :param height: N, height of building, defaults to 0
-        :raise AttributeError: if height is not from 0 to 4
+        :raise ValueError: if height is not from 0 to 4
         """
         super().__init__(height)
         
@@ -73,20 +73,19 @@ class Worker(Cell):
         :param worker_id: N, id of Worker
         :param position: (N, N), the position of Worker
         :param height: N, height of building worker is on, defaults to 0
-        :raise AttributeError: if height is not from 0 to 4        
+        :raise ValueError: if height is not from 0 to 4        
         """
         super().__init__(height)
         self.id = worker_id
         self.position = position
 
 
-class Rules(ABC):
+class Rules():
     """
     Set of rules for a Santorini game which both the administrative components
     and players can use to validate their moves before making them.
     """
     
-    @abstractmethod
     def __init__(self, move_rules, build_rules):
         """
         Initalize with list of Rule for both moving and building. 
@@ -98,7 +97,6 @@ class Rules(ABC):
         self.move_rules = move_rules
         self.build_rules = build_rules
 
-    @abstractmethod
     def check_move(self, board, worker, move_direction):
         """
         Check if the move is valid.
@@ -107,9 +105,8 @@ class Rules(ABC):
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
         """
-        return all(map(lambda f: f(board, worker, move_direction, self.move_rules)))
+        return all(map(lambda f: f(board, worker, move_direction), self.move_rules))
 
-    @abstractmethod
     def check_build(self, board, worker, build_direction):
         """
         Check if the build is valid.
@@ -118,7 +115,7 @@ class Rules(ABC):
         :param worker: N, id of worker
         :param build_direction: Direction, direction for build
         """
-        return all(map(lambda f: f(board, worker, build_direction, self.build_rules)))
+        return all(map(lambda f: f(board, worker, build_direction), self.build_rules))
 
 class Player(ABC):
     """

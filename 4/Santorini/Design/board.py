@@ -32,6 +32,13 @@ class Board(ABC):
         self._board = [[Height(0)] * width] * height
         self._workers = {}
 
+    def __str__(self):
+        """
+        The board's string representation.
+        """
+        return str(self.board)
+
+
     def is_game_over(self, win_condition):
         """
         Check if game has been won.
