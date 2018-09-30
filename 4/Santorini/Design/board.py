@@ -51,7 +51,7 @@ class Board(ABC):
     @property
     def board(self):
         """
-        Provide a deep copy of the board representing state of game.
+        Provide a deep copy of the boar/d representing state of game.
 
         :return: [[Cell, ...] ...], the state of the game
         """
@@ -70,6 +70,56 @@ class Board(ABC):
             return self.board[x][y]
         except IndexError:
             raise ValueError("Given position is out of bounds")
+
+    def neighbor(self, worker, direction):
+        """
+        Is there a cell in the given direction?
+
+        :param worker: N, id of worker
+        :param direction: Direction, direction of neighbor
+        :return: bool, True if it is an empty cell, False otherwise
+        """
+        x, y = self.workers[worker].position
+        
+        try:    
+            cell = self._next_cell(x, y, direction)
+        except ValueError:
+            return False
+        
+        return True
+
+
+    def occupied(self, worker, direction):
+        """
+        Is the neighboring cell occupied by worker?
+
+        :param worker: N, id of worker
+        :param direction: Direction, direction of neighbor
+        :return: bool, True if worker occupies neighbor, False otherwise
+        """
+        x, y = self.workers[worker].position
+        
+        try:
+            cell = self._next_cell(x, y, direction)
+        except ValueError:
+            return False
+        
+        return isinstance(cell, Worker)
+
+
+    def height(self, worker, direction):
+        """
+        What is the height of neigboring cell?
+
+        :param worker: N, id of worker
+        :param direction: Direction, direction of neighbor
+        :return: N, the height of neighboring building
+        :raise ValueError: if there's no neighboring cell
+        """
+
+        x, y = self.workers[worker].position
+        cell = self._next_cell(x, y, direction)
+        return cell.height
 
     def _cell(self, x, y):
         """

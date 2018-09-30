@@ -1,55 +1,60 @@
 import unittest
-import sys, os
-sys.path.append(os.path.realpath("../.."))
-from Common.components import Height
+from ..components import Worker
+
 
 class TestInit(unittest.TestCase):
     def setUp(self):
-        self.height = Height()
+        self.worker = Worker(1, (0, 0))
+        
+    def test_id(self):
+        self.assertEqual(self.worker.id, 1)
+
+    def test_position(self):
+        self.assertEqual(self.worker.position, (0, 0))
     
     def test_default_height(self):
-        self.assertEqual(self.height.height, 0)
+        self.assertEqual(self.worker.height, 0)
 
     def test_height_below_zero_error(self):
         with self.assertRaises(ValueError):
-            Height(-1)
+            Worker(1, (0, 0), -1)
 
     def test_height_above_four_error(self):
         with self.assertRaises(ValueError):
-            Height(5)
+            Worker(1, (0, 0), 5)
 
     def test_height_equals_zero(self):
-        self.assertEqual(Height(0).height, 0)
+        self.assertEqual(Worker(1, (0,0), 0).height, 0)
 
     def test_height_equals_four(self):
-        self.assertEqual(Height(4).height, 4)
+        self.assertEqual(Worker(1, (0, 0), 4).height, 4)
 
 class TestHeightProperty(unittest.TestCase):
     def setUp(self):
         self.given_height = 3
-        self.height = Height(self.given_height)
+        self.worker = Worker(1, (0, 0), self.given_height)
     
     def test_height_returns_given_height(self):
-        self.assertEqual(self.height.height, self.given_height)
+        self.assertEqual(self.worker.height, self.given_height)
 
 class TestHeightSetter(unittest.TestCase):
     def setUp(self):
-        self.height = Height()
+        self.worker = Worker(1, (0, 0))
 
     def test_change_height_within_boundaries(self):
-        self.assertEqual(self.height.height, 0)
-        self.height.height = 1
-        self.assertEqual(self.height.height, 1)
+        self.assertEqual(self.worker.height, 0)
+        self.worker.height = 1
+        self.assertEqual(self.worker.height, 1)
 
     def test_change_height_below_zero(self):
-        self.assertEqual(self.height.height, 0)
+        self.assertEqual(self.worker.height, 0)
         with self.assertRaises(ValueError):
-            self.height.height = -1
+            self.worker.height = -1
 
     def test_change_height_above_four(self):
-        self.assertEqual(self.height.height, 0)
+        self.assertEqual(self.worker.height, 0)
         with self.assertRaises(ValueError):
-            self.height.height = 5
+            self.worker.height = 5
     
 test_cases = [TestInit, TestHeightProperty, TestHeightSetter]
     

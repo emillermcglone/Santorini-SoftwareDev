@@ -1,7 +1,5 @@
 import unittest
-import sys, os
-sys.path.append(os.path.realpath("../.."))
-from Common.components import Direction
+from ..components import Direction
 
 class TestDirection(unittest.TestCase):
     def setUp(self):

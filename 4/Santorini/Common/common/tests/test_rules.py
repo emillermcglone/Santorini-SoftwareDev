@@ -1,7 +1,6 @@
 import unittest
-import sys, os
-sys.path.append(os.path.realpath("../.."))
-from Common.components import Rules, Direction
+from ..components import Rules, Direction
+
 
 class TestInit(unittest.TestCase):
     def setUp(self):

@@ -1,11 +1,10 @@
 import unittest
 import sys, os
-sys.path.append(os.path.realpath("../.."))
 
-from test_direction import test_cases as direction_test_cases
-from test_height import test_cases as height_test_cases
-from test_rules import test_cases as rules_test_cases
-from test_worker import test_cases as worker_test_cases
+from .test_direction import test_cases as direction_test_cases
+from .test_height import test_cases as height_test_cases
+from .test_rules import test_cases as rules_test_cases
+from .test_worker import test_cases as worker_test_cases
 
 """
 Test program for Common components
