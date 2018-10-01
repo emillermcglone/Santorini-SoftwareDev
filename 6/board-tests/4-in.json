@@ -9,4 +9,5 @@
 ["move", "player21", ["PUT", "NORTH"]]
 ["height", "player11", ["WEST", "PUT"]]
 
+["move", "player12", ["PUT", "NORTH"]]
 

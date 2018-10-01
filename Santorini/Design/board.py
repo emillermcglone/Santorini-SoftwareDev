@@ -1,22 +1,23 @@
-"""
-Board is made of a zero-indexed 2D list of Cell for a Santorini game,
-and manages the placement of the game's pieces and its buildings. 
-
-Cell is either Height or Worker
-Height signifies a building floor: N, 0 to 4 inclusive
-Worker has id: N, position: (N, N), and height: N, 0 to 4 inclusive
-N is a natural number
-Height of 0 signifies the ground floor 
-
-Direction is an Enum, one of N, E, S, W, NE, NW, SE, SW
-"""
-
 import copy
 
 from Common.common.components import *
 from abc import ABC, abstractmethod
 
+
 class Board():
+    """
+    Board is made of a zero-indexed 2D list of Cell for a Santorini game,
+    and manages the placement of the game's pieces and its buildings. 
+
+    Cell is either Height or Worker
+    Height signifies a building floor: N, 0 to 4 inclusive
+    Worker has id: N, position: (N, N), and height: N, 0 to 4 inclusive
+    N is a natural number
+    Height of 0 signifies the ground floor 
+
+    Direction is an Enum, one of N, E, S, W, NE, NW, SE, SW
+    """
+
     def __init__(self, rules, board=None, width=6, height=6):
         """
         Initialize board with the given dimensions, 6 x 6 by default, and
@@ -30,8 +31,8 @@ class Board():
         self._width = width
         self._height = height
         self._rules = rules
-        self._board = self.complete(board, width, height) if board is not None else [[Height(0)] * width] * height
-
+        self._board = self.complete(board, width, height) if board is not None else [
+            [Height(0)] * width] * height
 
     def complete(self, board, width, height):
         """
@@ -45,7 +46,8 @@ class Board():
         result = board
         difference = height - len(result)
         result += [[Height(0)] * width] * difference
-        result = list(map(lambda l: l + [Height(0)] * (width - len(l)), result))
+        result = list(
+            map(lambda l: l + [Height(0)] * (width - len(l)), result))
         return result
 
     def __str__(self):
@@ -53,7 +55,6 @@ class Board():
         The board's representation.
         """
         return str(self.board)
-
 
     def is_game_over(self, win_condition):
         """
@@ -96,7 +97,6 @@ class Board():
             raise ValueError("Given position is out of bounds")
         return self.board[y][x]
 
-
     def neighbor(self, worker, direction):
         """
         Is there a cell in the given direction?
@@ -106,14 +106,13 @@ class Board():
         :return: bool, True if it is an empty cell, False otherwise
         """
         x, y = self.get_worker_position(worker)
-        
-        try:    
+
+        try:
             cell = self._next_cell(x, y, direction)
         except ValueError:
             return False
-        
-        return True
 
+        return True
 
     def occupied(self, worker, direction):
         """
@@ -124,14 +123,13 @@ class Board():
         :return: bool, True if worker occupies neighbor, False otherwise
         """
         x, y = self.get_worker_position(worker)
-        
+
         try:
             cell = self._next_cell(x, y, direction)
         except ValueError:
             return False
-        
-        return isinstance(cell, Worker)
 
+        return isinstance(cell, Worker)
 
     def height(self, worker, direction):
         """
@@ -156,7 +154,7 @@ class Board():
         :raise ValueError: if worker is not found
         """
         for y, r in enumerate(self._board):
-            for x, c in enumerate(r ):
+            for x, c in enumerate(r):
                 if isinstance(c, Worker) and c.id == worker:
                     return x, y
         raise ValueError("Worker not found")
@@ -188,9 +186,8 @@ class Board():
 
         x, y = self.get_worker_position(worker)
         to_x, to_y = move_direction(x, y)
-        
-        self._move(worker, to_x, to_y)
 
+        self._move(worker, to_x, to_y)
 
     def build(self, worker, build_direction):
         """
@@ -207,7 +204,6 @@ class Board():
 
         self._build(to_x, to_y)
 
-
     def _cell(self, x, y):
         """
         Get the cell on given coordinates.
@@ -220,7 +216,6 @@ class Board():
         if (x < 0 or x >= self._width or y < 0 or y >= self._height):
             raise ValueError("Given position is out of bounds")
         return self._board[y][x]
-        
 
     def _next_cell(self, x, y, direction):
         """ 
@@ -248,7 +243,6 @@ class Board():
         self.cell(x, y)
         self._board[y][x] = new_cell
 
-
     def _move(self, worker_id, x, y):
         """
         Moves the given worker to the new position.
@@ -258,7 +252,7 @@ class Board():
         :param y: N, y coordinate
         """
         to_cell = self.cell(x, y)
-        
+
         # Updates from cell
         i, j = self.get_worker_position(worker_id)
         worker = self._cell(i, j)

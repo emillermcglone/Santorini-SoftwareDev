@@ -165,6 +165,8 @@ def main():
                 board = create_board(request, Rules([], []))
             else:
                 handle_requests(board, request, output)
+
+    output.close()
             
 if __name__ == "__main__":
     main()

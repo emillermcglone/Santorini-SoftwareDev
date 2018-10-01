@@ -5,6 +5,7 @@ import json
 
 from splitstream import splitfile
 
+
 def connect(host, port):
     """ 
     Create and return socket connection instance to server
@@ -17,7 +18,7 @@ def connect(host, port):
     return sock
 
 
-def send(host, port, message):
+def send(sock, message):
     """
     Send message to the server and return reply.
 
@@ -26,20 +27,9 @@ def send(host, port, message):
     @param message: Message string sent to server
     @return: Response in utf-8 received from server
     """
-    sock = connect(host, port)
     recv_data = ""
-    data = True
-
-    sock.sendall(message.encode())
-
-    while data:
-        data = sock.recv(1024).decode()
-        if data == True or data == "":
-            break
-        recv_data += data
-
-    sock.close()
-    return recv_data
+    sock.send(message.encode())
+    return sock.recv(1024).decode()
 
 
 def get_json_inputs(source):
@@ -58,31 +48,36 @@ def get_json_inputs(source):
     return json_inputs
 
 
+def is_named_request(json_value):
+    if not isinstance(json_value, list):
+        return False
+
+    return len(json_value) == 3 and json_value[0] == "sheet" and isinstance(json_value[1], str) and isinstance(json_value[2], list) and all(isinstance(x, list) for x in json_value[2])
+
+def is_set_request(json_value):
+    if not isinstance(json_valuem, list):
+        return False
+
+    return len(json_value) == 5 and json_value[0] == "set" and isinstance(json_value[1], str)
+
+
 def establish_connection(host, port, source, output):
-    internal_name = send(host, port, "cs4500")
+    sock = connect(host, port)
+    internal_name = send(sock, "\"gija-emmi\"")
     json_inputs = []
+
+    print(host)
 
     while True:
         current_inputs = get_json_inputs(source)
         for j in current_inputs:
             json_inputs.append(j)
             if isinstance(j, list) and j[0] == "at":
-                str_json_inputs = list(map(str, json_inputs))
-                output.write(send(host, port, "\n".join(str_json_inputs)))
+                message = str(json_inputs)
+                print(message)
+                output.write(send(sock, message))
                 json_inputs = []
 
-def is_ip_address(address):
-    """
-    Check if given string is valid IP address
-
-    @param address: string IP address
-    @return: True if valid, False otherwise
-    """
-    try:
-        socket.inet_aton(address)
-        return True
-    except:
-        return False
 
 def is_file_found(path):
     """
@@ -106,22 +101,16 @@ def main():
     file path if IP address is not given. These are optional arguments.
     IP address defaults to 'localhost' and source to 'sys.stdin'.
     """
-    host, port = "localhost", 8000
+    host, port = sys.argv[1], 8000
     source = sys.stdin
 
-    if len(sys.argv) == 2:
-        if is_ip_address(sys.argv[1]):
-            host = sys.argv[1]
-        elif is_file_found(sys.argv[1]):
-            source = open(sys.argv[1])
-    elif len(sys.argv) >= 3:
-        if is_ip_address(sys.argv[1]):
-            host = sys.argv[1]
-            source = open(sys.argv[2]) if is_file_found(sys.argv[2]) else sys.stdin
-        elif is_file_found(sys.argv[1]):
+    if len(sys.argv) >= 3:
+        source = open(sys.argv[2]) if is_file_found(sys.argv[2]) else sys.stdin
+        if is_file_found(sys.argv[1]):
             source = open(sys.argv[1])
 
     establish_connection(host, port, source, sys.stdout)
+
 
 if __name__ == "__main__":
     main()
