@@ -13,28 +13,27 @@ Direction is an Enum, one of 'N', 'E', 'S', 'W', 'NE', 'NW', 'SE', 'SW'
 
 import copy
 
-from Common.components import *
+from Common.common.components import *
 from abc import ABC, abstractmethod
 
 class Board(ABC):
-    def __init__(self, rules, width=6, height=6):
+    def __init__(self, rules, board=None, width=6, height=6):
         """
         Initialize board with the given dimensions, 6 x 6 by default, and
         list of game rules.
 
         :param rules: Rules, the rule checking interface
+        :param board: [[Cell, ...], ...], a board to initialize from 
         :param width: N, number of cells horizontally
         :param height: N, number of cells vertically
         """
         self._rules = rules
-        self.width = width
-        self.height = height
         self._board = [[Height(0)] * width] * height
         self._workers = {}
 
     def __str__(self):
         """
-        The board's string representation.
+        The board's representation.
         """
         return str(self.board)
 
@@ -121,6 +120,55 @@ class Board(ABC):
         cell = self._next_cell(x, y, direction)
         return cell.height
 
+    @abstractmethod
+    def place_worker(self, worker, x, y):
+        """ 
+        Place worker on position.
+
+        :param worker: N, id of worker to be placed
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :raise ValueError: if another worker is on position
+        """
+        cell = self.cell(x, y)
+        if isinstance(cell, Worker):
+            raise ValueError("Another worker is on position")
+        self._update(x, y, Worker(worker, (x, y), cell.height))
+
+    @abstractmethod
+    def move(self, worker, move_direction):
+        """ 
+        Move worker to given direction if rules are satisfied.
+
+        :param worker: N, id of worker
+        :param move_direction: Direction, direction for move
+        """
+        if not self._rules.check_move(self.board, worker, move_direction):
+            raise ValueError("Move is invalid")
+
+        worker = self.workers[worker]
+        x, y = worker.position
+        to_x, to_y = move_direction(x, y)
+        
+        self._move(worker, to_x, to_y)
+
+    @abstractmethod
+    def build(self, worker, build_direction):
+        """
+        Build a floor in the given direction if rules are satisfied.
+
+        :param worker: N, id of worker
+        :param build_direction: Direction, direction for build
+        """
+        if not self.rules.check_build(self.board, worker, build_direction):
+            raise ValueError("Build is invalid")
+
+        worker = self.workers[worker]
+        x, y = worker.position
+        to_x, to_y = build_direction(x, y)
+
+        self._build(to_x, to_y)
+
     def _cell(self, x, y):
         """
         Get the cell on given coordinates.
@@ -172,8 +220,6 @@ class Board(ABC):
         :param y: N, y coordinate
         """
         to_cell = self.cell(x, y)
-        if isinstance(to_cell, Worker):
-            raise ValueError("Another worker on given position")
         
         # Updates from cell
         worker = self._workers[worker_id]
@@ -192,59 +238,6 @@ class Board(ABC):
 
         :param x: N, x coordinate
         :param y: N, y coordinate
-        :raise ValueError: if there is a Worker on given position
         """
         to_cell = self._cell(x, y)
-        if isinstance(to_cell, Worker):
-            raise ValueError("There is a worker on given position")
-        to_cell.height += 1
-
-
-    @abstractmethod
-    def place_worker(self, worker, x, y):
-        """ 
-        Place worker on position.
-
-        :param worker: N, id of worker to be placed
-        :param x: N, x coordinate
-        :param y: N, y coordinate
-        :raise ValueError: if another worker is on position
-        """
-        cell = self.cell(x, y)
-        if isinstance(cell, Worker):
-            raise ValueError("Another worker is on position")
-        self._update(x, y, Worker(worker, (x, y), cell.height))
-
-    @abstractmethod
-    def move(self, worker, move_direction: Direction):
-        """ 
-        Move worker to given direction if rules are satisfied.
-
-        :param worker: N, id of worker
-        :param move_direction: Direction, direction for move
-        """
-        if not self._rules.check_move(self.board, worker, move_direction):
-            raise ValueError("Move is invalid")
-
-        worker = self.workers[worker]
-        x, y = worker.position
-        to_x, to_y = move_direction(x, y)
-        
-        self._move(worker, to_x, to_y)
-
-    @abstractmethod
-    def build(self, worker, build_direction):
-        """
-        Build a floor in the given direction if rules are satisfied.
-
-        :param worker: N, id of worker
-        :param build_direction: Direction, direction for build
-        """
-        if not self.rules.check_build(self.board, worker, build_direction):
-            raise ValueError("Build is invalid")
-
-        worker = self.workers[worker]
-        x, y = worker.position
-        to_x, to_y = build_direction(x, y)
-
-        self._build(to_x, to_y)
+        self._update(x, y, Height(to_cell.height + 1))
