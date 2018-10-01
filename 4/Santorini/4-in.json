@@ -1,0 +1,12 @@
+[[3, 2, 1, 0, 0, 1], 
+[0, "2player12", "3player11", 0, 0, 0], 
+[2, "1player21", 0, 0, 0, 0], 
+[0, 0, 0, 0, 0, 0],
+[0, 0, "1player22", 0, 0, 0],
+[0, 0, 0, 0, 0, 0]]
+
+["occupy", "player21", ["PUT", "NORTH"]]
+["move", "player21", ["PUT", "NORTH"]]
+["height", "player11", ["WEST", "PUT"]]
+
+

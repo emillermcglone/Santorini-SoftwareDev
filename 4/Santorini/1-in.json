@@ -1,2 +1,19 @@
-[1, 2]
-[3, 4]
+[[3, 2, 1, 0, 0, 1], 
+[0, 2, 0, "2player12", 0, 0], 
+[0, 0, 0, 0, 0, "3player11"], 
+[0, 0, 0, 0, "1player21", 0],
+[0, 0, "1player22", 0, 0, 0],
+[0, 0, 0, 0, 0, 0]]
+
+["build", "player11", ["WEST", "PUT"]]
+["height", "player11", ["WEST", "PUT"]]
+
+["neighbor", "player12", ["EAST", "SOUTH"]]
+["neighbor", "player11", ["EAST", "PUT"]]
+
+["occupy", "player12", ["EAST", "SOUTH"]]
+["occupy", "player21", ["EAST", "NORTH"]]
+["height", "player21", ["EAST", "NORTH"]]
+
+
+

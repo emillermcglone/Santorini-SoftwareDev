@@ -27,10 +27,13 @@ def move(board, request, output):
     :param output: the output
     """
 
-    worker = create_cell(request[1])
+    worker = request[1]
     direction = create_direction(request[2])
-    board.move(worker.id, direction)
-    output.write("[]")
+    try:
+        board.move(worker, direction)
+        output.write("[]\n")
+    except:
+        return
 
 def build(board, request, output):
     """
@@ -40,10 +43,14 @@ def build(board, request, output):
     :param request: [String, String, String], the test harness build request, worker, direction
     :param output: the output
     """
-    worker = create_cell(request[1])
+    
+    worker = request[1]
     direction = create_direction(request[2])
-    board.build(worker.id, direction)
-    output.write("[]")
+    try:
+        board.build(worker, direction)
+        output.write("[]\n")
+    except:
+        return
 
 def neighbor(board, request, output):
     """
@@ -53,10 +60,14 @@ def neighbor(board, request, output):
     :param request: [String, String, String], the test harness neighbor request, worker, direction
     :param output: the output
     """
-    worker = create_cell(build_request[1])
+    worker = request[1]
     direction = create_direction(request[2])
-    response = "yes" if board.neighbor(worker.id, direction) else "no"
-    output.write(response)
+    try:
+        response = "yes" if board.neighbor(worker, direction) else "no"
+    except:
+        response = "no"
+    output.write(response + "\n")
+
 
 def occupy(board, request, output):
     """
@@ -66,10 +77,13 @@ def occupy(board, request, output):
     :param request: [String, String, String], the test harness occupy request, worker, direction
     :param output: the output
     """
-    worker = create_cell(build_request[1])
+    worker = request[1]
     direction = create_direction(request[2])
-    response = "yes" if board.occupied(worker.id, direction) else "no"
-    output.write(response)
+    try:
+        response = "yes" if board.occupied(worker, direction) else "no"
+    except:
+        response = "no"
+    output.write(response + "\n")
 
 def height(board, request, output):
     """
@@ -79,10 +93,13 @@ def height(board, request, output):
     :param request: [String, String, String], the test harness height request, worker, direction
     :param output: the output
     """
-    worker = create_cell(build_request[1])
+    worker = request[1]
     direction = create_direction(request[2])
-    response = board.height(worker.id, direction)
-    output.write(response)
+    try:
+        response = str(board.height(worker, direction))
+    except:
+        response = str(0)
+    output.write(response + "\n")
 
 
 def create_cell(cell):
@@ -92,57 +109,62 @@ def create_cell(cell):
     :param cell: String | N, a buildingworker or height 
     """
     if isinstance(cell, str):
-        height = cell[0]
+        height = int(cell[0])
         worker_id = cell[1:]
-        return Worker(height, worker_id)
+        return Worker(worker_id, height)
     else:
-        return Height(height)
+        return Height(cell)
 
 def create_direction(direction):
     """
     Create the appropriate Direction for move or build.
 
-    :param direction: [String, String], where the first string is one of: "EAST" "PUT" "WEST" 
-    and the second is one of: "NORTH" "PUT" "SOUTH".
+    :param direction: [String, String], the test harness directions
     """
-    east_west = None
-    north_south = None
 
-    if direction[0] == "East":
-        east_west = Direction.E
-    elif direction[0] == "West":
-        east_west = Direction.W
+    directions = {
+        "EAST": Direction.E, 
+        "WEST": Direction.W,
+        "NORTH": Direction.N,
+        "SOUTH": Direction.S,
+        "PUT": lambda x, y: (x, y)
+    }
 
-    if direction[1] == "North":
-        north_south = Direction.N
-    elif direction[1] == "South":
-        north_south = Direction.S
+    east_west = directions[direction[0]]
+    north_south = directions[direction[1]]
 
-    if east_west is None:
-        return north_south
-    elif north_south is None:
-        return east_west
-    else:
-        return Direction.compose(east_west, north_south)
+    return Direction.compose(east_west, north_south)
+
+
+def handle_requests(board, request, output):
+    requests = {
+        "move": move,
+        "build": build,
+        "neighbor": neighbor,
+        "occupy": occupy,
+        "height": height,
+    }
+
+    requests[request[0]](board, request, output)
+
 
 def main():
-    output = sys.stdout
+    output = open(sys.argv[2], 'w') if len(sys.argv) >= 3 else sys.stdout
+    board = [[]]
 
     with fileinput.input() as f:
+        inputs = ""
         for line in f:
-            readable = io.BytesIO(line.encode())
-            for json_value in splitfile(readable, format="json"):
-                req_type = json_value[0]
-                if isinstance(req_type, list):
-                    board = create_board(json_value)
-                elif req_type == "move":
-                    move(board, req_type, output)
-                elif req_type == "build":
-                    build(board, req_type, output)
-                elif req_type == "neighbor":
-                    neighbor(board, req_type, output)
-                elif req_type == "occupy":
-                    occupy(board, req_type, output)
-                elif req_type == "height":
-                    height(board, req_type, output)
+            inputs += line
+        
+        readable = io.BytesIO(inputs.encode())
+        
+        for json_input in splitfile(readable, format="json"):
+            request = json.loads(json_input)
+            if isinstance(request[0], list):
+                board = create_board(request, Rules([], []))
+            else:
+                handle_requests(board, request, output)
             
+if __name__ == "__main__":
+    main()

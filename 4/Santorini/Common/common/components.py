@@ -66,7 +66,7 @@ class Worker(Cell):
     it is on.
     """
 
-    def __init__(self, worker_id, position = None, height = 0):
+    def __init__(self, worker_id, height = 0):
         """
         Initialize with id, position, and height of building the worker is on.
 
@@ -77,7 +77,6 @@ class Worker(Cell):
         """
         super().__init__(height)
         self.id = worker_id
-        self.position = position
 
 
 class Rules():
@@ -193,9 +192,9 @@ class Direction(Enum):
     SW = lambda x, y: (x - 1, y + 1)
     SE = lambda x, y: (x + 1, y + 1)
 
-    def compose(direction1, direction2):
+    def compose(direction_1, direction_2):
         def go(x, y):
-            i, j = direction1(x, y)
-            return direction2(i, j)
+            i, j = direction_1(x, y)
+            return direction_2(i, j)
 
         return go

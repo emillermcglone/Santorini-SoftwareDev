@@ -8,7 +8,7 @@ Worker has id: N, position: (N, N), and height: N, 0 to 4 inclusive
 N is a natural number
 Height of 0 signifies the ground floor 
 
-Direction is an Enum, one of 'N', 'E', 'S', 'W', 'NE', 'NW', 'SE', 'SW'
+Direction is an Enum, one of N, E, S, W, NE, NW, SE, SW
 """
 
 import copy
@@ -16,7 +16,7 @@ import copy
 from Common.common.components import *
 from abc import ABC, abstractmethod
 
-class Board(ABC):
+class Board():
     def __init__(self, rules, board=None, width=6, height=6):
         """
         Initialize board with the given dimensions, 6 x 6 by default, and
@@ -27,9 +27,26 @@ class Board(ABC):
         :param width: N, number of cells horizontally
         :param height: N, number of cells vertically
         """
+        self._width = width
+        self._height = height
         self._rules = rules
-        self._board = [[Height(0)] * width] * height
-        self._workers = {}
+        self._board = self.complete(board, width, height) if board is not None else [[Height(0)] * width] * height
+
+
+    def complete(self, board, width, height):
+        """
+        Complete the board with trailing unoccupied Cells if dimensions
+        are not width x height.
+
+        :param board: [[Cell, ...], ...], the incomplete board
+        :param width: N, the width of a complete board
+        :param height: N, the height of a complete board
+        """
+        result = board
+        difference = height - len(result)
+        result += [[Height(0)] * width] * difference
+        result = list(map(lambda l: l + [Height(0)] * (width - len(l)), result))
+        return result
 
     def __str__(self):
         """
@@ -50,11 +67,20 @@ class Board(ABC):
     @property
     def board(self):
         """
-        Provide a deep copy of the boar/d representing state of game.
+        Provide a deep copy of the board representing state of game.
 
         :return: [[Cell, ...] ...], the state of the game
         """
         return copy.deepcopy(self._board)
+
+    @property
+    def rules(self):
+        """ 
+        Provide a deep copy of the rules interface.
+
+        :return: Rules, the rules of the game
+        """
+        return copy.deepcopy(self._rules)
 
     def cell(self, x, y):
         """
@@ -65,10 +91,11 @@ class Board(ABC):
         :return: Cell, the cell on given coordinates
         :raise ValueError: if given position is out of bounds
         """
-        try:
-            return self.board[x][y]
-        except IndexError:
+
+        if (x < 0 or x >= self._width or y < 0 or y >= self._height):
             raise ValueError("Given position is out of bounds")
+        return self.board[y][x]
+
 
     def neighbor(self, worker, direction):
         """
@@ -78,7 +105,7 @@ class Board(ABC):
         :param direction: Direction, direction of neighbor
         :return: bool, True if it is an empty cell, False otherwise
         """
-        x, y = self.workers[worker].position
+        x, y = self.get_worker_position(worker)
         
         try:    
             cell = self._next_cell(x, y, direction)
@@ -96,7 +123,7 @@ class Board(ABC):
         :param direction: Direction, direction of neighbor
         :return: bool, True if worker occupies neighbor, False otherwise
         """
-        x, y = self.workers[worker].position
+        x, y = self.get_worker_position(worker)
         
         try:
             cell = self._next_cell(x, y, direction)
@@ -116,11 +143,24 @@ class Board(ABC):
         :raise ValueError: if there's no neighboring cell
         """
 
-        x, y = self.workers[worker].position
+        x, y = self.get_worker_position(worker)
         cell = self._next_cell(x, y, direction)
         return cell.height
 
-    @abstractmethod
+    def get_worker_position(self, worker):
+        """
+        Get the position of given worker.
+
+        :param worker: N, id of worker
+        :return: (N, N), position of worker
+        :raise ValueError: if worker is not found
+        """
+        for y, r in enumerate(self._board):
+            for x, c in enumerate(r ):
+                if isinstance(c, Worker) and c.id == worker:
+                    return x, y
+        raise ValueError("Worker not found")
+
     def place_worker(self, worker, x, y):
         """ 
         Place worker on position.
@@ -133,9 +173,9 @@ class Board(ABC):
         cell = self.cell(x, y)
         if isinstance(cell, Worker):
             raise ValueError("Another worker is on position")
-        self._update(x, y, Worker(worker, (x, y), cell.height))
+        placed_worker = Worker(worker, cell.height)
+        self._update(x, y, placed_worker)
 
-    @abstractmethod
     def move(self, worker, move_direction):
         """ 
         Move worker to given direction if rules are satisfied.
@@ -143,16 +183,15 @@ class Board(ABC):
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
         """
-        if not self._rules.check_move(self.board, worker, move_direction):
+        if not self.rules.check_move(self.board, worker, move_direction):
             raise ValueError("Move is invalid")
 
-        worker = self.workers[worker]
-        x, y = worker.position
+        x, y = self.get_worker_position(worker)
         to_x, to_y = move_direction(x, y)
         
         self._move(worker, to_x, to_y)
 
-    @abstractmethod
+
     def build(self, worker, build_direction):
         """
         Build a floor in the given direction if rules are satisfied.
@@ -163,11 +202,11 @@ class Board(ABC):
         if not self.rules.check_build(self.board, worker, build_direction):
             raise ValueError("Build is invalid")
 
-        worker = self.workers[worker]
-        x, y = worker.position
+        x, y = self.get_worker_position(worker)
         to_x, to_y = build_direction(x, y)
 
         self._build(to_x, to_y)
+
 
     def _cell(self, x, y):
         """
@@ -178,10 +217,9 @@ class Board(ABC):
         :return: Cell, the cell on given coordinates
         :raise ValueError: if given position is out of bounds
         """
-        try:
-            return self._board[x][y]
-        except IndexError:
+        if (x < 0 or x >= self._width or y < 0 or y >= self._height):
             raise ValueError("Given position is out of bounds")
+        return self._board[y][x]
         
 
     def _next_cell(self, x, y, direction):
@@ -193,8 +231,8 @@ class Board(ABC):
         :param direction: Direction, direction for next position
         :return: Cell, next cell
         """
-        i, j = direction(x, y)
-        return self._cell(i, j)
+        to_x, to_y = direction(x, y)
+        return self._cell(to_x, to_y)
 
     def _update(self, x, y, new_cell):
         """
@@ -208,7 +246,7 @@ class Board(ABC):
         if not isinstance(new_cell, Cell):
             raise ValueError("Given cell is not of type Cell")
         self.cell(x, y)
-        self._board[x][y] = new_cell
+        self._board[y][x] = new_cell
 
 
     def _move(self, worker_id, x, y):
@@ -222,13 +260,12 @@ class Board(ABC):
         to_cell = self.cell(x, y)
         
         # Updates from cell
-        worker = self._workers[worker_id]
-        i, j = worker.position
+        i, j = self.get_worker_position(worker_id)
+        worker = self._cell(i, j)
         self._update(i, j, Height(worker.height))
 
         # Updates to cell / move worker to cell
         to_height = to_cell.height
-        worker.position = (x, y)
         worker.height = to_height
         self._update(x, y, worker)
 

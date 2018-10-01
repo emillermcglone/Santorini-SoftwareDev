@@ -1,0 +1,17 @@
+[[3, 2, 1, 0, 0, 1], 
+[0, "2player12", "3player11", 0, 0, 0], 
+[2, "1player21", 0, 0, 0, 0], 
+[0, 0, 0, 0, 0, 0],
+[0, 0, "1player22", 0, 0, 0],
+[0, 0, 0, 0, 0, 0]]
+
+["build", "player12", ["PUT", "NORTH"]]
+["height", "player12", ["PUT", "NORTH"]]
+["build", "player12", ["PUT", "NORTH"]]
+["height", "player12", ["PUT", "NORTH"]]
+["move", "player12", ["PUT", "NORTH"]]
+
+["move", "player21", ["PUT", "NORTH"]]
+["height", "player21", ["PUT", "NORTH"]]
+["build", "player21", ["PUT", "NORTH"]]
+["height", "player21", ["PUT", "NORTH"]]
