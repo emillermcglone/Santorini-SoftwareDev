@@ -1,3 +1,5 @@
+#!/usr/bin/python3.4
+
 import fileinput, io, sys
 import json
 
