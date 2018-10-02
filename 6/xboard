@@ -1,0 +1,3 @@
+#!/bin/bash 
+
+./../Santorini/Common/dist/xboard/xboard $1 $2
