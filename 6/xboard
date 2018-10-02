@@ -1,3 +1,3 @@
 #!/bin/bash 
 
-./../Santorini/Common/dist/xboard/xboard $1 $2
+python3 ../Santorini/Common/xboard.py $1 $2
