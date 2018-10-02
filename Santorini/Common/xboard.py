@@ -4,7 +4,6 @@ import fileinput, io, sys
 import json
 
 
-from splitstream import splitfile
 from components import *
 from santorini import SantoriniBoard
 
@@ -160,16 +159,16 @@ def main():
         inputs = ""
         for line in f:
             inputs += line
+            try:
+                request = json.loads(inputs)
+                if isinstance(request[0], list):
+                    board = create_board(request, Rules([], []))
+                else:
+                    handle_requests(board, request, output)
+                inputs = ""
+            except:
+                continue
         
-        readable = io.BytesIO(inputs.encode())
-        
-        for json_input in splitfile(readable, format="json"):
-            request = json.loads(json_input)
-            if isinstance(request[0], list):
-                board = create_board(request, Rules([], []))
-            else:
-                handle_requests(board, request, output)
-
     output.close()
             
 if __name__ == "__main__":
