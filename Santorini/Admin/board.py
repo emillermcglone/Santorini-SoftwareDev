@@ -18,8 +18,7 @@ class SantoriniBoard(Board):
         self._width = width
         self._height = height
         self._rules = rules
-        self._board = self.complete(board, width, height) if board is not None else [
-            [Height(0)] * width] * height
+        self._board = self.complete(board, width, height) if board is not None else [[Height(0)] * width] * height
 
     def complete(self, board, width, height):
         """
@@ -33,8 +32,7 @@ class SantoriniBoard(Board):
         result = board
         difference = height - len(result)
         result += [[Height(0)] * width] * difference
-        result = list(
-            map(lambda l: l + [Height(0)] * (width - len(l)), result))
+        result = list(map(lambda l: l + [Height(0)] * (width - len(l)), result))
         return result
 
     def __str__(self):
