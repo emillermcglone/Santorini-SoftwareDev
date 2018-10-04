@@ -1,10 +1,11 @@
-import copy, sys
-from board import Board
-from components import *
+import copy, sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from abc import ABC, abstractmethod
+from Design.board import IBoard
+from Admin.components import *
 
-
-class SantoriniBoard(Board):
+class Board(IBoard):
     def __init__(self, rules, board=None, width=6, height=6):
         """
         Initialize board with the given dimensions, 6 x 6 by default, and
@@ -18,21 +19,29 @@ class SantoriniBoard(Board):
         self._width = width
         self._height = height
         self._rules = rules
-        self._board = self.complete(board, width, height) if board is not None else [[Height(0)] * width] * height
+        self._board = self._complete(board) if board is not None else [[Height(0)] * width] * height
 
-    def complete(self, board, width, height):
+    def _complete(self, board):
         """
         Complete the board with trailing unoccupied Cells if dimensions
-        are not width x height.
+        are not width x height. If board's dimensions exceed current width and
+        height, width and height are set to the given board's dimensions.
 
         :param board: [[Cell, ...], ...], the incomplete board
-        :param width: N, the width of a complete board
-        :param height: N, the height of a complete board
         """
+        max_height = len(board)
+        max_width = max(map(len, board))
+
+        if max_height > self._height: 
+            self._height = max_height
+
+        if max_width > self._width:
+            self._width = max_width
+        
         result = board
-        difference = height - len(result)
-        result += [[Height(0)] * width] * difference
-        result = list(map(lambda l: l + [Height(0)] * (width - len(l)), result))
+        difference = self._height - len(result)
+        result += [[Height(0)] * self._width] * difference
+        result = list(map(lambda l: l + [Height(0)] * (self._width - len(l)), result))
         return result
 
     def __str__(self):

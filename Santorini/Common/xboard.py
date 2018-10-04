@@ -1,12 +1,15 @@
-#!/usr/bin/python3.4
+#!/usr/bin/python3.6
+"""
+Test harness for IBoard.
+"""
 
-import fileinput, io, sys
-import json
+import fileinput, io, sys, json, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
-from components import *
-from santorini import SantoriniBoard
-
+from splitstream import splitfile
+from Common.components import Direction
+from Admin.components import *
+from Admin.board import Board
 
 def create_board(board, rules):
     """
@@ -18,7 +21,7 @@ def create_board(board, rules):
     """
 
     new_board = [[create_cell(c) for c in l] for l in board]
-    return SantoriniBoard(rules, new_board)
+    return Board(rules, new_board)
 
 
 def move(board, request, output):
@@ -138,7 +141,6 @@ def create_direction(direction):
 
     return Direction.compose(east_west, north_south)
 
-
 def handle_requests(board, request, output):
     requests = {
         "move": move,
@@ -159,16 +161,16 @@ def main():
         inputs = ""
         for line in f:
             inputs += line
-            try:
-                request = json.loads(inputs)
-                if isinstance(request[0], list):
-                    board = create_board(request, Rules([], []))
-                else:
-                    handle_requests(board, request, output)
-                inputs = ""
-            except:
-                continue
         
+        readable = io.BytesIO(inputs.encode())
+        
+        for json_input in splitfile(readable, format="json"):
+            request = json.loads(json_input)
+            if isinstance(request[0], list):
+                board = create_board(request, Rules([], []))
+            else:
+                handle_requests(board, request, output)
+
     output.close()
             
 if __name__ == "__main__":

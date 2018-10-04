@@ -8,10 +8,13 @@ and the player interface.
 N is a natural number. 
 """
 
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from abc import ABC, abstractmethod
 from enum import Enum
 
-class Cell(ABC):
+class ICell(ABC):
     """
     Individual cell element with height on a Santorini board.
     """
@@ -24,16 +27,18 @@ class Cell(ABC):
         :param height: 0 to 4 inclusive
         :raise ValueError: height is not between 0 and 4 inclusive        
         """
-        self.height = height
+        pass
 
     @property
+    @abstractmethod
     def height(self):
         """
         Height of cell.
         """
-        return self._height
+        pass
 
     @height.setter
+    @abstractmethod
     def height(self, new_height):
         """
         Set cell's height to new_height.
@@ -41,50 +46,14 @@ class Cell(ABC):
         :param new_height: the new height
         :raise ValueError: if height is not from 0 to 4
         """
-        if new_height < 0 or new_height > 4:
-            raise ValueError("New height must be between 0 and 4 inclusive")
-        self._height = new_height
+        pass
 
-class Height(Cell):
-    """
-    Height of a building.
-    """
-
-    def __init__(self, height = 0):
-        """
-        Initialize with height of building.
-
-        :param height: N, height of building, defaults to 0
-        :raise ValueError: if height is not from 0 to 4
-        """
-        super().__init__(height)
-        
-
-class Worker(Cell):
-    """
-    Worker of a Santorini board whose height represents which floor
-    it is on.
-    """
-
-    def __init__(self, worker_id, height = 0):
-        """
-        Initialize with id, position, and height of building the worker is on.
-
-        :param worker_id: N, id of Worker
-        :param position: (N, N), the position of Worker
-        :param height: N, height of building worker is on, defaults to 0
-        :raise ValueError: if height is not from 0 to 4        
-        """
-        super().__init__(height)
-        self.id = worker_id
-
-
-class Rules():
+class IRules(ABC):
     """
     Set of rules for a Santorini game which both the administrative components
     and players can use to validate their moves before making them.
     """
-    
+    @abstractmethod
     def __init__(self, move_rules, build_rules):
         """
         Initalize with list of Rule for both moving and building. 
@@ -93,9 +62,9 @@ class Rules():
         :param move_rules: [Rule, ...], list of rules for move
         :param build_rules: [Rule, ...], list of rules for build
         """
-        self.move_rules = move_rules
-        self.build_rules = build_rules
+        pass
 
+    @abstractmethod
     def check_move(self, board, worker, move_direction):
         """
         Check if the move is valid.
@@ -104,8 +73,10 @@ class Rules():
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
         """
-        return all(map(lambda f: f(board, worker, move_direction), self.move_rules))
+        pass
 
+
+    @abstractmethod
     def check_build(self, board, worker, build_direction):
         """
         Check if the build is valid.
@@ -114,9 +85,10 @@ class Rules():
         :param worker: N, id of worker
         :param build_direction: Direction, direction for build
         """
-        return all(map(lambda f: f(board, worker, build_direction), self.build_rules))
+        pass
 
-class Player(ABC):
+
+class IPlayer(ABC):
     """
     Player component for Santorini, and intermediary between administrative
     components and the player AI.
@@ -134,7 +106,7 @@ class Player(ABC):
         pass
 
     @abstractmethod
-    def place_worker(self, board):
+    def prompt_place_worker(self, board):
         """
         Provide coordinates to place one of the workers on the given board.
 
@@ -192,7 +164,15 @@ class Direction(Enum):
     SW = lambda x, y: (x - 1, y + 1)
     SE = lambda x, y: (x + 1, y + 1)
 
+    @staticmethod
     def compose(direction_1, direction_2):
+        """
+        Composes two direction functions.
+
+        :param direction_1: Direction, first direction
+        :param direction_2: Direction, second direction
+        :return: (int, int) -> (int, int), composed direction function
+        """
         def go(x, y):
             i, j = direction_1(x, y)
             return direction_2(i, j)

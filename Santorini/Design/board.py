@@ -1,17 +1,23 @@
+"""
+Interface design for board with which Santorini games move/place workers
+and build buildings.
+
+ICell is an individual cell with height on the board.
+
+IRules is a set of rules for the board which both the administrative components 
+and players can use to validate their moves before making them.
+
+N is a natural number
+"""
+
 from abc import ABC, abstractmethod
 
-class Board(ABC):
+class IBoard(ABC):
     """
-    Board is made of a zero-indexed 2D list of Cell for a Santorini game,
+    IBoard is made of a zero-indexed 2D list of ICell for a Santorini game,
     and manages the placement of the game's pieces and its buildings. 
-
-    Cell is either Height or Worker
-    Height signifies a building floor: N, 0 to 4 inclusive
-    Worker has id: N, position: (N, N), and height: N, 0 to 4 inclusive
-    N is a natural number
-    Height of 0 signifies the ground floor 
-
-    Direction is an Enum, one of N, E, S, W, NE, NW, SE, SW
+    No rules are baked into the board. The board is in charge of the game's pieces 
+    and provide basic inquiries about its pieces.
     """
 
     @abstractmethod
@@ -20,8 +26,8 @@ class Board(ABC):
         Initialize board with the given dimensions, 6 x 6 by default, and
         list of game rules.
 
-        :param rules: Rules, the rule checking interface
-        :param board: [[Cell, ...], ...], a board to initialize from 
+        :param rules: IRules, the rule checking interface
+        :param board: [[ICell, ...], ...], a board to initialize from 
         :param width: N, number of cells horizontally
         :param height: N, number of cells vertically
         """
@@ -32,7 +38,7 @@ class Board(ABC):
         """
         Check if game has been won.
 
-        :param win_condition: (board: [[Cell, ...] ...]) -> N | -1, returns id of winning worker, -1 if game continues
+        :param win_condition: (board: [[ICell, ...] ...]) -> N | -1, returns id of winning worker, -1 if game continues
         :return: N | -1, id of winning worker or -1 if game continues
         """
         pass
@@ -43,7 +49,7 @@ class Board(ABC):
         """
         Provide a deep copy of the board representing state of game.
 
-        :return: [[Cell, ...] ...], the state of the game
+        :return: [[ICell, ...] ...], the state of the game
         """
         pass
 
@@ -53,7 +59,7 @@ class Board(ABC):
         """ 
         Provide a deep copy of the rules interface.
 
-        :return: Rules, the rules of the game
+        :return: IRules, the rules of the game
         """
         pass
 
@@ -64,7 +70,7 @@ class Board(ABC):
 
         :param x: N, x coordinate
         :param y: N, y coordinate
-        :return: Cell, the cell on given coordinates
+        :return: ICell, the cell on given coordinates
         :raise ValueError: if given position is out of bounds
         """
         pass
