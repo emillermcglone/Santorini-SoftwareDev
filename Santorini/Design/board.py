@@ -4,9 +4,6 @@ and build buildings.
 
 ICell is an individual cell with height on the board.
 
-IRules is a set of rules for the board which both the administrative components 
-and players can use to validate their moves before making them.
-
 N is a natural number
 """
 
@@ -21,12 +18,10 @@ class IBoard(ABC):
     """
 
     @abstractmethod
-    def __init__(self, rules, board=None, width=6, height=6):
+    def __init__(self, board=None, width=6, height=6):
         """
-        Initialize board with the given dimensions, 6 x 6 by default, and
-        list of game rules.
+        Initialize board with the given dimensions, 6 x 6 by default.
 
-        :param rules: IRules, the rule checking interface
         :param board: [[ICell, ...], ...], a board to initialize from 
         :param width: N, number of cells horizontally
         :param height: N, number of cells vertically
@@ -50,16 +45,6 @@ class IBoard(ABC):
         Provide a deep copy of the board representing state of game.
 
         :return: [[ICell, ...] ...], the state of the game
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def rules(self):
-        """ 
-        Provide a deep copy of the rules interface.
-
-        :return: IRules, the rules of the game
         """
         pass
 
@@ -100,7 +85,7 @@ class IBoard(ABC):
 
 
     @abstractmethod
-    def height(self, worker, direction):
+    def neighbor_height(self, worker, direction):
         """
         What is the height of neigboring cell?
 
@@ -140,7 +125,7 @@ class IBoard(ABC):
     @abstractmethod
     def move(self, worker, move_direction):
         """ 
-        Move worker to given direction if rules are satisfied.
+        Move worker to given direction.
 
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
@@ -151,7 +136,7 @@ class IBoard(ABC):
     @abstractmethod
     def build(self, worker, build_direction):
         """
-        Build a floor in the given direction if rules are satisfied.
+        Build a floor in the given direction.
 
         :param worker: N, id of worker
         :param build_direction: Direction, direction for build

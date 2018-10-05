@@ -15,10 +15,6 @@ class TestInit(unittest.TestCase):
         with self.assertRaises(ValueError):
             Height(-1)
 
-    def test_height_above_four_error(self):
-        with self.assertRaises(ValueError):
-            Height(5)
-
     def test_height_equals_zero(self):
         self.assertEqual(Height(0).height, 0)
 
@@ -47,10 +43,6 @@ class TestHeightSetter(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.height.height = -1
 
-    def test_change_height_above_four(self):
-        self.assertEqual(self.height.height, 0)
-        with self.assertRaises(ValueError):
-            self.height.height = 5
     
 test_cases = [TestInit, TestHeightProperty, TestHeightSetter]
     

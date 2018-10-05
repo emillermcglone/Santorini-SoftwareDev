@@ -8,20 +8,19 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from splitstream import splitfile
 from Common.components import Direction
-from Admin.components import *
+from Admin.components import Height, Worker
 from Admin.board import Board
 
-def create_board(board, rules):
+def create_board(board):
     """
     Translate test harness board to Santorini board.
 
     :param board: [[Cell, ...], ...], the test harness board
-    :param rules: [Rule, ...], the rules for the board
     :return: Board, instance of Santorini board
     """
 
     new_board = [[create_cell(c) for c in l] for l in board]
-    return Board(rules, new_board)
+    return Board(new_board)
 
 
 def move(board, request, output):
@@ -102,7 +101,7 @@ def height(board, request, output):
     worker = request[1]
     direction = create_direction(request[2])
     try:
-        response = str(board.height(worker, direction))
+        response = str(board.neighbor_height(worker, direction))
     except:
         response = str(0)
     output.write(response + "\n")
@@ -167,7 +166,7 @@ def main():
         for json_input in splitfile(readable, format="json"):
             request = json.loads(json_input)
             if isinstance(request[0], list):
-                board = create_board(request, Rules([], []))
+                board = create_board(request)
             else:
                 handle_requests(board, request, output)
 

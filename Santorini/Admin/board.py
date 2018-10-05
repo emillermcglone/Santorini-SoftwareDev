@@ -6,19 +6,16 @@ from Design.board import IBoard
 from Admin.components import *
 
 class Board(IBoard):
-    def __init__(self, rules, board=None, width=6, height=6):
+    def __init__(self, board=None, width=6, height=6):
         """
-        Initialize board with the given dimensions, 6 x 6 by default, and
-        list of game rules.
+        Initialize board with the given dimensions, 6 x 6 by default.
 
-        :param rules: Rules, the rule checking interface
         :param board: [[Cell, ...], ...], a board to initialize from 
         :param width: N, number of cells horizontally
         :param height: N, number of cells vertically
         """
         self._width = width
         self._height = height
-        self._rules = rules
         self._board = self._complete(board) if board is not None else [[Height(0)] * width] * height
 
     def _complete(self, board):
@@ -68,14 +65,6 @@ class Board(IBoard):
         """
         return copy.deepcopy(self._board)
 
-    @property
-    def rules(self):
-        """ 
-        Provide a deep copy of the rules interface.
-
-        :return: Rules, the rules of the game
-        """
-        return copy.deepcopy(self._rules)
 
     def cell(self, x, y):
         """
@@ -87,7 +76,7 @@ class Board(IBoard):
         :raise ValueError: if given position is out of bounds
         """
 
-        if (x < 0 or x >= self._width or y < 0 or y >= self._height):
+        if (self._out_of_bounds(x, y)):
             raise ValueError("Given position is out of bounds")
         return self.board[y][x]
 
@@ -114,7 +103,7 @@ class Board(IBoard):
 
         :param worker: N, id of worker
         :param direction: Direction, direction of neighbor
-        :return: bool, True if worker occupies neighbor, False otherwise
+        :return: bool, True if worker occupies neighbor, False otherwise including out of bounds
         """
         x, y = self.get_worker_position(worker)
 
@@ -125,7 +114,7 @@ class Board(IBoard):
 
         return isinstance(cell, Worker)
 
-    def height(self, worker, direction):
+    def neighbor_height(self, worker, direction):
         """
         What is the height of neigboring cell?
 
@@ -163,21 +152,16 @@ class Board(IBoard):
         :raise ValueError: if another worker is on position
         """
         cell = self.cell(x, y)
-        if isinstance(cell, Worker):
-            raise ValueError("Another worker is on position")
         placed_worker = Worker(worker, cell.height)
         self._update(x, y, placed_worker)
 
     def move(self, worker, move_direction):
         """ 
-        Move worker to given direction if rules are satisfied.
+        Move worker to given direction.
 
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
         """
-        if not self.rules.check_move(self.board, worker, move_direction):
-            raise ValueError("Move is invalid")
-
         x, y = self.get_worker_position(worker)
         to_x, to_y = move_direction(x, y)
 
@@ -185,14 +169,11 @@ class Board(IBoard):
 
     def build(self, worker, build_direction):
         """
-        Build a floor in the given direction if rules are satisfied.
+        Build a floor in the given direction.
 
         :param worker: N, id of worker
         :param build_direction: Direction, direction for build
         """
-        if not self.rules.check_build(self.board, worker, build_direction):
-            raise ValueError("Build is invalid")
-
         x, y = self.get_worker_position(worker)
         to_x, to_y = build_direction(x, y)
 
@@ -207,7 +188,7 @@ class Board(IBoard):
         :return: Cell, the cell on given coordinates
         :raise ValueError: if given position is out of bounds
         """
-        if (x < 0 or x >= self._width or y < 0 or y >= self._height):
+        if (self._out_of_bounds(x, y)):
             raise ValueError("Given position is out of bounds")
         return self._board[y][x]
 
@@ -234,7 +215,8 @@ class Board(IBoard):
         """
         if not isinstance(new_cell, Cell):
             raise ValueError("Given cell is not of type Cell")
-        self.cell(x, y)
+        elif (self._out_of_bounds(x, y)):
+            raise ValueError("Given position is out of bounds")
         self._board[y][x] = new_cell
 
     def _move(self, worker_id, x, y):
@@ -266,3 +248,15 @@ class Board(IBoard):
         """
         to_cell = self._cell(x, y)
         self._update(x, y, Height(to_cell.height + 1))
+
+    def _out_of_bounds(self, x, y):
+        """
+        Check if given x and y are out of bounds.
+
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :return: bool, True if given coordinates are out of bounds, False otherwise
+        """
+        return x < 0 or x >= self._width or y < 0 or y >= self._height
+            
+       

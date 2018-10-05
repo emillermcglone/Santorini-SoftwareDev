@@ -16,31 +16,16 @@ class Cell(ICell):
     """
 
     def __init__(self, height = 0):
-        """
-        Initialize cell with height, defaults to 0.
-
-        :param height: 0 to 4 inclusive
-        :raise ValueError: height is not between 0 and 4 inclusive        
-        """
+        if height < 0: raise ValueError("Given height is less than 0")
         self.height = height
 
     @property
     def height(self):
-        """
-        Height of cell.
-        """
         return self._height
 
     @height.setter
     def height(self, new_height):
-        """
-        Set cell's height to new_height.
-
-        :param new_height: the new height
-        :raise ValueError: if height is not from 0 to 4
-        """
-        if new_height < 0 or new_height > 4:
-            raise ValueError("New height must be between 0 and 4 inclusive")
+        if new_height < 0: raise ValueError("Given height is less than 0")
         self._height = new_height
 
     def __str__(self):
@@ -77,33 +62,16 @@ class Rules(IRules):
     and players can use to validate their moves before making them.
     """
     
-    def __init__(self, move_rules, build_rules):
-        """
-        Initalize with list of Rule for both moving and building. 
-        Rule is a function (board: [[Cell, ...] ...], worker: N, direction: Direction) -> bool
-  
-        :param move_rules: [Rule, ...], list of rules for move
-        :param build_rules: [Rule, ...], list of rules for build
-        """
+    def __init__(self, place_rules, move_rules, build_rules):
+        self.place_rules = place_rules
         self.move_rules = move_rules
         self.build_rules = build_rules
 
-    def check_move(self, board, worker, move_direction):
-        """
-        Check if the move is valid.
+    def check_place(self, board, x, y):
+        return all(map(lambda f: f(board, x, y), self.place_rules))
 
-        :param board: [[Cell, ...] ...], zero-indexed 2D list of Cells
-        :param worker: N, id of worker
-        :param move_direction: Direction, direction for move
-        """
+    def check_move(self, board, worker, move_direction):
         return all(map(lambda f: f(board, worker, move_direction), self.move_rules))
 
     def check_build(self, board, worker, build_direction):
-        """
-        Check if the build is valid.
-
-        :param board: [[Cell, ...] ...], zero-indexed 2D list of Cells
-        :param worker: N, id of worker
-        :param build_direction: Direction, direction for build
-        """
         return all(map(lambda f: f(board, worker, build_direction), self.build_rules))
