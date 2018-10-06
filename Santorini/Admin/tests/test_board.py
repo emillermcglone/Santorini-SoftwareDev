@@ -231,11 +231,6 @@ class TestBuild(unittest.TestCase):
             self.incomplete_board.build(20, Direction.S)
 
 
-
-
-        
-        
-
 test_cases = [TestInit, TestIsGameOver, TestBoard, TestCell, TestNeighbor, 
 TestOccupied, TestNeighborHeight, TestGetWorkerPosition, TestPlace, 
 TestMove, TestBuild]
