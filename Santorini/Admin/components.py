@@ -30,6 +30,9 @@ class Cell(ICell):
 
     def __str__(self):
         return "{0} {1}".format(type(self).__name__, self.height)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.height == other.height
         
 
 class Height(Cell):

@@ -110,7 +110,7 @@ class IBoard(ABC):
 
 
     @abstractmethod
-    def place_worker(self, worker, x, y):
+    def place(self, worker, x, y):
         """ 
         Place worker on position.
 

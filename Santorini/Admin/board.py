@@ -142,14 +142,13 @@ class Board(IBoard):
                     return x, y
         raise ValueError("Worker not found")
 
-    def place_worker(self, worker, x, y):
+    def place(self, worker, x, y):
         """ 
         Place worker on position.
 
         :param worker: N, id of worker to be placed
         :param x: N, x coordinate
         :param y: N, y coordinate
-        :raise ValueError: if another worker is on position
         """
         cell = self.cell(x, y)
         placed_worker = Worker(worker, cell.height)

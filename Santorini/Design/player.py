@@ -16,7 +16,7 @@ class IPlayer(ABC):
         pass
 
     @abstractmethod
-    def prompt_place_worker(self, board):
+    def prompt_place(self, board):
         """
         Provide coordinates to place one of the workers on the given board.
 
