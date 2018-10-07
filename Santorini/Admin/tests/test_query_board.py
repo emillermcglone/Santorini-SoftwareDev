@@ -106,8 +106,19 @@ class TestGetWorkerPosition(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.board.get_worker_position(1)
 
+class TestWorkers(unittest.TestCase):
+    def setUp(self):
+        self.board = ActionBoard().query_board
+        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
-test_cases = [TestCell, TestNeighborHeight, TestNeighbor, TestGetWorkerPosition, TestOccupied]
+    def test_empty_list_with_empty_board(self):
+        self.assertEqual(self.board.workers, [])
+
+    def test_worker_ids_with_filled_board(self):
+        self.assertEqual(self.incomplete_board.workers, [1, 2])
+
+
+test_cases = [TestCell, TestNeighborHeight, TestNeighbor, TestGetWorkerPosition, TestOccupied, TestWorkers]
     
 if __name__ == "__main__":
     test_suites = list(map(unittest.TestLoader().loadTestsFromTestCase, test_cases))

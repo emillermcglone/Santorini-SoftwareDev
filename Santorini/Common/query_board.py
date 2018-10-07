@@ -68,6 +68,17 @@ class IQueryBoard(IBoard):
         pass
 
 
+    @property
+    @abstractmethod
+    def workers(self):
+        """
+        Provide the ids of every worker on the board.
+
+        :return: [N, ...], ids of every worker on the board
+        """
+        pass
+
+
     @abstractmethod
     def get_worker_position(self, worker):
         """

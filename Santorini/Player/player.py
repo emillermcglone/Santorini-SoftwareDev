@@ -1,7 +1,7 @@
 class IPlayer(ABC):
     """
     Player component for Santorini, and intermediary between administrative
-    components and the player AI.
+    components and the actor
     """
 
     @abstractmethod
@@ -11,7 +11,7 @@ class IPlayer(ABC):
 
         :param board: IQueryBoard, the current board of the game
         :param workers: [N, ...], list of worker ids that belong to this player
-        :return: (N, N), the x and y coordinates to place a new worker
+        :return: (N, N), the x and y coordinates to place a new worker on
         """
         pass
 

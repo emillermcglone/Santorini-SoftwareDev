@@ -44,6 +44,7 @@ class TestBoard(unittest.TestCase):
 class TestPlace(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard()
+        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]])
     
     def test_place_worker(self):
         self.board.place(1, 0, 0)
@@ -60,6 +61,10 @@ class TestPlace(unittest.TestCase):
     def test_error_given_invalid_coordinates(self):
         with self.assertRaises(ValueError):
             self.board.place(3, 0, 7)
+
+    def test_error_given_existing_id(self):
+        with self.assertRaises(ValueError):
+            self.incomplete_board.place(1, 0, 0)
 
 
 class TestMove(unittest.TestCase):

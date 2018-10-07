@@ -4,16 +4,33 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Admin.components import *
 from Common.query_board import IQueryBoard
 
+from functools import reduce
+
 class QueryBoard(IQueryBoard):
     def __init__(self, board):
         """
         Initialize the query board with the given board.
 
-        :param board: [[Cell, ...], ...], a board to initialize from 
+        :param board: [[ICell, ...], ...], a board to initialize from 
         """
         self._board = board
         self._height = len(board)
         self._width = len(board[0])
+        self._workers = self._extract_worker_ids(board)
+
+    def _extract_worker_ids(self, board):
+        """
+        Extract ids of all workers in the board.
+        
+        :param board: [[ICell, ...], ...], the board of cells
+        :return: [N, ...], the ids of all workers
+        """
+        workers = []
+        for row in board:
+            for c in row:
+                if isinstance(c, Worker):
+                    workers.append(c.id)
+        return workers
 
 
     def __str__(self):
@@ -60,6 +77,11 @@ class QueryBoard(IQueryBoard):
         x, y = self.get_worker_position(worker)
         cell = self._next_cell(x, y, direction)
         return cell.height
+
+
+    @property
+    def workers(self):
+        return self._workers
 
 
     def get_worker_position(self, worker):

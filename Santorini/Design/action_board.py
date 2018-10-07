@@ -23,6 +23,7 @@ class IActionBoard(IBoard):
         :param worker: N, id of worker to be placed
         :param x: N, x coordinate
         :param y: N, y coordinate
+        :raise ValueError: if id exists on board, or x and y are out of bounds
         """
         pass
 

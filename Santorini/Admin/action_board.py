@@ -46,6 +46,9 @@ class ActionBoard(IActionBoard):
         raise ValueError("Worker not found")
 
     def place(self, worker, x, y):
+        if worker in self.query_board.workers:
+            raise ValueError("Given id is already on the board")
+
         cell = self._cell(x, y)
         placed_worker = Worker(worker, cell.height)
         self._update(x, y, placed_worker)
