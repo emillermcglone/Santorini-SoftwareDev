@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from splitstream import splitfile
 from Common.components import Direction
 from Admin.components import Height, Worker
-from Admin.board import Board
+from Admin.action_board import ActionBoard
 
 def create_board(board):
     """
@@ -20,7 +20,7 @@ def create_board(board):
     """
 
     new_board = [[create_cell(c) for c in l] for l in board]
-    return Board(new_board)
+    return ActionBoard(new_board)
 
 
 def move(board, request, output):
@@ -68,7 +68,7 @@ def neighbor(board, request, output):
     worker = request[1]
     direction = create_direction(request[2])
     try:
-        response = "yes" if board.neighbor(worker, direction) else "no"
+        response = "yes" if board.query_board.neighbor(worker, direction) else "no"
     except:
         response = "no"
     output.write(response + "\n")
@@ -85,7 +85,7 @@ def occupy(board, request, output):
     worker = request[1]
     direction = create_direction(request[2])
     try:
-        response = "yes" if board.occupied(worker, direction) else "no"
+        response = "yes" if board.query_board.occupied(worker, direction) else "no"
     except:
         response = "no"
     output.write(response + "\n")
@@ -101,7 +101,7 @@ def height(board, request, output):
     worker = request[1]
     direction = create_direction(request[2])
     try:
-        response = str(board.neighbor_height(worker, direction))
+        response = str(board.query_board.neighbor_height(worker, direction))
     except:
         response = str(0)
     output.write(response + "\n")
