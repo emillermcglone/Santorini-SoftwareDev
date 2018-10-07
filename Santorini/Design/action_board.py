@@ -16,19 +16,6 @@ class IActionBoard(IBoard):
     """
 
     @abstractmethod
-    def __init__(self, board=None, width=6, height=6):
-        """
-        Initialize board with the given dimensions, 6 x 6 by default. Board can
-        be initialized with a given 2D list of Cells.
-
-        :param board: [[Cell, ...], ...], a board to initialize from 
-        :param width: N, number of cells horizontally
-        :param height: N, number of cells vertically
-        """
-        pass
-
-
-    @abstractmethod
     def place(self, worker, x, y):
         """ 
         Place worker on position.

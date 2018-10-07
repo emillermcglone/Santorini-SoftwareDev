@@ -18,16 +18,6 @@ class ICell(ABC):
     """
     Individual cell element with height on a Santorini board.
     """
-    
-    @abstractmethod
-    def __init__(self, height = 0):
-        """
-        Initialize cell with height, defaults to 0.
-
-        :param height: N, height of cell 
-        :raise ValueError: if given height is less than 0
-        """
-        pass
 
     @property
     @abstractmethod
@@ -53,16 +43,6 @@ class IRules(ABC):
     Set of rules for a Santorini game which both the administrative components
     and players can use to validate their moves before making them.
     """
-    @abstractmethod
-    def __init__(self, place_rules, move_rules, build_rules):
-        """
-        Initalize with list of Rule for placing, moving, and building.
-        Rule is a function (board: [[Cell, ...] ...], worker: N, direction: Direction) -> bool
-  
-        :param move_rules: [Rule, ...], list of rules for move
-        :param build_rules: [Rule, ...], list of rules for build
-        """
-        pass
 
     @abstractmethod
     def check_place(self, board, x, y):

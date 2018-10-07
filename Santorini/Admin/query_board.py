@@ -6,6 +6,11 @@ from Common.query_board import IQueryBoard
 
 class QueryBoard(IQueryBoard):
     def __init__(self, board):
+        """
+        Initialize the query board with the given board.
+
+        :param board: [[Cell, ...], ...], a board to initialize from 
+        """
         self._board = board
         self._height = len(board)
         self._width = len(board[0])

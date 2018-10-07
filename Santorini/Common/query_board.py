@@ -19,16 +19,6 @@ class IQueryBoard(IBoard):
     """
 
     @abstractmethod
-    def __init__(self, board): 
-        """
-        Initialize the query board with the given board.
-
-        :param board: [[Cell, ...], ...], a board to initialize from 
-        """
-        pass
-
-
-    @abstractmethod
     def cell(self, x, y):
         """
         Get a copy of the cell on the given coordinates.

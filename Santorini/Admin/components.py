@@ -16,6 +16,12 @@ class Cell(ICell):
     """
 
     def __init__(self, height = 0):
+        """
+        Initialize cell with height, defaults to 0.
+
+        :param height: N, height of cell 
+        :raise ValueError: if given height is less than 0
+        """
         if height < 0: raise ValueError("Given height is less than 0")
         self.height = height
 
