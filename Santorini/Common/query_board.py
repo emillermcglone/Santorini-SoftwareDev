@@ -31,6 +31,18 @@ class IQueryBoard(IBoard):
         pass
 
     @abstractmethod
+    def height(self, x, y):
+        """
+        Get the height of the cell on the given coordinates.
+
+        :param x: N, x coordinate
+        :param y: N, y coordinate
+        :return: N, the height of the cell
+        :raise ValueError: if given position is out of bounds
+        """
+        pass
+
+    @abstractmethod
     def neighbor(self, worker, direction):
         """
         Is there a cell in the given direction?

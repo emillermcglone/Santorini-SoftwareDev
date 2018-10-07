@@ -117,8 +117,34 @@ class TestWorkers(unittest.TestCase):
     def test_worker_ids_with_filled_board(self):
         self.assertEqual(self.incomplete_board.workers, [1, 2])
 
+class TestHeight(unittest.TestCase):
+    def setUp(self):
+        self.board = ActionBoard().query_board
+        self.incomplete_board = ActionBoard([[Worker(1), Worker(2, 5)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
-test_cases = [TestCell, TestNeighborHeight, TestNeighbor, TestGetWorkerPosition, TestOccupied, TestWorkers]
+    def test_worker_height(self):
+        self.assertEqual(self.incomplete_board.height(0, 0), 0)
+        self.assertEqual(self.incomplete_board.height(1, 0), 5)
+    
+    def test_height_height(self):
+        self.assertEqual(self.board.height(0, 0), 0)
+        self.assertEqual(self.incomplete_board.height(1, 1), 4)
+
+    def test_x_out_of_bounds(self):
+        with self.assertRaises(ValueError):
+            self.board.height(-1, 2)
+        with self.assertRaises(ValueError):
+            self.board.height(7, 2)
+
+    def test_y_out_of_bounds(self):
+        with self.assertRaises(ValueError):
+            self.board.height(3, -5)
+        with self.assertRaises(ValueError):
+            self.board.height(3, 6)
+
+
+
+test_cases = [TestCell, TestNeighborHeight, TestNeighbor, TestGetWorkerPosition, TestOccupied, TestWorkers, TestHeight]
     
 if __name__ == "__main__":
     test_suites = list(map(unittest.TestLoader().loadTestsFromTestCase, test_cases))

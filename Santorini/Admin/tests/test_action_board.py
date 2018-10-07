@@ -127,7 +127,29 @@ class TestBuild(unittest.TestCase):
             self.incomplete_board.build(20, Direction.S)
 
 
-test_cases = [TestInit, TestBoard, TestPlace, TestMove, TestBuild]
+class TestQueryBoard(unittest.TestCase):
+    def setUp(self):
+        self.board = ActionBoard()
+        self.q_board = self.board.query_board
+        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]])
+        self.q_incomplete_board = self.incomplete_board.query_board
+
+    def test_place(self):
+        self.assertEqual(self.q_board.cell(0, 0), Height(0))
+        self.board.place(1, 0, 0)
+        self.assertEqual(self.q_board.cell(0, 0), Worker(1, 0))
+
+    def test_move(self):
+        self.assertEqual(self.q_incomplete_board.get_worker_position(1), (0, 0))
+        self.incomplete_board.move(1, Direction.E)
+        self.assertEqual(self.q_incomplete_board.get_worker_position(1), (1, 0))
+
+    def test_build(self):
+        self.assertEqual(self.q_incomplete_board.neighbor_height(1, Direction.S), 3)
+        self.incomplete_board.build(1, Direction.S)
+        self.assertEqual(self.q_incomplete_board.neighbor_height(1, Direction.S), 4)
+
+test_cases = [TestInit, TestBoard, TestPlace, TestMove, TestBuild, TestQueryBoard]
     
 if __name__ == "__main__":
     test_suites = list(map(unittest.TestLoader().loadTestsFromTestCase, test_cases))

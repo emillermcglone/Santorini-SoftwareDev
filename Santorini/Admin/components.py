@@ -1,5 +1,5 @@
 """ 
-Concrete classes for common components.
+Implementations for common components.
 """
 
 import sys, os
@@ -34,7 +34,7 @@ class Cell(ICell):
         if new_height < 0: raise ValueError("Given height is less than 0")
         self._height = new_height
 
-    def __str__(self):
+    def __repr__(self):
         return "{0} {1}".format(type(self).__name__, self.height)
 
     def __eq__(self, other):

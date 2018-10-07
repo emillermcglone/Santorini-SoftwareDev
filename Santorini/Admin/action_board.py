@@ -18,7 +18,7 @@ class ActionBoard(IActionBoard):
         """
         self._width = width
         self._height = height
-        self._board = self._complete(board) if board is not None else [[Height(0)] * width] * height
+        self._board = self._complete(board) if board is not None else [[Height(0)] * width for _ in range(height)]
 
 
     def __str__(self):
@@ -35,7 +35,7 @@ class ActionBoard(IActionBoard):
 
     @property
     def query_board(self):
-        return QueryBoard(self.board)
+        return QueryBoard(self._board)
 
 
     def get_worker_position(self, worker):
@@ -52,6 +52,7 @@ class ActionBoard(IActionBoard):
         cell = self._cell(x, y)
         placed_worker = Worker(worker, cell.height)
         self._update(x, y, placed_worker)
+
 
     def move(self, worker, move_direction):
         x, y = self.get_worker_position(worker)
@@ -170,7 +171,7 @@ class ActionBoard(IActionBoard):
         
         result = board
         difference = self._height - len(result)
-        result += [[Height(0)] * self._width] * difference
+        result += [[Height(0)] * self._width for _ in range(difference)] 
         result = list(map(lambda l: l + [Height(0)] * (self._width - len(l)), result))
         return result
             

@@ -16,21 +16,6 @@ class QueryBoard(IQueryBoard):
         self._board = board
         self._height = len(board)
         self._width = len(board[0])
-        self._workers = self._extract_worker_ids(board)
-
-    def _extract_worker_ids(self, board):
-        """
-        Extract ids of all workers in the board.
-        
-        :param board: [[ICell, ...], ...], the board of cells
-        :return: [N, ...], the ids of all workers
-        """
-        workers = []
-        for row in board:
-            for c in row:
-                if isinstance(c, Worker):
-                    workers.append(c.id)
-        return workers
 
 
     def __str__(self):
@@ -49,6 +34,11 @@ class QueryBoard(IQueryBoard):
         if (self._out_of_bounds(x, y)):
             raise ValueError("Given position is out of bounds")
         return self.board[y][x]
+
+
+    def height(self, x, y):
+        cell = self.cell(x, y)
+        return cell.height
 
 
     def neighbor(self, worker, direction):
@@ -81,7 +71,18 @@ class QueryBoard(IQueryBoard):
 
     @property
     def workers(self):
-        return self._workers
+        """
+        Extract ids of all workers in the board.
+        
+        :return: [N, ...], the ids of all workers
+        """
+        workers = []
+        for row in self._board:
+            for c in row:
+                if isinstance(c, Worker):
+                    workers.append(c.id)
+
+        return workers
 
 
     def get_worker_position(self, worker):

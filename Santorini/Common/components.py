@@ -45,11 +45,10 @@ class IRules(ABC):
     """
 
     @abstractmethod
-    def check_place(self, board, x, y):
+    def check_place(self, x, y):
         """
         Check if place request is valid.
 
-        :param board: IQueryBoard, the query board
         :param x: N, x coordinate
         :param y: N, y coordinate
         :return: bool, True if valid, False otherwise
@@ -58,11 +57,10 @@ class IRules(ABC):
 
 
     @abstractmethod
-    def check_move(self, board, worker, move_direction):
+    def check_move(self, worker, move_direction):
         """
         Check if the move is valid.
 
-        :param board: IQueryBoard, the query board
         :param worker: N, id of worker
         :param move_direction: Direction, direction for move
         """
@@ -70,11 +68,10 @@ class IRules(ABC):
 
 
     @abstractmethod
-    def check_build(self, board, worker, build_direction):
+    def check_build(self, worker, build_direction):
         """
         Check if the build is valid.
 
-        :param board: [[Cell, ...] ...], zero-indexed 2D list of Cells
         :param worker: N, id of worker
         :param build_direction: Direction, direction for build
         """
