@@ -38,7 +38,7 @@ class ActionBoard(IActionBoard):
         return QueryBoard(self._board)
 
 
-    def get_worker_position(self, worker):
+    def _get_worker_position(self, worker):
         for y, r in enumerate(self._board):
             for x, c in enumerate(r):
                 if isinstance(c, Worker) and c.id == worker:
@@ -55,13 +55,13 @@ class ActionBoard(IActionBoard):
 
 
     def move(self, worker, move_direction):
-        x, y = self.get_worker_position(worker)
+        x, y = self._get_worker_position(worker)
         to_x, to_y = move_direction(x, y)
 
         self._move(worker, to_x, to_y)
 
     def build(self, worker, build_direction):
-        x, y = self.get_worker_position(worker)
+        x, y = self._get_worker_position(worker)
         to_x, to_y = build_direction(x, y)
 
         self._build(to_x, to_y)
@@ -120,7 +120,7 @@ class ActionBoard(IActionBoard):
         to_cell = self._cell(x, y)
 
         # Updates from cell
-        i, j = self.get_worker_position(worker_id)
+        i, j = self._get_worker_position(worker_id)
         worker = self._cell(i, j)
         self._update(i, j, Height(worker.height))
 

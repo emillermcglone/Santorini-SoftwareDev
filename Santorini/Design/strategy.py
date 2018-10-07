@@ -13,5 +13,5 @@ class Strategy(ABC):
     """
 
     @abstractmethod
-    def apply(self, board, workers, rules, history):
+    def apply(self, board, workers, rules, history): 
         pass

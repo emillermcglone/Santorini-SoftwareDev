@@ -24,17 +24,20 @@ class SantoriniRules(IRules):
 
     def check_place(self, x, y):
         """
-        True if cell height is 0 and is not taken by another worker, and
-        number of workers does not exceed four.
+        True if:
+        - destination height is 0
+        - destination has not been taken by another worker
+        - number of workers does not exceed four.
+        - x and y are valid coordinates on the board
         """
 
         try:
             cell = self._board.cell(x, y)
-            number_of_workers = self._board.workers
+            number_of_workers = len(self._board.workers)
         except ValueError:
             return False
 
-        return cell.height == 0 and not isinstance(cell, Worker) and len(number_of_workers) < 4
+        return cell.height == 0 and not isinstance(cell, Worker) and number_of_workers < 4
 
 
     def check_move(self, worker, move_direction):
@@ -43,10 +46,12 @@ class SantoriniRules(IRules):
         - destination cell is not occupied
         - destination cell is at most a floor higher
         - destination cell's height is not four
+        - destination cell exists
         """
         try:
             x, y = self._board.get_worker_position(worker)
             height = self._board.height(x, y)
+
             occupied = self._board.occupied(worker, move_direction)
             neighbor_height = self._board.neighbor_height(worker, move_direction)
 
@@ -61,6 +66,7 @@ class SantoriniRules(IRules):
         True if:
         - destination cell does not have worker
         - destination cell's height is below four
+        - destination cell exists
         """
         try:
             occupied = self._board.occupied(worker, build_direction)

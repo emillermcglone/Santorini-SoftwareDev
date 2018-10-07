@@ -63,24 +63,3 @@ class Worker(Cell):
         """
         super().__init__(height)
         self.id = worker_id
-
-
-class Rules(IRules):
-    """
-    Set of rules for a Santorini game which both the administrative components
-    and players can use to validate their moves before making them.
-    """
-    
-    def __init__(self, place_rules, move_rules, build_rules):
-        self.place_rules = place_rules
-        self.move_rules = move_rules
-        self.build_rules = build_rules
-
-    def check_place(self, board, x, y):
-        return all(map(lambda f: f(board, x, y), self.place_rules))
-
-    def check_move(self, board, worker, move_direction):
-        return all(map(lambda f: f(board, worker, move_direction), self.move_rules))
-
-    def check_build(self, board, worker, build_direction):
-        return all(map(lambda f: f(board, worker, build_direction), self.build_rules))
