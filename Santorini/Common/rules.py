@@ -3,7 +3,6 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from abc import ABC, abstractmethod
-from components import IRules
 from Admin.components import Worker
 from Admin.query_board import QueryBoard
 
