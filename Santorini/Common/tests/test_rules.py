@@ -126,8 +126,6 @@ class TestCheckBuild(unittest.TestCase):
         self.assertFalse(self.rules_incomplete.check_build(5, Direction.S))
 
 
-
-
 test_cases = [TestCheckPlace, TestCheckMove, TestCheckBuild]
     
 if __name__ == "__main__":
