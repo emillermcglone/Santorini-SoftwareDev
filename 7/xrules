@@ -1,3 +1,4 @@
 #!/bin/bash
 
-./../Santorini/Common/dist/xrules $1 $2
+cd ../Santorini/Common
+./dist/xrules $1 $2
