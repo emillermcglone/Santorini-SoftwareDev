@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd ../Santorini/Common
-./dist/xrules $1 $2
+cd ~/gija-emmi/7
+./../Santorini/Common/dist/xrules $1 $2
