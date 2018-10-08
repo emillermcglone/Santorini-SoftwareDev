@@ -2,49 +2,9 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from abc import ABC, abstractmethod
-
+from components import IRules
 from Admin.components import Worker
 from Admin.query_board import QueryBoard
-
-class IRules(ABC):
-    """
-    Set of rules for a Santorini game which both the administrative components
-    and players can use to validate their moves before making them.
-    """
-
-    @abstractmethod
-    def check_place(self, x, y):
-        """
-        Check if place request is valid.
-
-        :param x: N, x coordinate
-        :param y: N, y coordinate
-        :return: bool, True if valid, False otherwise
-        """
-        pass
-
-
-    @abstractmethod
-    def check_move(self, worker, move_direction):
-        """
-        Check if the move is valid.
-
-        :param worker: N, id of worker
-        :param move_direction: Direction, direction for move
-        """
-        pass
-
-
-    @abstractmethod
-    def check_build(self, worker, build_direction):
-        """
-        Check if the build is valid.
-
-        :param worker: N, id of worker
-        :param build_direction: Direction, direction for build
-        """
-        pass
 
 
 class SantoriniRules(IRules):
