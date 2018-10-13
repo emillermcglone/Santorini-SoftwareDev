@@ -7,35 +7,38 @@ from components import Worker
 
 class TestInit(unittest.TestCase):
     def setUp(self):
-        self.worker = Worker(1)
+        self.worker = Worker(1, 0)
         
     def test_id(self):
         self.assertEqual(self.worker.id, 1)
+
+    def test_player_id(self):
+        self.assertEqual(self.worker.player_id, 0)
 
     def test_default_height(self):
         self.assertEqual(self.worker.height, 0)
 
     def test_height_below_zero_error(self):
         with self.assertRaises(ValueError):
-            Worker(1, -1)
+            Worker(1, 0, -1)
 
     def test_height_equals_zero(self):
-        self.assertEqual(Worker(1, 0).height, 0)
+        self.assertEqual(Worker(1, 0, 0).height, 0)
 
     def test_height_equals_four(self):
-        self.assertEqual(Worker(1, 4).height, 4)
+        self.assertEqual(Worker(1, 0, 4).height, 4)
 
 class TestHeightProperty(unittest.TestCase):
     def setUp(self):
         self.given_height = 3
-        self.worker = Worker(1, self.given_height)
+        self.worker = Worker(1, 0, self.given_height)
     
     def test_height_returns_given_height(self):
         self.assertEqual(self.worker.height, self.given_height)
 
 class TestHeightSetter(unittest.TestCase):
     def setUp(self):
-        self.worker = Worker(1)
+        self.worker = Worker(1, 0)
 
     def test_change_height_within_boundaries(self):
         self.assertEqual(self.worker.height, 0)

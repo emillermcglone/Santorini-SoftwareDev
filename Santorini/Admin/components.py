@@ -38,7 +38,7 @@ class Cell(ICell):
         return "{0} {1}".format(type(self).__name__, self.height)
 
     def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.height == other.height
+        return isinstance(other, type(self)) and self.height == other.height
         
 
 class Height(Cell):
@@ -52,14 +52,18 @@ class Worker(Cell):
     it is on.
     """
 
-    def __init__(self, worker_id, height = 0):
+    def __init__(self, worker_id, player_id, height = 0):
         """
         Initialize with id, position, and height of building the worker is on.
 
         :param worker_id: N, id of Worker
-        :param position: (N, N), the position of Worker
+        :param player_id: N, id of this worker's player
         :param height: N, height of building worker is on, defaults to 0
         :raise ValueError: if height is not from 0 to 4        
         """
         super().__init__(height)
         self.id = worker_id
+        self.player_id = player_id
+
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self.id == other.id and self.player_id == other.player_id

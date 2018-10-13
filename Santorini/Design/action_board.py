@@ -16,11 +16,12 @@ class IActionBoard(IBoard):
     """
 
     @abstractmethod
-    def place(self, worker, x, y):
+    def place(self, worker, player, x, y):
         """ 
         Place worker on position.
 
         :param worker: N, id of worker to be placed
+        :param player: N, id of player of given worker
         :param x: N, x coordinate
         :param y: N, y coordinate
         :raise ValueError: if id exists on board, or x and y are out of bounds

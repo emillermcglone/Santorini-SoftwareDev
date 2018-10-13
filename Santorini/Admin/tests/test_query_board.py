@@ -10,7 +10,7 @@ from Common.components import Direction
 class TestCell(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Height(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Height(1), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
     def test_origin(self):
         self.assertEqual(self.incomplete_board.cell(0, 0), Height(1))
@@ -31,13 +31,13 @@ class TestCell(unittest.TestCase):
             self.board.cell(3, 6)
 
     def test_return_worker(self):
-        self.assertEqual(self.incomplete_board.cell(1, 0), Worker(2))
+        self.assertEqual(self.incomplete_board.cell(1, 0), Worker(2, 0))
 
 
 class TestNeighbor(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
     def test_neighbor_exists(self):
         for direction in Direction:
@@ -55,7 +55,7 @@ class TestNeighbor(unittest.TestCase):
 class TestOccupied(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
     def test_true_if_worker(self):
         self.assertTrue(self.incomplete_board.occupied(2, Direction.W))
@@ -70,7 +70,7 @@ class TestOccupied(unittest.TestCase):
 class TestNeighborHeight(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
     
     def test_height_of_neighbor(self):
         self.assertEqual(self.incomplete_board.neighbor_height(1, Direction.E), 0)
@@ -92,7 +92,7 @@ class TestNeighborHeight(unittest.TestCase):
 class TestGetWorkerPosition(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
     def test_get_correct_position(self):
         self.assertEqual(self.incomplete_board.get_worker_position(1), (0, 0))
@@ -109,18 +109,18 @@ class TestGetWorkerPosition(unittest.TestCase):
 class TestWorkers(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
     def test_empty_list_with_empty_board(self):
         self.assertEqual(self.board.workers, [])
 
     def test_worker_ids_with_filled_board(self):
-        self.assertEqual(self.incomplete_board.workers, [1, 2])
+        self.assertEqual(self.incomplete_board.workers, [Worker(1, 0), Worker(2, 0)])
 
 class TestHeight(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2, 5)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0, 5)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
 
     def test_worker_height(self):
         self.assertEqual(self.incomplete_board.height(0, 0), 0)

@@ -18,7 +18,7 @@ class ActionBoard(IActionBoard):
         """
         self._width = width
         self._height = height
-        self._board = self._complete(board) if board is not None else [[Height(0)] * width for _ in range(height)]
+        self.__board = self._complete(board) if board is not None else [[Height(0)] * width for _ in range(height)]
 
 
     def __str__(self):
@@ -30,27 +30,28 @@ class ActionBoard(IActionBoard):
 
     @property
     def board(self):
-        return copy.deepcopy(self._board)
+        return copy.deepcopy(self.__board)
 
 
     @property
     def query_board(self):
-        return QueryBoard(self._board)
+        return QueryBoard(self.__board)
 
 
     def _get_worker_position(self, worker):
-        for y, r in enumerate(self._board):
+        for y, r in enumerate(self.__board):
             for x, c in enumerate(r):
                 if isinstance(c, Worker) and c.id == worker:
                     return x, y
         raise ValueError("Worker not found")
 
-    def place(self, worker, x, y):
-        if worker in self.query_board.workers:
+    def place(self, worker, player, x, y):
+        placed_worker = Worker(worker, player)
+        if placed_worker in self.query_board.workers:
             raise ValueError("Given id is already on the board")
 
         cell = self._cell(x, y)
-        placed_worker = Worker(worker, cell.height)
+        placed_worker.height = cell.height
         self._update(x, y, placed_worker)
 
 
@@ -77,7 +78,7 @@ class ActionBoard(IActionBoard):
         """
         if (self._out_of_bounds(x, y)):
             raise ValueError("Given position is out of bounds")
-        return self._board[y][x]
+        return self.__board[y][x]
 
 
     def _next_cell(self, x, y, direction):
@@ -106,7 +107,7 @@ class ActionBoard(IActionBoard):
             raise ValueError("Given cell is not of type Cell")
         elif (self._out_of_bounds(x, y)):
             raise ValueError("Given position is out of bounds")
-        self._board[y][x] = new_cell
+        self.__board[y][x] = new_cell
 
 
     def _move(self, worker_id, x, y):

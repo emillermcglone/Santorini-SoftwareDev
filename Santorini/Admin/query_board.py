@@ -13,7 +13,7 @@ class QueryBoard(IQueryBoard):
 
         :param board: [[ICell, ...], ...], a board to initialize from 
         """
-        self._board = board
+        self.__board = board
         self._height = len(board)
         self._width = len(board[0])
 
@@ -27,7 +27,7 @@ class QueryBoard(IQueryBoard):
 
     @property
     def board(self):
-        return copy.deepcopy(self._board)
+        return copy.deepcopy(self.__board)
 
 
     def cell(self, x, y):
@@ -72,21 +72,21 @@ class QueryBoard(IQueryBoard):
     @property
     def workers(self):
         """
-        Extract ids of all workers in the board.
+        Deep copy of all workers on board.
         
-        :return: [N, ...], the ids of all workers
+        :return: [Worker, ...], deep copy of all workers
         """
         workers = []
-        for row in self._board:
+        for row in self.__board:
             for c in row:
                 if isinstance(c, Worker):
-                    workers.append(c.id)
+                    workers.append(copy.deepcopy(c))
 
         return workers
 
 
     def get_worker_position(self, worker):
-        for y, r in enumerate(self._board):
+        for y, r in enumerate(self.__board):
             for x, c in enumerate(r):
                 if isinstance(c, Worker) and c.id == worker:
                     return x, y

@@ -44,33 +44,33 @@ class TestBoard(unittest.TestCase):
 class TestPlace(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard()
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]])
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]])
     
     def test_place_worker(self):
-        self.board.place(1, 0, 0)
-        self.board.place(2, 2, 1)
-        self.assertEqual(self.board.query_board.cell(0, 0), Worker(0))
-        self.assertEqual(self.board.query_board.cell(2, 1), Worker(0))
+        self.board.place(1, 0, 0, 0)
+        self.board.place(2, 0, 2, 1)
+        self.assertEqual(self.board.query_board.cell(0, 0), Worker(1, 0))
+        self.assertEqual(self.board.query_board.cell(2, 1), Worker(2, 0))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 
     def test_replace_worker(self):
-        self.board.place(4, 0, 5)
-        self.board.place(5, 0, 5)
+        self.board.place(4, 0, 0, 5)
+        self.board.place(5, 0, 0, 5)
         worker = self.board.query_board.cell(0, 5)
         self.assertEqual(worker.id, 5)
     
     def test_error_given_invalid_coordinates(self):
         with self.assertRaises(ValueError):
-            self.board.place(3, 0, 7)
+            self.board.place(3, 0, 0, 7)
 
     def test_error_given_existing_id(self):
         with self.assertRaises(ValueError):
-            self.incomplete_board.place(1, 0, 0)
+            self.incomplete_board.place(1, 0, 0, 0)
 
 
 class TestMove(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard()
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]])
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]])
 
     def test_move_to_open_cell(self):
         self.assertEqual(self.incomplete_board.query_board.get_worker_position(2), (1, 0))
@@ -99,7 +99,7 @@ class TestMove(unittest.TestCase):
 class TestBuild(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard()
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]])
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]])
 
     def test_build_on_height(self):
         self.assertEqual(self.incomplete_board.query_board.neighbor_height(1, Direction.S), 3)
@@ -131,13 +131,13 @@ class TestQueryBoard(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard()
         self.q_board = self.board.query_board
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2)], [Height(3), Height(4), Height(5)], [Height(1)]])
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]])
         self.q_incomplete_board = self.incomplete_board.query_board
 
     def test_place(self):
         self.assertEqual(self.q_board.cell(0, 0), Height(0))
-        self.board.place(1, 0, 0)
-        self.assertEqual(self.q_board.cell(0, 0), Worker(1, 0))
+        self.board.place(1, 0, 0, 0)
+        self.assertEqual(self.q_board.cell(0, 0), Worker(1, 0, 0))
 
     def test_move(self):
         self.assertEqual(self.q_incomplete_board.get_worker_position(1), (0, 0))

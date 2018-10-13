@@ -125,6 +125,9 @@ class TestCheckBuild(unittest.TestCase):
     def test_false_if_worker_not_found(self):
         self.assertFalse(self.rules_incomplete.check_build(5, Direction.S))
 
+class TestMoveAndBuild(unittest.TestCase):
+    pass
+
 
 test_cases = [TestCheckPlace, TestCheckMove, TestCheckBuild]
     
