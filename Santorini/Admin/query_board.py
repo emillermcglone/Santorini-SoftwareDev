@@ -28,6 +28,11 @@ class QueryBoard(IQueryBoard):
     @property
     def board(self):
         return copy.deepcopy(self.__board)
+        
+    
+    @property
+    def dimensions(self):
+        return (self._width, self._height)
 
 
     def cell(self, x, y):

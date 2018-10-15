@@ -12,7 +12,7 @@ class TestCheckPlace(unittest.TestCase):
         self.board = ActionBoard()
         self.q_board = self.board.query_board
 
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2, 5)], [Height(3), Height(4), Height(5)], [Height(1)]])
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0, 5)], [Height(3), Height(4), Height(5)], [Height(1)]])
         self.q_incomplete_board = self.incomplete_board.query_board
 
         self.rules_board = SantoriniRules(self.q_board)
@@ -32,13 +32,13 @@ class TestCheckPlace(unittest.TestCase):
         self.assertFalse(self.rules_incomplete.check_place(0, 0))
 
     def test_true_if_worker_numbers_below_four(self):
-        self.incomplete_board.place(3, 1, 1)
+        self.incomplete_board.place(3, 0, 1, 1)
         self.assertEqual(len(self.q_incomplete_board.workers), 3)
         self.assertTrue(self.rules_incomplete.check_place(2, 2))
 
     def test_false_if_worker_numbers_above_four(self):
-        self.incomplete_board.place(3, 1, 1)
-        self.incomplete_board.place(4, 0, 1)
+        self.incomplete_board.place(3, 0, 1, 1)
+        self.incomplete_board.place(4, 0, 0, 1)
         self.assertEqual(len(self.q_incomplete_board.workers), 4)
         self.assertFalse(self.rules_incomplete.check_place(2, 2))
 
@@ -56,7 +56,7 @@ class TestCheckMove(unittest.TestCase):
         self.board = ActionBoard()
         self.q_board = self.board.query_board
 
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2, 5), Worker(3, 0)], [Height(0), Height(3), Height(4)], [Height(1)]])
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0, 5), Worker(3, 0, 0)], [Height(0), Height(3), Height(4)], [Height(1)]])
         self.q_incomplete_board = self.incomplete_board.query_board
 
         self.rules_board = SantoriniRules(self.q_board)
@@ -94,7 +94,7 @@ class TestCheckBuild(unittest.TestCase):
         self.board = ActionBoard()
         self.q_board = self.board.query_board
 
-        self.incomplete_board = ActionBoard([[Worker(1), Worker(2, 5), Worker(3, 0)], [Height(0), Height(3), Height(4)], [Height(1)]])
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0, 5), Worker(3, 0, 0)], [Height(0), Height(3), Height(4)], [Height(1)]])
         self.q_incomplete_board = self.incomplete_board.query_board
 
         self.rules_board = SantoriniRules(self.q_board)
@@ -126,6 +126,20 @@ class TestCheckBuild(unittest.TestCase):
         self.assertFalse(self.rules_incomplete.check_build(5, Direction.S))
 
 class TestMoveAndBuild(unittest.TestCase):
+        def setUp(self):
+            self.board = ActionBoard()
+            self.q_board = self.board.query_board
+
+            self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0, 5), Worker(3, 0, 0)], [Height(0), Worker(3, 0, 0), Height(4)], [Height(1)]])
+            self.q_incomplete_board = self.incomplete_board.query_board
+
+            self.rules_board = SantoriniRules(self.q_board)
+            self.rules_incomplete = SantoriniRules(self.q_incomplete_board)
+
+        def test_true_if_move_and_build(self):  
+            self.rules_incomplete.check_move_and_build()
+
+class TestIsGameOver(unittest.TestCase):
     pass
 
 

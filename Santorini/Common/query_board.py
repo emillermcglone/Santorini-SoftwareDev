@@ -18,6 +18,15 @@ class IQueryBoard(IBoard):
     on game pieces. 
     """
 
+    @property
+    def dimensions(self):
+        """
+        Dimensions of board.
+
+        :return: (N, N), width and height of board
+        """
+        pass
+
     @abstractmethod
     def cell(self, x, y):
         """
@@ -84,9 +93,9 @@ class IQueryBoard(IBoard):
     @abstractmethod
     def workers(self):
         """
-        Provide the ids of every worker on the board.
-
-        :return: [N, ...], ids of every worker on the board
+        Deep copy of all workers on board.
+        
+        :return: [Worker, ...], deep copy of all workers
         """
         pass
 

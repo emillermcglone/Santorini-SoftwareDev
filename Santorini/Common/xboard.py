@@ -115,7 +115,7 @@ def create_cell(cell):
     if isinstance(cell, str):
         height = int(cell[0])
         worker_id = cell[1:]
-        return Worker(worker_id, height)
+        return Worker(worker_id, 0, height)
     else:
         return Height(cell)
 

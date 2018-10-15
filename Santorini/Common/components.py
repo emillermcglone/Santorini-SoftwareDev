@@ -126,7 +126,7 @@ class IRules(ABC):
         """
         Check if game has ended.
 
-        :return: N, id of worker who won, -1 if game has not ended.
+        :return: N, id of player who won, -1 if game has not ended.
         """
         pass
 

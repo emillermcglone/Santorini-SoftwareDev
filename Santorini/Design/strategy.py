@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class Strategy(ABC):
+class IStrategy(ABC):
     """
     The Santorini strategy for place, move, and build. 
     """
@@ -55,7 +55,7 @@ class PlaceStrategy(ABC):
 
         :param board: IQueryBoard, the current board of the game
         :param workers: [N, ...], list of worker ids of player to be placed
-        :param rules: Rules, the rule checker with standard Santorini rules
+        :param rules: IRules, the rule checker with standard Santorini rules
         :return: (N, N), the x and y coordinates to place a new worker
         """
         pass 
