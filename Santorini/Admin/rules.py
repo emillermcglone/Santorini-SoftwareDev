@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from components import IRules
+from Common.components import IRules
 from abc import ABC, abstractmethod
 from Admin.components import Worker
 from Admin.query_board import QueryBoard
