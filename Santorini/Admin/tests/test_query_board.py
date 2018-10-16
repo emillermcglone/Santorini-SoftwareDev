@@ -37,7 +37,7 @@ class TestCell(unittest.TestCase):
 class TestNeighbor(unittest.TestCase):
     def setUp(self):
         self.board = ActionBoard().query_board
-        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(2, 0)], [Height(3), Height(4), Height(5)], [Height(1)]]).query_board
+        self.incomplete_board = ActionBoard([[Worker(1, 0), Worker(3, 0)], [Height(3), Worker(2, 0), Height(5)], [Height(1)]]).query_board
 
     def test_neighbor_exists(self):
         for direction in Direction:

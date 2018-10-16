@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python3 Admin/tests/test_suite.py
