@@ -139,14 +139,17 @@ class Direction(Enum):
     Each Enum maps to a function of type (x, y: (N, N)) -> (N, N) that gives the next
     coordinates in its direction.
     """
-    N = lambda x, y: (x, y - 1)
-    S = lambda x, y: (x, y + 1)
-    W = lambda x, y: (x - 1, y)
-    E = lambda x, y: (x + 1, y)
-    NW = lambda x, y: (x - 1, y - 1)
-    NE = lambda x, y: (x + 1, y - 1)
-    SW = lambda x, y: (x - 1, y + 1)
-    SE = lambda x, y: (x + 1, y + 1)
+    N = (lambda x, y: (x, y - 1),)
+    S = (lambda x, y: (x, y + 1),)
+    W = (lambda x, y: (x - 1, y),)
+    E = (lambda x, y: (x + 1, y),)
+    NW = (lambda x, y: (x - 1, y - 1),)
+    NE = (lambda x, y: (x + 1, y - 1),)
+    SW = (lambda x, y: (x - 1, y + 1),)
+    SE = (lambda x, y: (x + 1, y + 1),)
+
+    def __call__(self, *args, **kwargs):
+        return self.value[0](*args, **kwargs)
 
     @staticmethod
     def compose(direction_1, direction_2):

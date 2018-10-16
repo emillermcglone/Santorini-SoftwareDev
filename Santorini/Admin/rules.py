@@ -106,13 +106,17 @@ class SantoriniRules(IRules):
         """
         True if move and build are valid
         """
-        if not check_move(worker, move_direction):
+        if not self.check_move(worker, move_direction):
            return False
 
         x, y = self.__board.get_worker_position(worker)  
         move_x, move_y = move_direction(x, y)
         build_x, build_y = build_direction(move_x, move_y)
-        build_cell = self.__board.cell(build_x, build_y)
+
+        try:
+            build_cell = self.__board.cell(build_x, build_y)
+        except:
+            return False
 
         if isinstance(build_cell, Worker) or build_cell.height >= self.max_height:
             return False
@@ -131,7 +135,8 @@ class SantoriniRules(IRules):
         in the last two cases the opponent is the winner.
         """
         workers = self.__board.workers
-        players = { worker.player_id for worker in workers }
+        players_set = { worker.player_id for worker in workers }
+        players = list(players_set)
 
         first_player_workers = [w for w in workers if w.player_id is players[0]]
         second_player_workers = [w for w in workers if w.player_id is players[1]]
@@ -142,24 +147,35 @@ class SantoriniRules(IRules):
                 return worker.player_id
 
         # Winning case 2
-        first_player_cannot_move = all(map(self._worker_cannot_move, first_player_workers))
-        second_player_cannot_move = all(map(self._worker_cannot_move, second_player_workers))
-        if first_player_cannot_move:
-            return players[1]
-
-        if second_player_cannot_move:
-            return players[0]
+        winner_case_2 = self._get_winner_from_condition(
+            (players[0], first_player_workers), (players[1], second_player_workers), self._worker_cannot_move)
+        if not winner_case_2 is None: return winner_case_2
 
         # Winning case 3
-        first_player_cannot_build = all(map(self._worker_cannot_build_after_move, first_player_workers))
-        second_player_cannot_build = all(map(self._worker_cannot_build_after_move, second_player_workers))
-        if first_player_cannot_build:
-            return players[1]
-
-        if second_player_cannot_build:
-            return players[0]
+        winner_case_3 = self._get_winner_from_condition(
+            (players[0], first_player_workers), (players[1], second_player_workers), self._worker_cannot_build_after_move)
+        if not winner_case_3 is None: return winner_case_3
 
         return -1
+
+    def _get_winner_from_condition(self, first_workers, second_workers, condition):
+        """
+        Get winner if any of the player's workers satisfy the loss condition.
+
+        :param first_workers: (N, [N, ...]), first player id and list of worker ids
+        :param second_workers: (N, [N, ...]), second player id and list of worker ids
+        :param condition: (N) -> bool, loss condition
+        """
+        print("daf")
+        first_player_cannot_build = all(map(condition, first_workers[1]))
+        second_player_cannot_build = all(map(condition, second_workers[1]))
+        if first_player_cannot_build:
+            return second_workers[0]
+
+        if second_player_cannot_build:
+            return first_workers[0]
+        
+        return None
 
 
     def _worker_reach_third(self, worker):
@@ -171,10 +187,13 @@ class SantoriniRules(IRules):
         :return: bool, True if worker can move to third floor, False otherwise
         """
         for direction in Direction:
-            occupied = self.__board.occupied(worker.id, direction)
-            height = self.__board.neighbor_height(worker.id, direction)
-            if not occupied and height is self.height_to_win:
-                return True
+            try:
+                occupied = self.__board.occupied(worker.id, direction)
+                height = self.__board.neighbor_height(worker.id, direction)
+                if not occupied and height is self.height_to_win:
+                    return True
+            except:
+                continue
 
         return False
 
