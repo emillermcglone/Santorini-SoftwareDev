@@ -166,7 +166,6 @@ class SantoriniRules(IRules):
         :param second_workers: (N, [N, ...]), second player id and list of worker ids
         :param condition: (N) -> bool, loss condition
         """
-        print("daf")
         first_player_cannot_build = all(map(condition, first_workers[1]))
         second_player_cannot_build = all(map(condition, second_workers[1]))
         if first_player_cannot_build:
