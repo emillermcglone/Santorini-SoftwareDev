@@ -1,0 +1,29 @@
+#! /usr/bin/python3
+# File that sets up test harness and reads tests
+
+import sys
+# Add parent directory to path so that we can import from Santorini
+sys.path.append('../../')
+import json
+# import the needed parts from Santorini to run tests
+from Santorini.Player.strategy_parser import Strategy_Tester
+from Santorini.Lib.util import parse_json
+
+# Parse out JSON commands on STDIN
+cmds = parse_json()
+
+# Instantiate the test parser
+parser = Strategy_Tester(cmds[0])
+# Take the first JSON which is the state of the board and set that up
+parser.set_board(cmds[1])
+# Set the look ahead for this strategy
+parser.strategy.look_ahead = cmds[2]
+# Go though the test JSON and take care of them one at a time
+
+# Run the initial command to set test state
+
+for j in cmds[3:]:
+    result = parser.parse(j)
+
+    if not result == None:
+        print(json.dumps(result))

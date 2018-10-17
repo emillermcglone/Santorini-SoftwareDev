@@ -1,0 +1,3 @@
+[[0, "0playerone1", 0],[1, "3playerone2", 1],[2, "2playertwo1", "2playertwo2"]]
+["move", "playerone2", ["WEST", "SOUTH"]]
+["+build", ["PUT", "NORTH"]]
