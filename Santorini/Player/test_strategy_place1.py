@@ -59,14 +59,12 @@ class Strategy:
         """
         pass
 
-    def decide_place(self, action):
+    def decide_place(self, wid):
         """
         Method that makes a decision about worker placement
 
         :param action: JSON that represents an place action
         """
-
-        wid = action['wid']
         x = 0
         y = 0
 
