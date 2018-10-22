@@ -5,7 +5,6 @@ from Santorini.Player.test_strategy_place2 import Strategy as PlaceFurthestStrat
 from Santorini.Player.test_strategy_place1 import Strategy as PlaceDiagonalStrategy
 from Santorini.Player.test_strategy_alive import Strategy as StayAliveStrategy
 from Santorini.Common.rule_checker import RuleChecker
-
 from Santorini.Lib.util import gen_moves, gen_builds
 
 from Design.player import Player as IPlayer
@@ -37,6 +36,7 @@ class Player(IPlayer):
         """
         return self.__player_id
 
+
     def get_placement(self, board, wid):
         """
         Asks the player to place a worker on the board
@@ -46,11 +46,9 @@ class Player(IPlayer):
 
         :return: JSON that represents a place_worker action
         """
-        place_diagonal_strategy = PlaceDiagonalStrategy(
-            self.__player_id, board, self__rule_checker)
+        place_diagonal_strategy = PlaceDiagonalStrategy(self.__player_id, board, self__rule_checker)
         
-        
-        to_xy = place_diagonal_strategy.decide_place({ "wid": wid })
+        to_xy = place_diagonal_strategy.decide_place(wid)
         return { 'type': 'place', 'wid': wid, 'xy': list(to_xy) }
 
 
