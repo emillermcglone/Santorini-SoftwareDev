@@ -133,14 +133,25 @@ to other components that manage or interact with it.
 - Referee does not have players piped into it. It almost seems like it has to access the 
 players through the given board, which inverts the control of the game flow. 
 
-
-- These interfaces seem to accomplish the needed testing tasks, but have no forethought
-for the actual Santorini game. 
+- Implementation classes are not consistent with their interfaces in Design (e.g. rule_checker)
+- Implementation classes also don't "extend" the interfaces
+- These interfaces/implementation classes seem to accomplish the needed testing tasks,
+but have no forethought for the actual Santorini game. 
 
 Solution:
 - Fix literally every interface 
 
-We are psychopaths and will come for them...
+They've woken the psychopaths in us
+
+
+Changes:
+    Player Interface:
+    - Place, move and build all take in a copy of the board game
+    - Constructor takes in a RuleChecker
+
+    RuleChecker Interface:
+    - Replaced all methods with methods of provided implementation class so that
+    rule checker has an instance of the board state at all times
 
 
 Added player.py in Player for player implementation.

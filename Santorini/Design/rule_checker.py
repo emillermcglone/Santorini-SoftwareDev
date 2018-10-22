@@ -1,49 +1,68 @@
 # Class that checks to see if the requested move conforms to the rules
 
-
 class RuleChecker:
     """Defines the Rule Checker interface"""
 
-    def __init__(self):
+    def __init__(self, board):
+        """
+        Initializes a RuleChecker object with the given GameBoard
+
+        :param board: The GameBoard
+        :type board:  GameBoard
+        """
         pass
 
-    def check_build(self, board, x, y):
+    def check_build(self, x1, y1, x2, y2):
         """
         Determines whether building at the
         given coordinate is valid
 
-        :param board: A GameBoard object
-        :param x: An integer representing the x coordinate
-        :param y: An integer representing the x coordinate
-        :return: True if valid build, else False
+        :param x1: Represents the x coordinate of the worker board cell
+        :type x1:  int
+        :param y1: Represents the y coordinate of the worker board cell
+        :type y1:  int
+        :param x2: Represents the x coordinate of the board cell to build
+        :type x2:  int
+        :param y2: Represents the y coordinate of the board cell to build
+        :type y2:  int
+        :return:   True if valid build, else False
+        :rtype     bool
         """
         pass
 
-    def check_move(self, board, x1, y1, x2, y2):
+    def check_move(self, x1, y1, x2, y2):
         """
         Determines whether moving a worker from the given
         coordinate to the other given coordinate is valid
 
-        :param board: A GameBoard object
-        :param x1: An integer representing the x coordinate of the source board cell
-        :param y1: An integer representing the y coordinate of the source board cell
-        :param x2: An integer representing the x coordinate of the destination board cell
-        :param y2: An integer representing the y coordinate of the destination board cell
-        :return: True if valid move, else False
+        :param x1: Represents the x coordinate of the source board cell
+        :type x1:  int
+        :param y1: Represents the y coordinate of the source board cell
+        :type y1:  int
+        :param x2: Represents the x coordinate of the destination board cell
+        :type x2:  int
+        :param y2: Represents the y coordinate of the destination board cell
+        :type y2:  int
+        :return:   True if valid move, else False
+        :rtype     bool
         """
         pass
 
-    def check_place(self, board, pid, wid, x, y):
+    def check_place(self, pid, wid, x, y):
         """
         Determines whether placing a worker
         at the given coordinates is valid
 
-        :param board: A GameBoard object
-        :param pid: A string identifying the player whose worker to place
-        :param wid: A number that identifies the worker to place, either 1 or 2
-        :param x: An integer representing the x coordinate of the targeted board cell
-        :param y: An integer representing the y coordinate of the targeted board cell
-        :return: True if valid place, else False
+        :param pid: Identifies the player whose worker to place
+        :type pid:  str
+        :param wid: Identifies the worker to place
+        :type wid:  int
+        :param x:   Represents the x coordinate of the targeted board cell
+        :type x:    int
+        :param y:   Represents the y coordinate of the targeted board cell
+        :type y:    int
+        :return:    True if valid place, else False
+        :rtype      bool
         """
         pass
 
@@ -52,18 +71,25 @@ class RuleChecker:
         Determines whether the given coordinates
         represent a valid cell on a GameBoard
 
-        :param x: An integer representing the x coordinate
-        :param y: An integer representing the y coordinate
-        :return: True if valid coordinates, else False
+        :param x: Represents the x coordinate of the targeted board cell
+        :type x:  int
+        :param y: Represents the y coordinate of the targeted board cell
+        :type y:  int
+        :return:  True if valid coordinates, else False
+        :rtype    bool
         """
         pass
 
-    def get_winner(self, board):
-        """
-        Determines whether the game is over,
-        and returns the winner if it is
 
-        :param board: A GameBoard object
-        :return: The string id of the winner if the game is over, else None
+    def check_game_over(self, player1, player2):
         """
-        pass
+        Determines the winner if the game is over
+
+        :param player1: ID of the first player
+        :type player1:  str
+        :param player2: ID of the second player
+        :type player2:  str
+        :return:        Player ID if there is a winner, else None
+        :rtype:         Optional[str]
+        """
+        pass 
