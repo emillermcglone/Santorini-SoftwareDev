@@ -6,6 +6,8 @@ from Santorini.Player.test_strategy_place1 import Strategy as PlaceDiagonalStrat
 from Santorini.Player.test_strategy_alive import Strategy as StayAliveStrategy
 from Santorini.Common.rule_checker import RuleChecker
 
+from Santorini.Lib.util import gen_moves, gen_builds
+
 from Design.player import Player as IPlayer
 
 class Player(IPlayer):
@@ -16,7 +18,7 @@ class Player(IPlayer):
         __player_id: Unique string identifying the Player
     """
 
-    def __init__(self, player_id):
+    def __init__(self, player_id, rule_checker):
         """
         Initialize the Player object
 
@@ -24,7 +26,8 @@ class Player(IPlayer):
         :param rule_checker: RuleChecker, rule checker for current game
         """
         self.__player_id = player_id
-        self.rule_checker = RuleChecker()
+        self.__rule_checker = rule_checker
+
 
     def get_id(self):
         """
@@ -43,13 +46,13 @@ class Player(IPlayer):
 
         :return: JSON that represents a place_worker action
         """
-        place_furthest_strategy = PlaceFurthestStrategy(
-            self.__player_id, board)
-        to_xy = place_furthest_strategy.decide_place("place")
-        rules = RuleChecker(board)
+        place_diagonal_strategy = PlaceDiagonalStrategy(
+            self.__player_id, board, self__rule_checker)
+        
+        
+        to_xy = place_diagonal_strategy.decide_place({ "wid": wid })
+        return { 'type': 'place', 'wid': wid, 'xy': list(to_xy) }
 
-        if self.rule_checker.check_place(self.__player_id, wid, *to_xy):
-            return ["place", wid, to_xy]
 
     def get_move(self, board):
         """
@@ -58,7 +61,8 @@ class Player(IPlayer):
         :param board: GameBoard, copy of the current state of the game
         :return: JSON that represents a move action
         """
-        return ["move", from_xy, to_xy]
+        moves = gen_moves(self.__player_id, board, self.__rule_checker)
+        return moves[0]
 
     def get_build(self, board, wid):
         """
@@ -69,7 +73,9 @@ class Player(IPlayer):
 
         :return: Json that represents a build action
         """
-        return ["build", from_xy, to_xy]
+        worker_position = board.find_worker(self.__player_id, wid)
+        builds = gen_builds(self.__player_id, worker_position, board, self.__rule_checker)
+        return [0]
 
     def game_over(self, status):
         """
@@ -77,3 +83,4 @@ class Player(IPlayer):
 
         :param status: one of "WIN" | "LOSE" depending on the outcome of the board
         """
+        pass

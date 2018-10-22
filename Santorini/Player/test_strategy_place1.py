@@ -13,7 +13,7 @@ class Strategy:
                         on the structure as different strategies may benefit from different types
     """
 
-    def __init__(self, pid, init=None):
+    def __init__(self, pid, rule_checker, init=None):
         """
         Initializes a strategy object for use
 
@@ -21,6 +21,7 @@ class Strategy:
         :param init:    Optional Santoini GameBoard that represents initial state
         """
         self.__pid = pid
+        self.__rule_checker = rule_checker
 
         cmd_handler = Cmd_Handler(lambda x: x['type'])
         cmd_handler.register_cmd('place', self.decide_place)
@@ -71,12 +72,11 @@ class Strategy:
 
         while x < 6 and y < 6:
             worker_present = self.__state.get_worker_id(x, y)
-            if not worker_present:
-                self.__state.place_worker(self.pid, wid, x, y)
-                return True
+            if not worker_present and self.__rule_checker.check_place(self.__pid, wid, x, y):
+                return (x, y)
             x += 1
             y += 1
-        return False
+        raise ValueError("Nowhere to place")
 
     def decide_move(self, action):
         """
