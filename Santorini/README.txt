@@ -106,3 +106,43 @@ Santorini/Player/test_strategy_place2.py implementation of one of the placement 
 Santorini/Lib/stack_board.py is supplementary but shows how we operate on a GameBoard
 Santorini/Design/referee.py is the file for the design task
 =========================================================================================
+
+
+
+=========================================================================================
+
+Change Log 
+
+=========================================================================================
+
+10/22/2018
+-----------------------------------------------------------------------------------------
+Problems:
+- Player does not have data piped into it. There's no access to board, rules, or 
+referee (if that's the intended design). 
+
+- Strategy directly mutates the board. 
+- Strategy has no access to the board it's supposed to operate on, unless the 'optional'
+argument for a board is given in the constructor. This does not make sense for a component
+that's supposed to plan actions based on current state of game. 
+
+- Referee seems to be the "rule checker" for the player. It has a check method that checks
+if given action is valid. 
+- Referee has no way of exposing the current state of the game. Interface is very limited
+to other components that manage or interact with it. 
+- Referee does not have players piped into it. It almost seems like it has to access the 
+players through the given board, which inverts the control of the game flow. 
+
+
+- These interfaces seem to accomplish the needed testing tasks, but have no forethought
+for the actual Santorini game. 
+
+Solution:
+- Fix literally every interface 
+
+We are psychopaths and will come for them...
+
+
+Added player.py in Player for player implementation.
+
+-----------------------------------------------------------------------------------------
