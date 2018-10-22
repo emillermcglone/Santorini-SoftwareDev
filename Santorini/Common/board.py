@@ -137,6 +137,19 @@ class GameBoard:
         # Otherwise, there was no Cell matching the given player_id and worker_id
         return None
 
+    def find_player_workers(self, pid):
+        """
+        Find all workers of given player.
+
+        :param pid: string, id of player
+        :return: [(N, N), ...], positions of player's workers
+        """
+        workers = []
+        for key, value in self.__board.items():
+            if value.player_id and value.player_id == pid:
+                workers.append(key)
+        return workers
+
     def find_workers(self):
         """
         Method to find the x, y coordinates of all the workers on the board

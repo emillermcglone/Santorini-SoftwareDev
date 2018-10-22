@@ -125,6 +125,13 @@ referee (if that's the intended design).
 - Strategy has no access to the board it's supposed to operate on, unless the 'optional'
 argument for a board is given in the constructor. This does not make sense for a component
 that's supposed to plan actions based on current state of game. 
+- Strategy methods return True or False depending on whether the action based on the
+strategy has been enacted on the board. 
+- Strategy has no reference to rule checker. It has the basic rules of Santorini baked into
+its logic. 
+- Strategy exposes private methods
+- Interface is hopeless and not salvagable. It only delivers the needs of the testing 
+harnesses and doesn't serve the purpose of planning next moves in a game. 
 
 - Referee seems to be the "rule checker" for the player. It has a check method that checks
 if given action is valid. 
@@ -133,10 +140,13 @@ to other components that manage or interact with it.
 - Referee does not have players piped into it. It almost seems like it has to access the 
 players through the given board, which inverts the control of the game flow. 
 
-- Implementation classes are not consistent with their interfaces in Design (e.g. rule_checker)
+- Implementation classes are not consistent with their interfaces in Design (e.g. board,
+rule_checker, strategy)
 - Implementation classes also don't "extend" the interfaces
 - These interfaces/implementation classes seem to accomplish the needed testing tasks,
 but have no forethought for the actual Santorini game. 
+
+- Method signatures and purpose statements are inaccurate or incomplete. 
 
 Solution:
 - Fix literally every interface 
@@ -153,7 +163,16 @@ Changes:
     - Replaced all methods with methods of provided implementation class so that
     rule checker has an instance of the board state at all times
 
+    Strategy Interface:
+    - 
+
+    GameBoard Interface:
+    - added find_player_workers to get all of given player's workers
+
+
+
 
 Added player.py in Player for player implementation.
+- Use diagonal strategy for placement, and random strategy for move and build.
 
 -----------------------------------------------------------------------------------------

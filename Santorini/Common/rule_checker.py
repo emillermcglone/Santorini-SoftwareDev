@@ -11,7 +11,7 @@ class RuleChecker:
         Initializes a RuleChecker object with the given GameBoard
 
         :param board: The GameBoard
-        :type board:  GameBoard
+        :type board:  GameBoardThis 
         """
         # The GameBoard that the RuleChecker will be using for operations
         self.__board = board  # type: GameBoard
