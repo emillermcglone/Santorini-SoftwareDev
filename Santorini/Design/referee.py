@@ -10,18 +10,31 @@ class Referee():
     """
     Defines a Referee interface
     """
-    def __init__(self, board, checker):
+    def __init__(self, player_1, player_2, checker, board=None):
         """
         initilization setup to hold state
 
-        checker: A Santorini RuleChecker that is used for logic
+        :param player_1: string, player 1 id
+        :param player_2: string, player 2 id
+
+        checker_cls: A Santorini RuleChecker class that is used for logic
         board: A Santorini GameBoard that is used for state lookup
         players: List-of Player IDs
         current_player: player ID of the current player
         current_worker: assigned after a move is done
-        cmd_handler: used to dispatch to appropriate function based of incoming action
+        cmd_handler: used to dispatch to appropriate function based on incoming action
         """
         pass
+
+    def run_games(self, best_of=1):
+        """
+        Run the game between the two players once or as many as the given 
+        number of matches. 
+
+        :param best_of: N, odd number of matches at least 1
+        """
+        pass
+
 
     def check(self, action):
         """
