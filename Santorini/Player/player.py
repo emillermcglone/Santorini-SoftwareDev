@@ -61,6 +61,7 @@ class Player(IPlayer):
         """
         moves = gen_moves(self.__player_id, board, self.__rule_checker)
         return moves[0]
+        
 
     def get_build(self, board, wid):
         """
@@ -74,6 +75,7 @@ class Player(IPlayer):
         worker_position = board.find_worker(self.__player_id, wid)
         builds = gen_builds(self.__player_id, worker_position, board, self.__rule_checker)
         return [0]
+        
 
     def game_over(self, status):
         """

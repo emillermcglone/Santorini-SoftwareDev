@@ -14,7 +14,7 @@ A Worker is a string of lowercase letters that ends in either 1 or 2. The last d
 
 Action is one of:
 PLACE:
-    {'type': 'place', 'wi' <Worker_ID>, 'xy': [<Number>, <Number>]}
+    {'type': 'place', 'wid' <Worker_ID>, 'xy': [<Number>, <Number>]}
 
 MOVE:
     {'type': 'move', 'xy1': [<Number>, <Number>], 'xy2': [<Number>, <Number>]}

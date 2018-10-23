@@ -163,16 +163,17 @@ Changes:
     - Replaced all methods with methods of provided implementation class so that
     rule checker has an instance of the board state at all times
 
-    Strategy Interface:
-    - 
-
     GameBoard Interface:
     - added find_player_workers to get all of given player's workers
 
-
+    Referee Interface:
+    - added run_game method to run a game through the referee
 
 
 Added player.py in Player for player implementation.
 - Use diagonal strategy for placement, and random strategy for move and build.
+
+Added Observer.py in Design, which outlines the interface for a Santorini Observer.py
+
 
 -----------------------------------------------------------------------------------------
