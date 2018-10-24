@@ -175,5 +175,11 @@ Added player.py in Player for player implementation.
 
 Added Observer.py in Design, which outlines the interface for a Santorini Observer.py
 
+Issues:
+- Action 'type' attribute should use given TurnPhase
+- RuleChecker should have an interface to grab game constants such as
+number of workers allowed on the game.
+- check_game_over should not return None
+
 
 -----------------------------------------------------------------------------------------

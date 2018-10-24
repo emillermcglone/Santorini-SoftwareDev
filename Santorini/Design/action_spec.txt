@@ -2,7 +2,7 @@ File that defines what JSON for an action can look like:
 Anything between <> should be interpreted and is not the actual value
 
 PLACE:
-    {'type': 'place', 'wi' <Worker_ID>, 'xy': [<Number>, <Number>]}
+    {'type': 'place', 'wid' <Worker_ID>, 'xy': [<Number>, <Number>]}
 
 MOVE:
     {'type': 'move', 'xy1': [<Number>, <Number>], 'xy2': [<Number>, <Number>]}
