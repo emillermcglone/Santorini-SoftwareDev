@@ -93,8 +93,8 @@ class RuleChecker:
         # Check that the given worker ID has not already been placed on the board
         return wid in range(0, 2) \
                and self.check_valid_cell(x, y) \
-               and not self.__board.get_player_id(x, y) \
-               and not self.__board.find_worker(pid, wid)
+               and self.__board.get_player_id(x, y) is None \
+               and self.__board.find_worker(pid, wid) is None
 
     def check_valid_cell(self, x, y):
         """

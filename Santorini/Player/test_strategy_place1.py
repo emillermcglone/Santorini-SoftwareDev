@@ -58,12 +58,7 @@ class Strategy:
 
         while x < 6 and y < 6:
             worker_present = self.__state.get_worker_id(x, y)
-            print("END")
-            print(self.__pid, wid)
-            print("no worker", worker_present is None)
-            print(self.__rule_checker.check_place(self.__pid, wid, x, y))
             if worker_present is None and self.__rule_checker.check_place(self.__pid, wid, x, y):
-                print(x, y)
                 return (x, y)
             x += 1
             y += 1
