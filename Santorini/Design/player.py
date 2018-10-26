@@ -9,12 +9,11 @@ class Player:
         __player_id: Unique string identifying the Player
     """
 
-    def __init__(self, player_id, rule_checker):
+    def __init__(self, player_id):
         """
         Initialize the Player object
 
         :param player_id: Unique ID for the Player
-        :param rule_checker: RuleChecker, rule checker for current game
         """
         pass
 
@@ -26,33 +25,36 @@ class Player:
         """
         pass
 
-    def get_placement(self, board, wid):
+    def get_placement(self, board, wid, rule_checker):
         """
         Asks the player to place a worker on the board
 
         :param board: GameBoard, copy of the current state of the game
         :param wid: The ID of the worker the player is to place
+        :param rule_checker: RuleChecker, rule checker for current game
 
         :return: JSON that represents a place_worker action
         """
         pass
 
-    def get_move(self, board):
+    def get_move(self, board, rule_checker):
         """
         Asks the player to make a move
 
         :param board: GameBoard, copy of the current state of the game
+        :param rule_checker: RuleChecker, rule checker for current game
 
         :return: JSON that represents a move action
         """
         pass
 
-    def get_build(self, board, wid):
+    def get_build(self, board, wid, rule_checker):
         """
         Asks the player to build a floor
 
         :param board: GameBoard, copy of the current state of the game
         :param wid: Worker ID of the worker that the player needs to build with
+        :param rule_checker: RuleChecker, rule checker for current game
 
         :return: JSON that represents a build action
         """

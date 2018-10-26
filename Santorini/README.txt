@@ -156,12 +156,12 @@ They've woken the psychopaths in us
 
 Changes:
     Player Interface:
-    - Place, move and build all take in a copy of the board game
-    - Constructor takes in a RuleChecker
+    - Place, move and build all take in a copy of the board game and rule checker
 
     RuleChecker Interface:
     - Replaced all methods with methods of provided implementation class so that
     rule checker has an instance of the board state at all times
+
 
     GameBoard Interface:
     - added find_player_workers to get all of given player's workers
@@ -180,6 +180,7 @@ Issues:
 - RuleChecker should have an interface to grab game constants such as
 number of workers allowed on the game.
 - check_game_over should not return None
+- RuleChecker needs to provide access to board constants such as max number of workers allowed
 
 
 -----------------------------------------------------------------------------------------

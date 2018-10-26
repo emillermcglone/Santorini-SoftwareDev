@@ -17,15 +17,16 @@ class Player(IPlayer):
         __player_id: Unique string identifying the Player
     """
 
-    def __init__(self, player_id, rule_checker):
+    def __init__(self, player_id):
         """
         Initialize the Player object
 
         :param player_id: Unique ID for the Player
-        :param rule_checker: RuleChecker, rule checker for current game
         """
         self.__player_id = player_id
-        self.__rule_checker = rule_checker
+
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self.get_id() is other.get_id()
 
 
     def get_id(self):
@@ -37,7 +38,7 @@ class Player(IPlayer):
         return self.__player_id
 
 
-    def get_placement(self, board, wid):
+    def get_placement(self, board, wid, rule_checker):
         """
         Asks the player to place a worker on the board
 
@@ -46,24 +47,24 @@ class Player(IPlayer):
 
         :return: JSON that represents a place_worker action
         """
-        place_diagonal_strategy = PlaceDiagonalStrategy(self.__player_id, board, self__rule_checker)
+        place_diagonal_strategy = PlaceDiagonalStrategy(self.__player_id, rule_checker, board)
         
         to_xy = place_diagonal_strategy.decide_place(wid)
         return { 'type': 'place', 'wid': wid, 'xy': list(to_xy) }
 
 
-    def get_move(self, board):
+    def get_move(self, board, rule_checker):
         """
         Asks the player to make a move
 
         :param board: GameBoard, copy of the current state of the game
         :return: JSON that represents a move action
         """
-        moves = gen_moves(self.__player_id, board, self.__rule_checker)
+        moves = gen_moves(self.__player_id, board, rule_checker)
         return moves[0]
         
 
-    def get_build(self, board, wid):
+    def get_build(self, board, wid, rule_checker):
         """
         Asks the player to build a floor
 
@@ -73,7 +74,7 @@ class Player(IPlayer):
         :return: Json that represents a build action
         """
         worker_position = board.find_worker(self.__player_id, wid)
-        builds = gen_builds(self.__player_id, worker_position, board, self.__rule_checker)
+        builds = gen_builds(self.__player_id, worker_position, board, rule_checker)
         return [0]
         
 
