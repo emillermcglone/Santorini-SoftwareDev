@@ -13,7 +13,7 @@ class Strategy:
                         on the structure as different strategies may benefit from different types
     """
 
-    def __init__(self, pid, rule_checker, init=None):
+    def __init__(self, pid, rule_checker, init):
         """
         Initializes a strategy object for use
 
@@ -27,10 +27,8 @@ class Strategy:
         cmd_handler.register_cmd('place', self.decide_place)
         self.__cmd_handler = cmd_handler
 
-        if not init:
-            self.init_state(init)
-        else:
-            self.__state = None
+        self.__state = init
+
 
     def get_result(self, action):
         """
@@ -40,16 +38,6 @@ class Strategy:
         """
         return self.__cmd_handler.handle_cmd(action)
 
-    def init_state(self, board):
-        """
-        Allows for the initialization of a internal state based off of a GameBoard
-
-        :param board: a Santorini GameBoard that represents the initial state for this trategy
-        """
-        if not self.__state:
-            self.__state = board
-            return True
-        return False
 
     def update_state(self, dstate):
         """
@@ -70,7 +58,12 @@ class Strategy:
 
         while x < 6 and y < 6:
             worker_present = self.__state.get_worker_id(x, y)
-            if not worker_present and self.__rule_checker.check_place(self.__pid, wid, x, y):
+            print("END")
+            print(self.__pid, wid)
+            print("no worker", worker_present is None)
+            print(self.__rule_checker.check_place(self.__pid, wid, x, y))
+            if worker_present is None and self.__rule_checker.check_place(self.__pid, wid, x, y):
+                print(x, y)
                 return (x, y)
             x += 1
             y += 1
