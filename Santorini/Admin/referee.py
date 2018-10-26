@@ -124,7 +124,6 @@ class SantoriniReferee(Referee):
 
         winners = [self.__run_game(self.__board, self.__checker, self.players) for _ in range(best_of)]
 
-        #
         return max(self.players, key=lambda p: winners.count(p)).get_id()
 
     
@@ -138,6 +137,7 @@ class SantoriniReferee(Referee):
         :param players: [Player, Player], list of players 
         :return: Player, winner of game
         """
+        winner = None
 
         try:
             # Init: placement
@@ -189,8 +189,8 @@ class SantoriniReferee(Referee):
         """
 
         # TODO: Replace constant with RuleChecker constant
-        for player, wid in zip(self.__players_iter, range(4)):
-            self.__prompt_and_act(TurnPhase.PLACE, player, str(wid))
+        for player, wid in zip(self.__players_iter, [0, 0, 1, 1]):
+            self.__prompt_and_act(TurnPhase.PLACE, player, wid)
 
 
     def __run_steady_phase(self, board, checker, players):
@@ -207,11 +207,23 @@ class SantoriniReferee(Referee):
 
         for player in self.__players_iter: 
             if self.__is_game_over() is not None:
-                return self.__is_game_over()
+                return self.__get_player_from_id(self.__is_game_over())
 
             # TODO: Fix getting worker id after move
             wid = self.__prompt_and_act(TurnPhase.MOVE, player)
             self.__prompt_and_act(TurnPhase.BUILD, player, wid)
+
+
+    def __get_player_from_id(self, player_id):
+        """
+        Get player from id.
+
+        :param player_id: id of player
+        :return: Player, player
+        """
+        for p in self.players:
+            if p.get_id() is player_id:
+                return p
 
     
 
@@ -252,7 +264,7 @@ class SantoriniReferee(Referee):
         elif action_type is "move":
             self.__board.move_worker(*(action['xy1'] + action['xy2']))
         else:
-            self.__board.build_floor(action['xy2'])
+            self.__board.build_floor(*action['xy2'])
 
 
     def __is_game_over(self):
@@ -271,9 +283,8 @@ class SantoriniReferee(Referee):
         :param player: Player, given player
         :return: Player, opponent of given Player
         """
-
         for p in self.players:
-            if p.get_id is not player.get_id:
+            if p.get_id() is not player.get_id():
                 return p
 
 
@@ -343,9 +354,9 @@ class SantoriniReferee(Referee):
         # Are dictionary and method currying too complicated?
         # Are if else statements simpler? They're ugly
         check_methods = {
-            "place": lambda a: self.__checker.check_place(player.get_id(), a),
-            "move": self.__checker.check_move,
-            "build": self.__checker.check_build
+            "place": lambda a: self.__check_place(player.get_id(), a),
+            "move": self.__check_move,
+            "build": self.__check_build
         }
         try:
             valid = check_methods[action_type](action)
