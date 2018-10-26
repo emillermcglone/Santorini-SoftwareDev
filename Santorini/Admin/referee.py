@@ -1,6 +1,10 @@
+import sys
+sys.path.append('../')
+
 from Design.referee import Referee
 from Common.board import GameBoard
 from Common.turn_phase import TurnPhase
+from Common.rule_checker import RuleChecker
 
 from timeout_decorator import timeout, TimeoutError
 
@@ -40,7 +44,10 @@ class ContinuousIterator:
 
     def __next__(self):
         """ Iterate continuously """
-        if self.index == self.end:
+        if self.end is 0:
+            raise StopIteration
+
+        if self.index is self.end:
             self.index = 0
 
         item = self.items[self.index]
@@ -49,35 +56,39 @@ class ContinuousIterator:
 
 
 class SantoriniReferee(Referee):
-    def __init__(self, player_1, player_2, checker_cls, board=None):
-        """
-        Initialize Referee. 
+    """
+    The Referee runs a game of Santorini between two players. It prompts players for their
+    turn specifications, and execute turn specifications if valid. In case of timeout
+    or invalid action, the opponent is deemed winner automatically. 
+    """
 
-        player_1 goes first in all instances of Santorini game. 
+
+    def __init__(self, player_1, player_2, checker_cls=RuleChecker, board=None):
+        """
+        Initialize Referee.
+
+        players take turns making the first move after every game, starting with player_1 
 
         :param player_1: Player, player 1
         :param player_2: Player, player 2
         :param checker_cls: RuleChecker, class to instantiate rule checker from
+                            use standard Santorini rule checker as default
         :param board: GameBoard, board to instantiate from if given
-        
-        board: A Santorini GameBoard that is used for state lookup
-        players: List-of Player IDs
-        current_player: player ID of the current player
-        current_worker: assigned after a move is done
-        cmd_handler: used to dispatch to appropriate function based on incoming action
         """
         self.__original_board = board
         self.__checker_cls = checker_cls
-        self.players = [player_1, player_2]
+        self.players = [player_2, player_1]
         self.__reset()
 
 
     def __reset(self):
         """
-        Reset the board, rule checker, and players 
+        Reset board with copy of original board and checker with new board instance,
+        and reverse player order. 
         """
-        self.__board = self.__original_board or GameBoard()
+        self.__board = copy.deepcopy(self.__original_board) or GameBoard()
         self.__checker = self.__checker_cls(self.__board)
+        self.players = self.players[::-1] 
 
     
     @property
@@ -103,16 +114,18 @@ class SantoriniReferee(Referee):
     def run_games(self, best_of=1):
         """
         Run the game between the two players once or as many as the given 
-        number of matches. If best_of is even, Referee subtracts 1 match. 
+        number of matches. If best_of is even, Referee adds 1 more match. 
 
         :param best_of: N, odd number of matches at least 1
         :return: string, the id of winner
         """
         if best_of % 2 is 0:
-            best_of -= 1
+            best_of += 1
 
         winners = [self.__run_game(self.__board, self.__checker, self.players) for _ in range(best_of)]
-        return max(self.players, key=lambda p: winners.count(p))
+
+        #
+        return max(self.players, key=lambda p: winners.count(p)).get_id()
 
     
     def __run_game(self, board, checker, players):
@@ -263,6 +276,7 @@ class SantoriniReferee(Referee):
             if p.get_id is not player.get_id:
                 return p
 
+
     @timeout(10)
     def __prompt(self, turn_phase, player, wid=None):
         """
@@ -291,7 +305,7 @@ class SantoriniReferee(Referee):
         :param wid: string, worker id 
         :return: PLACE, place specifications
         """
-        return player.get_placement(self.board, wid)
+        return player.get_placement(self.board, wid, self.__checker)
 
 
     def __prompt_move(self, player):
@@ -301,7 +315,7 @@ class SantoriniReferee(Referee):
         :param player: Player, player to prompt
         :return: MOVE, move specification
         """
-        return player.get_move(self.board)
+        return player.get_move(self.board, self.__checker)
 
 
     def __prompt_build(self, player, wid):
@@ -312,7 +326,7 @@ class SantoriniReferee(Referee):
         :param wid: string, worker id 
         :return: BUILD, build specifications
         """
-        return player.get_build(self.board, wid)
+        return player.get_build(self.board, wid, self.__checker)
 
 
     # Not sure if this is necessary but it was given in the interface
