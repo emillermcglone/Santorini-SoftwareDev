@@ -27,7 +27,8 @@ class TestInit:
 
 class TestRunGames:
     def test_run_single(self, referee):
-        print(referee.run_games())
+        winner = referee.run_games()
+        assert winner is 1
 
 
 
