@@ -1,6 +1,6 @@
 # class that allows a board to act like a stack by pushing and poppping
 # delta transitions for board state
-from Santorini.Common.command_handler import Cmd_Handler
+from Common.command_handler import Cmd_Handler
 
 
 class StackBoard:

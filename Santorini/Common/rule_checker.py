@@ -1,6 +1,6 @@
 # Class that checks to see if the requested move conforms to the rules
-from Santorini.Common.board import GameBoard
-from Santorini.Lib.util import check_distance, get_adjacent
+from Common.board import GameBoard
+from Lib.util import check_distance, get_adjacent
 
 
 class RuleChecker:

@@ -1,8 +1,8 @@
 # Class that parses the given test input into the format that we want
-from Santorini.Common.board import GameBoard
-from Santorini.Common.rule_checker import RuleChecker
-from Santorini.Common.command_handler import Cmd_Handler
-from Santorini.Player.test_message_funcs import *
+from Common.board import GameBoard
+from Common.rule_checker import RuleChecker
+from Common.command_handler import Cmd_Handler
+from Player.test_message_funcs import *
 
 
 class Rule_Tester():

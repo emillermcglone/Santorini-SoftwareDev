@@ -1,11 +1,11 @@
 # This file describes the interactions that a `Player` will be responsible for.
 # Player relies on the place/move strategies created in hw8 to make decisions concerning the
 # placement of initial workers and the actions to be taken when it is the player’s turn.
-from Santorini.Player.test_strategy_place2 import Strategy as PlaceFurthestStrategy
-from Santorini.Player.test_strategy_place1 import Strategy as PlaceDiagonalStrategy
-from Santorini.Player.test_strategy_alive import Strategy as StayAliveStrategy
-from Santorini.Common.rule_checker import RuleChecker
-from Santorini.Lib.util import gen_moves, gen_builds
+from Player.test_strategy_place2 import Strategy as PlaceFurthestStrategy
+from Player.test_strategy_place1 import Strategy as PlaceDiagonalStrategy
+from Player.test_strategy_alive import Strategy as StayAliveStrategy
+from Common.rule_checker import RuleChecker
+from Lib.util import gen_moves, gen_builds
 
 from Design.player import Player as IPlayer
 

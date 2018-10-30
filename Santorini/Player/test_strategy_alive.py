@@ -1,8 +1,8 @@
 # This file implements the strategy spec'd out for assignment 8
-from Santorini.Common.command_handler import Cmd_Handler
-from Santorini.Lib.stack_board import StackBoard
-from Santorini.Common.rule_checker import RuleChecker
-from Santorini.Lib.util import gen_builds, gen_moves
+from Common.command_handler import Cmd_Handler
+from Lib.stack_board import StackBoard
+from Common.rule_checker import RuleChecker
+from Lib.util import gen_builds, gen_moves
 
 
 class Strategy:

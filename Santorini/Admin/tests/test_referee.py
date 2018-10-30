@@ -1,9 +1,9 @@
 import pytest
 
-from Santorini.Admin.referee import SantoriniReferee
-from Santorini.Player.player import Player
-from Santorini.Common.rule_checker import RuleChecker
-from Santorini.Admin.game_over import GameOverCondition
+from Admin.referee import SantoriniReferee
+from Player.player import Player
+from Common.rule_checker import RuleChecker
+from Admin.game_over import GameOverCondition
 
 @pytest.fixture
 def player_one():

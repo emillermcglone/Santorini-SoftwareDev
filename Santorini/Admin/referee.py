@@ -1,5 +1,4 @@
 import sys
-sys.path.append('../')
 
 from Design.referee import Referee
 from Common.board import GameBoard

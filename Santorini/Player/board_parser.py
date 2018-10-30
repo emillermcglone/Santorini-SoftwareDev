@@ -1,7 +1,7 @@
 # Class that parses the given test input into the format that we want
-from Santorini.Common.board import GameBoard
-from Santorini.Common.command_handler import Cmd_Handler
-from Santorini.Player.test_message_funcs import *
+from Common.board import GameBoard
+from Common.command_handler import Cmd_Handler
+from Player.test_message_funcs import *
 
 
 class Board_Tester():

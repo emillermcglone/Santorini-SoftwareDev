@@ -1,5 +1,5 @@
 # This file implements the place along diagonal strategy spec'd out for assignment 8
-from Santorini.Common.command_handler import Cmd_Handler
+from Common.command_handler import Cmd_Handler
 
 
 class Strategy:

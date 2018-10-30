@@ -1,6 +1,6 @@
 import pytest
 
-from Santorini.Admin.referee import ContinuousIterator
+from Admin.referee import ContinuousIterator
 
 @pytest.fixture
 def items():

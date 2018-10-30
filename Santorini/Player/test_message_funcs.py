@@ -1,6 +1,6 @@
 # Holds all the functions for how the test harness will handle the different input messages
-from Santorini.Common.exception import *
-from Santorini.Common.turn_phase import TurnPhase
+from Common.exception import *
+from Common.turn_phase import TurnPhase
 
 
 def convert_direction(dir):

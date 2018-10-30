@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from Santorini.Common.cell import Cell
+from Common.cell import Cell
 
 
 class GameBoard:
