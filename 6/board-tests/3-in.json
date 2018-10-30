@@ -1,20 +1,2 @@
-[[3, 2, 1, 0, 0, 1], 
-[0, "2player12", 0, 0, 0, 0], 
-[2, 0, 0, 0, 0, "3player11"], 
-["1player21", 0, 0, 0, 0, 0],
-["1player22", 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0]]
-
-
-["move", "player11", ["WEST", "PUT"]]
-["height", "player11", ["EAST", "PUT"]]
-
-["neighbor", "player22", ["WEST", "PUT"]]
-["move", "player22", ["WEST", "PUT"]]
-["occupy", "player21", ["PUT", "SOUTH"]]
-
-
-
-
-
-
+[[0, "3playerone1", 0], [1, "1playerone2", 1], [2, "2playertwo1", "2playertwo2"]]
+["height", "playerone2", ["PUT", "NORTH"]]

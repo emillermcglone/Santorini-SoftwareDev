@@ -146,10 +146,11 @@ rule_checker, strategy)
 - These interfaces/implementation classes seem to accomplish the needed testing tasks,
 but have no forethought for the actual Santorini game. 
 
-- Method signatures and purpose statements are inaccurate or incomplete. 
+- Method signatures and purpose statements are inaccurate or incomplete.
+- NO UNIT TESTS
 
 Solution:
-- Fix literally every interface 
+- Fix every interface we need to use
 
 They've woken the psychopaths in us
 

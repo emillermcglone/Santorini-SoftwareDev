@@ -1,10 +1,6 @@
-"player1"
-[[3, 2, 1, 0, 0, 1], 
-[0, 2, 0, "2player12", 0, 0], 
-[0, 0, 0, 0, 0, "1player11"], 
-[0, 0, 0, 0, "1player21", 0],
-[0, 0, "1player22", 0, 0, 0],
-[0, 0, 0, 0, 0, 0]]
+"two"
+[["0one1", "1one2", 3, "2two1"],
+  [0,       "2two2", 3]]
 3
-["move","player11",["WEST","PUT"]]
-["+build",["WEST","PUT"]]
+["move","two2",["WEST","PUT"]]
+["+build",["PUT","SOUTH"]]

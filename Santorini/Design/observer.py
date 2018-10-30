@@ -23,7 +23,8 @@ BUILD:
     {'type': 'build', 'xy1': [<Number>, <Number>], 'xy2': [<Number>, <Number>]}
 """
 
-class Observer:
+class IObserver:
+
     def update_state_of_game(self, board):
         """
         Update the observer with the current state of the game. This
@@ -33,15 +34,8 @@ class Observer:
         """
         pass
 
-    def update_turn(self, pid):
-        """
-        Update the observer with the next player whose turn it is.
 
-        :param pid: string, id of next player
-        """
-        pass
-
-    def update_action(self, pid, action):
+    def update_action(self, wid, move_action, build_action):
         """
         Update the observer with the next action taken by given player.
 
@@ -50,12 +44,21 @@ class Observer:
         """
         pass
 
-    def game_over(self, winner, board):
+    
+    def give_up(self, pid):
+        """
+        Player gives up.
+
+        :param pid: string, id of player that gives up
+        """
+        pass
+    
+    def game_over(self, pid, wid, move_action):
         """
         Update the observer with the player who won the game and the last state
         of the game.
 
         :param winner: string, id of winning player
-        :param board: Board, last state of game
+        :param condition: GameOverCondition, condition of game over
         """
         pass

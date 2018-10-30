@@ -1,4 +1,0 @@
-#!/bin/bash
-
-
-./Aux/dist/client/client $1 $2

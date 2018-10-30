@@ -1,3 +1,0 @@
-#!/bin/bash
-
-./Aux/dist/2/2 $1

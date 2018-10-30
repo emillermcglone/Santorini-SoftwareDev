@@ -111,6 +111,27 @@ class RuleChecker:
         # Check that the coordinates are between 0 and 5
         return x in range(0, 6) and y in range(0, 6)
 
+
+    def get_winning_move(self, pid):
+        """
+        Get winning move.
+
+        :param pid
+        """
+        for x1, y1 in self.__board.find_player_workers(pid):
+            # Iterate over all possible adjacent cells
+            for x2, y2 in get_adjacent(x1, y1):
+
+                # Determine whether the worker can move to this cell
+                if self.check_move(x1, y1, x2, y2):
+
+                    # If the worker can reach the third level of the building, they win
+                    if self.__board.get_height(x2, y2) == 3:
+                        return { 'type': 'move', 'xy1': [x1, y1], 'xy2': [x2, y2] }
+
+        return None
+    
+
     def check_game_over(self, player1, player2):
         """
         Determines the winner if the game is over
