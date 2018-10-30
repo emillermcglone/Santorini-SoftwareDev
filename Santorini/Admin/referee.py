@@ -5,54 +5,25 @@ from Design.referee import Referee
 from Common.board import GameBoard
 from Common.turn_phase import TurnPhase
 from Common.rule_checker import RuleChecker
+from Admin.continuous_iterator import ContinuousIterator
+from Admin.game_over import GameOver, GameOverCondition
 
 from timeout_decorator import timeout, TimeoutError
-
 import copy
 
-class TimeoutOrInvalidActionWinner(Exception):
-    """ Exceptions to throw when a Player has timed out during their turn. """
 
-    def __init__(self, winner):
-        """
-        Initialize exception.
-
-        :param winner: Player, winner of the game
-        """
-        self.winner = winner
-
-
-class ContinuousIterator:
+class BreakingPlayer(Exception):
     """
-    Iterable class that loops over list of players continuously. 
+    Error for when player breaks.
     """
 
-    def __init__(self, items):
+    def __init__(self, player, condition):
         """
-        Initialize iterable with list of items to loop over. 
-
-        :param items: [Any, ...], list of items to loop over
+        :param player: Player, player who breaks
+        :param condition: GameOverCondition, condition for breaking
         """
-        self.items = items
-        self.index = 0
-        self.end = len(items)
-
-
-    def __iter__(self):
-        return self
-
-
-    def __next__(self):
-        """ Iterate continuously """
-        if self.end is 0:
-            raise StopIteration
-
-        if self.index is self.end:
-            self.index = 0
-
-        item = self.items[self.index]
-        self.index += 1
-        return item
+        self.player = player
+        self.condition = condition
 
 
 class SantoriniReferee(Referee):
@@ -62,8 +33,7 @@ class SantoriniReferee(Referee):
     or invalid action, the opponent is deemed winner automatically. 
     """
 
-
-    def __init__(self, player_1, player_2, checker_cls=RuleChecker, board=None):
+    def __init__(self, player_1, player_2, checker_cls=RuleChecker, observers=[]):
         """
         Initialize Referee.
 
@@ -74,20 +44,95 @@ class SantoriniReferee(Referee):
         :param checker_cls: RuleChecker, class to instantiate rule checker from
                             use standard Santorini rule checker as default
         :param board: GameBoard, board to instantiate from if given
+        :raise ValueError: if players are the same
         """
-        self.__original_board = board
+        if player_1 == player_2:
+            raise ValueError("Players cannot be the same")
+
         self.__checker_cls = checker_cls
-        self.players = [player_2, player_1]
-        self.__reset()
+        self.players = [player_1, player_2]
+        self.__init_board_and_checker()
+
+        self.observers = observers
+        self.__turn_history = []
+
+    
+    def add_observer(self, observer):
+        """
+        Add another observer.
+
+        :param observer: Observer, observer of series of games.
+        """
+        self.observers.append(observer)
+
+
+    def __update_state_observers(self, board):
+        """
+        Update observers about state of game.
+
+        :param board: GameBoard, state of game
+        """
+        for observer in self.observers:
+            observer.update_state_of_game(board)
+
+    def __update_action_observers(self, wid, move_action, build_action):
+        """
+        Update observers about recent action.
+
+        :param wid: string, worker id
+        :param move_action: Action, move specification
+        :param build_action: Action, build specification
+        """
+        for observer in self.observers:
+            observer.update_action(wid, move_action, build_action)
+            observer.update_state_of_game(self.__board)
+
+
+    def __give_up_observers(self, pid):
+        """
+        Update observers about player who gives up.
+
+        :param pid: string, id of player
+        """
+        for observer in self.observers:
+            observer.give_up(pid)
+
+    def __error_observers(self, pid, message):
+        """
+        Update observers about player error.
+
+        :param pid: string, player id
+        :param message: string, error message
+        """
+        for observer in self.observers:
+            observer.error(pid, message)
+
+    def __game_over_observers(self, pid, wid, move_action):
+        """
+        Update observers about game over.
+
+        :param pid: string, winner id
+        :param wid: string, winning move worker id
+        :param move_action: Action, winning move action
+        """
+        for observer in self.observers:
+            observer.game_over(pid, wid, move_action)
+
+
+    def __init_board_and_checker(self):
+        """ 
+        Initialize board with copy of originally given board, and
+        checker with originally given checker class.
+        """
+        self.__board = GameBoard()
+        self.__checker = self.__checker_cls(self.__board)
 
 
     def __reset(self):
         """
-        Reset board with copy of original board and checker with new board instance,
-        and reverse player order. 
+        Reset board and checker, and reverse order of players. 
         """
-        self.__board = copy.deepcopy(self.__original_board) or GameBoard()
-        self.__checker = self.__checker_cls(self.__board)
+        self.__init_board_and_checker()
         self.players = self.players[::-1] 
 
     
@@ -117,14 +162,23 @@ class SantoriniReferee(Referee):
         number of matches. If best_of is even, Referee adds 1 more match. 
 
         :param best_of: N, odd number of matches at least 1
-        :return: string, the id of winner
+        :return: GameOver, the game over state
         """
         if best_of % 2 is 0:
             best_of += 1
 
-        winners = [self.__run_game(self.__board, self.__checker, self.players) for _ in range(best_of)]
+        game_outcomes = []
 
-        return max(self.players, key=lambda p: winners.count(p)).get_id()
+        for _ in range(best_of):
+            game_over = self.__run_game(self.__board, self.__checker, self.players)
+            if game_over.condition is not GameOverCondition.FairGame:
+                return game_over 
+            game_outcomes.append(game_over)   
+        
+        winners = list(map(lambda game: game.winner, game_outcomes))
+        overall_winner = max(self.players, key=lambda p: winners.count(p))
+        loser = self.__opponent_of(overall_winner)
+        return GameOver(overall_winner, loser, GameOverCondition.FairGame)
 
     
     def __run_game(self, board, checker, players):
@@ -138,43 +192,55 @@ class SantoriniReferee(Referee):
         :return: Player, winner of game
         """
         winner = None
+        loser = None
+        condition = GameOverCondition.FairGame
 
         try:
             # Init: placement
             self.__run_init_phase(board, checker, players)
+            self.__update_state_observers(board)
 
             # Steady: move and build
             winner = self.__run_steady_phase(board, checker, players)
+            loser = self.__opponent_of(winner)
 
-        except TimeoutOrInvalidActionWinner as e:
-            winner = e.winner
+        except BreakingPlayer as e:
+            loser = e.player
+            winner = self.__opponent_of(loser)
+            condition = e.condition
 
-        finally:
-            opponent = self.__opponent_of(winner)
+            self.__error_observers(loser.get_id(), condition)
 
-        try:
-            # Shutdown: game over update and reset
-            self.__shutdown_players(winner, opponent)
-
-        except TimeoutError:
-            # Is there a better way to deal with Timeout rather 
-            # than giving up on notifying players?
-            pass
-
-        finally:
-            self.__reset()
-            return winner
+        # Notify players game has ended
+        self.__game_over_players(winner, loser)
+        # self.__game_over_observers(
+        self.__reset()
+        return GameOver(winner, loser, condition)
 
 
-    def __shutdown_players(winner, loser):
+    def __game_over_players(self, winner, loser):
         """
         Notify winner and loser of game over.
 
         :param winner: Player, winner of game
         :param loser: Player, loser of game
         """
-        winner.game_over("WIN")
-        opponent.game_over("LOSE")
+        self.__game_over_player(winner, "WIN")
+        self.__game_over_player(loser, "LOSE")
+
+
+    def __game_over_player(self, player, message):
+        """
+        Notify player of game over with message.
+
+        :param player: Player, player to notify
+        :param message: string, message to send
+        :raise BreakingPlayer: if player times out
+        """
+        try:
+            timeout(10)(player.game_over)(message)
+        except TimeoutError:
+            raise BreakingPlayer(player, GameOverCondition.Timeout)
 
 
     def __run_init_phase(self, board, checker, players):
@@ -188,7 +254,6 @@ class SantoriniReferee(Referee):
         :raise TimeoutOrInvalidActionWinner: if a player times out or makes an invalid action
         """
 
-        # TODO: Replace constant with RuleChecker constant
         for player, wid in zip(self.__players_iter, [0, 0, 1, 1]):
             self.__prompt_and_act(TurnPhase.PLACE, player, wid)
 
@@ -207,9 +272,17 @@ class SantoriniReferee(Referee):
 
         for player in self.__players_iter: 
             if self.__is_game_over() is not None:
+                winner_id = self.__is_game_over()
+                winning_move = self.__checker.get_winning_move(winner_id)
+
+                if winning_move is None:
+                    self.__give_up_observers(self.__opponent_of(self.__get_player_from_id(winner_id)))
+                else:
+                    worker_id = self.__board.get_worker_id(*winning_move['xy1'])
+                    self.__game_over_observers(winner_id, worker_id, winning_move)
+
                 return self.__get_player_from_id(self.__is_game_over())
 
-            # TODO: Fix getting worker id after move
             wid = self.__prompt_and_act(TurnPhase.MOVE, player)
             self.__prompt_and_act(TurnPhase.BUILD, player, wid)
 
@@ -239,15 +312,19 @@ class SantoriniReferee(Referee):
         try: 
             action = self.__prompt(turn_phase, player, wid)
             if not self.check(player, action):
-                raise TimeoutOrInvalidActionWinner(self.__opponent_of(player))
+                raise BreakingPlayer(player, GameOverCondition.InvalidAction)
             self.__act(player, action)
 
-            # if action is move, return id of worker moved
+            self.__turn_history.append(action)
+
+            if turn_phase is TurnPhase.BUILD:
+                self.__update_action_observers(wid, self.__turn_history[-2], self.__turn_history[-1])
+
             if turn_phase is TurnPhase.MOVE:
                 return self.__board.get_worker_id(*action['xy2'])
 
         except TimeoutError:
-            raise TimeoutOrInvalidActionWinner(self.__opponent_of(player))
+            raise BreakingPlayer(player, GameOverCondition.Timeout)
 
 
     def __act(self, player, action):
@@ -340,7 +417,6 @@ class SantoriniReferee(Referee):
         return player.get_build(self.board, wid, self.__checker)
 
 
-    # Not sure if this is necessary but it was given in the interface
     def check(self, player, action):
         """
         Method to check if a given action is valid
@@ -351,16 +427,14 @@ class SantoriniReferee(Referee):
         """
         action_type = action['type']
 
-        # Are dictionary and method currying too complicated?
-        # Are if else statements simpler? They're ugly
         check_methods = {
             "place": lambda a: self.__check_place(player.get_id(), a),
             "move": self.__check_move,
             "build": self.__check_build
         }
+
         try:
-            valid = check_methods[action_type](action)
-            return valid
+            return check_methods[action_type](action)
         except KeyError:
             return False
 

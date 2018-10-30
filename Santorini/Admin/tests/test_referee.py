@@ -3,6 +3,7 @@ import pytest
 from Santorini.Admin.referee import SantoriniReferee
 from Santorini.Player.player import Player
 from Santorini.Common.rule_checker import RuleChecker
+from Santorini.Admin.game_over import GameOverCondition
 
 @pytest.fixture
 def player_one():
@@ -27,8 +28,8 @@ class TestInit:
 
 class TestRunGames:
     def test_run_single(self, referee):
-        winner = referee.run_games()
-        assert winner is 1
+        game_over = referee.run_games()
+        assert game_over.winner.get_id() is 1
 
 
 
