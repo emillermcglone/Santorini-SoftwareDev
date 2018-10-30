@@ -6,6 +6,7 @@ sys.path.append("../../")
 
 from Santorini.Design.observer import IObserver
 from enum import Enum
+from timeout_decorator import timeout, TimeoutError
 
 from Santorini.Admin.referee import SantoriniReferee
 from Santorini.Player.player import Player
