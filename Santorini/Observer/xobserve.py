@@ -2,12 +2,10 @@
 import json
 
 import sys, os
-print(sys.path)
-sys.path.append(sys.path[0] + "/../")
+sys.path.append('./Santorini/')
+sys.path.append('./gija-emmi/Santorini/')
+sys.path.append('../Santorini/')
 
-sys.path.append(sys.path[0] + "/../../")
-
-sys.path.append(sys.path[0] + "/../../../")
 
 from Design.observer import IObserver
 from enum import Enum
