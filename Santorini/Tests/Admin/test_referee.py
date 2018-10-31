@@ -1,9 +1,13 @@
 import pytest
+import sys, os
+dir_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, dir_path + '/../../')
 
 from Admin.referee import SantoriniReferee
+from Admin.game_over import GameOverCondition
 from Player.player import Player
 from Common.rule_checker import RuleChecker
-from Admin.game_over import GameOverCondition
+
 
 @pytest.fixture
 def player_one():

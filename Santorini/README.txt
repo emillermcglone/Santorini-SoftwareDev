@@ -152,9 +152,6 @@ but have no forethought for the actual Santorini game.
 Solution:
 - Fix every interface we need to use
 
-They've woken the psychopaths in us
-
-
 Changes:
     Player Interface:
     - Place, move and build all take in a copy of the board game and rule checker

@@ -1,14 +1,13 @@
-import sys
+import sys, copy
 
 from Design.referee import Referee
 from Common.board import GameBoard
 from Common.turn_phase import TurnPhase
 from Common.rule_checker import RuleChecker
-from Admin.continuous_iterator import ContinuousIterator
+from Lib.continuous_iterator import ContinuousIterator
 from Admin.game_over import GameOver, GameOverCondition
 
 from timeout_decorator import timeout, TimeoutError
-import copy
 
 
 class BreakingPlayer(Exception):

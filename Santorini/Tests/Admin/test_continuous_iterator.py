@@ -1,6 +1,11 @@
 import pytest
+import sys, os
+dir_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, dir_path + '/../../')
 
-from Admin.referee import ContinuousIterator
+from Lib.continuous_iterator import ContinuousIterator
+
+
 
 @pytest.fixture
 def items():

@@ -1,3 +1,8 @@
+"""
+Data representation for game over states based on different game 
+over conditions. 
+"""
+
 from enum import Enum
 
 class GameOver:
@@ -21,6 +26,10 @@ class GameOver:
 
 
 class GameOverCondition(Enum):
+    """
+    Condition for game over.
+    """
+
     Timeout = "Loser timed out on action request"
     InvalidAction = "Loser specified invalid action"
     FairGame = "Winner won by game rules"
