@@ -3,10 +3,10 @@ import sys, os
 dir_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, dir_path + '/../../')
 
-from Admin.referee import SantoriniReferee
+from Admin.referee import Referee
 from Admin.game_over import GameOverCondition
 from Admin.rule_checker import RuleChecker
-from Player.player import Player
+from Player.random_player import Player
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def player_two():
 
 @pytest.fixture
 def referee(player_one, player_two):
-    return SantoriniReferee(player_one, player_two, RuleChecker)
+    return Referee(player_one, player_two, RuleChecker)
 
 
 class TestInit:

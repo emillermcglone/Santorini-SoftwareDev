@@ -11,8 +11,8 @@ from Design.observer import IObserver
 from enum import Enum
 from timeout_decorator import timeout, TimeoutError
 
-from Admin.referee import SantoriniReferee
-from Player.player import Player
+from Admin.referee import Referee
+from Player.random_player import Player
 
 
 class XObserver(IObserver):
@@ -89,5 +89,5 @@ if __name__ == "__main__":
     player_1 = Player(1)
     player_2 = Player(2)
 
-    SantoriniReferee(player_1, player_2, observers=[XObserver()]).run_games()
+    Referee(player_1, player_2, observers=[XObserver()]).run_games()
 

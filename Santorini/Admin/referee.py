@@ -1,6 +1,5 @@
 import sys, copy
 
-from Design.referee import Referee
 from Admin.board import GameBoard
 from Common.turn_phase import TurnPhase
 from Admin.rule_checker import RuleChecker
@@ -24,7 +23,7 @@ class BreakingPlayer(Exception):
         self.condition = condition
 
 
-class SantoriniReferee(Referee):
+class Referee:
     """
     The Referee runs a game of Santorini between two players. It prompts players for their
     turn specifications, and execute turn specifications if valid. In case of timeout
