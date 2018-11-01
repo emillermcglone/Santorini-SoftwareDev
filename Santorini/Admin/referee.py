@@ -3,7 +3,7 @@ import sys, copy
 from Design.referee import Referee
 from Admin.board import GameBoard
 from Common.turn_phase import TurnPhase
-from Common.rule_checker import RuleChecker
+from Admin.rule_checker import RuleChecker
 from Lib.continuous_iterator import ContinuousIterator
 from Admin.game_over import GameOver, GameOverCondition
 

@@ -5,8 +5,8 @@ sys.path.insert(0, dir_path + '/../../')
 
 from Admin.referee import SantoriniReferee
 from Admin.game_over import GameOverCondition
+from Admin.rule_checker import RuleChecker
 from Player.player import Player
-from Common.rule_checker import RuleChecker
 
 
 @pytest.fixture

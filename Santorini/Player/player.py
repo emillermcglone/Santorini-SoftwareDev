@@ -4,7 +4,6 @@
 from Player.test_strategy_place2 import Strategy as PlaceFurthestStrategy
 from Player.test_strategy_place1 import Strategy as PlaceDiagonalStrategy
 from Player.test_strategy_alive import Strategy as StayAliveStrategy
-from Common.rule_checker import RuleChecker
 from Lib.util import gen_moves, gen_builds
 
 from Design.player import Player as IPlayer

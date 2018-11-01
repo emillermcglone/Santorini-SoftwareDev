@@ -1,6 +1,6 @@
 # Class that parses the given test input into the format that we want
 from Common.board import GameBoard
-from Common.rule_checker import RuleChecker
+from Admin.rule_checker import RuleChecker
 from Common.command_handler import Cmd_Handler
 from Player.test_message_funcs import *
 

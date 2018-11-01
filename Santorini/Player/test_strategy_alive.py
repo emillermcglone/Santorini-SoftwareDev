@@ -1,7 +1,7 @@
 # This file implements the strategy spec'd out for assignment 8
 from Common.command_handler import Cmd_Handler
 from Lib.stack_board import StackBoard
-from Common.rule_checker import RuleChecker
+from Admin.rule_checker import RuleChecker
 from Lib.util import gen_builds, gen_moves
 
 
