@@ -3,7 +3,6 @@
 
 class IllegalPlaceException(Exception):
     """Raised when attempting to place a worker illegally."""
-    pass
 
 
 class IllegalMoveException(Exception):

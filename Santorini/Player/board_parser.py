@@ -1,5 +1,5 @@
 # Class that parses the given test input into the format that we want
-from Common.board import GameBoard
+from Admin.board import GameBoard
 from Common.command_handler import Cmd_Handler
 from Player.test_message_funcs import *
 

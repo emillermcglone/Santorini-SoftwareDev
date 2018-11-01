@@ -1,6 +1,6 @@
 """
-Data representation for game over states based on different game 
-over conditions. 
+Data representation used by referee for game over states based 
+on different game over conditions.
 """
 
 from enum import Enum

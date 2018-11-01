@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from Common.cell import Cell
+from Admin.cell import Cell
 
 
 class GameBoard:
