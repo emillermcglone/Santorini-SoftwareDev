@@ -3,7 +3,7 @@ import sys, os
 dir_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, dir_path + '/../../')
 
-from Player.random_player import Player
+from Player.mock_players.random_player import Player
 from Admin.game_over import GameOver, GameOverCondition
 
 @pytest.fixture

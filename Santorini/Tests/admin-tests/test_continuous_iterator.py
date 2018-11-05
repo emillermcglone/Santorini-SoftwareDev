@@ -5,8 +5,6 @@ sys.path.insert(0, dir_path + '/../../')
 
 from Lib.continuous_iterator import ContinuousIterator
 
-
-
 @pytest.fixture
 def items():
     return [1, 2, 3]

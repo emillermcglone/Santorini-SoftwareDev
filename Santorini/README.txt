@@ -160,12 +160,14 @@ Changes:
     - Replaced all methods with methods of provided implementation class so that
     rule checker has an instance of the board state at all times
 
-
     GameBoard Interface:
     - added find_player_workers to get all of given player's workers
 
     Referee Interface:
     - added run_game method to run a game through the referee
+
+    RuleChecker impl:
+    - added win condition for when worker is on the third floor. 
 
 
 Added player.py in Player for player implementation.

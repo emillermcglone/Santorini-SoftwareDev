@@ -30,6 +30,7 @@ class GameOverCondition(Enum):
     Condition for game over.
     """
 
+    Unresponsive = "Loser was unresponsive"
     Timeout = "Loser timed out on action request"
     InvalidAction = "Loser specified invalid action"
     FairGame = "Winner won by game rules"

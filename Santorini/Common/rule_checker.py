@@ -1,9 +1,11 @@
 # Class that checks to see if the requested move conforms to the rules
+from abc import ABC, abstractmethod
 
-class RuleChecker:
+
+class RuleChecker(ABC):
     """Defines the Rule Checker interface"""
 
-
+    @abstractmethod
     def check_build(self, x1, y1, x2, y2):
         """
         Determines whether building at the
@@ -22,6 +24,7 @@ class RuleChecker:
         """
         pass
 
+    @abstractmethod
     def check_move(self, x1, y1, x2, y2):
         """
         Determines whether moving a worker from the given
@@ -41,6 +44,7 @@ class RuleChecker:
         pass
 
 
+    @abstractmethod
     def check_place(self, pid, wid, x, y):
         """
         Determines whether placing a worker
@@ -60,6 +64,7 @@ class RuleChecker:
         pass
 
 
+    @abstractmethod
     def check_valid_cell(self, x, y):
         """
         Determines whether the given coordinates
@@ -75,6 +80,7 @@ class RuleChecker:
         pass
 
 
+    @abstractmethod
     def get_winning_move(self, pid):
         """
         Get winning move.
@@ -84,6 +90,7 @@ class RuleChecker:
         pass
     
 
+    @abstractmethod
     def check_game_over(self, player1, player2):
         """
         Determines the winner if the game is over

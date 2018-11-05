@@ -35,7 +35,7 @@ class IObserver:
         pass
 
 
-    def update_action(self, wid, move_action, build_action):
+    def update_action(self, wid, action):
         """
         Update the observer with the next action taken by given player.
 
@@ -52,6 +52,7 @@ class IObserver:
         :param pid: string, id of player that gives up
         """
         pass
+
     
     def game_over(self, pid, wid, move_action):
         """

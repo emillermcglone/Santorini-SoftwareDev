@@ -1,11 +1,10 @@
-# This file describes the high-level interactions that a `GameBoard` will be responsible for
-
 from collections import defaultdict
 
 from Admin.cell import Cell
+from Common.board import GameBoard as IGameBoard
 
 
-class GameBoard:
+class GameBoard(IGameBoard):
     """Class representing a Santorini game board"""
 
     def __init__(self):

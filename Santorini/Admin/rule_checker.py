@@ -1,8 +1,11 @@
 # Class that checks to see if the requested move conforms to the rules
+
+from Common.rule_checker import RuleChecker as IRuleChecker
 from Lib.util import check_distance, get_adjacent
 
 
-class RuleChecker:
+
+class RuleChecker(IRuleChecker):
     """Defines the Rule Checker interface"""
 
     def __init__(self, board):
@@ -144,6 +147,12 @@ class RuleChecker:
         """
         # Get coordinates of all workers on the board
         for x1, y1 in self.__board.find_workers():
+            height = self.__board.get_height(x1, y1)
+            player = self.__board.get_player_id(x1, y1)
+
+            # Check if current worker is on the third floor
+            if height is 3:
+                return player
 
             # Assume there are no valid moves to start
             can_move = False
@@ -156,10 +165,6 @@ class RuleChecker:
 
                 # Determine whether the worker can move to this cell
                 if self.check_move(x1, y1, x2, y2):
-
-                    # If the worker can reach the third level of the building, they win
-                    if self.__board.get_height(x2, y2) == 3:
-                        return self.__board.get_player_id(x1, y1)
 
                     # The worker can make a valid move, game is not over
                     can_move = True

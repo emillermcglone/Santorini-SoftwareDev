@@ -16,14 +16,13 @@
 # - "BUILD", representing the build phase of a player's turn
 # This file describes the high-level interactions that a `GameBoard` will be responsible for
 
-from abc import ABC
-
-from Common.cell import Cell
+from abc import ABC, abstractmethod
 
 
-class GameBoard:
+class GameBoard(ABC):
     """Class representing a Santorini game board"""
 
+    @abstractmethod
     def place_worker(self, pid, wid, x, y):
         """
         Places a worker with given pid and wid at the cell x,y
@@ -39,6 +38,8 @@ class GameBoard:
         """
         pass
 
+
+    @abstractmethod
     def move_worker(self, x1, y1, x2, y2):
         """
         Moves a worker from x1,y1 to x2,y2.
@@ -55,6 +56,7 @@ class GameBoard:
         pass
 
 
+    @abstractmethod
     def build_floor(self, x, y, n=1):
         """
         Adds 1 to the height of the Cell at x,y.
@@ -69,6 +71,7 @@ class GameBoard:
         pass
 
 
+    @abstractmethod
     def get_height(self, x, y):
         """
         Returns the height of the Cell at the given coordinates
@@ -83,6 +86,7 @@ class GameBoard:
         pass
 
 
+    @abstractmethod
     def get_player_id(self, x, y):
         """
         Gets the player ID for the given coordinates if there is one
@@ -97,6 +101,7 @@ class GameBoard:
         pass
 
 
+    @abstractmethod
     def get_worker_id(self, x, y):
         """
         Gets the worker ID for the given coordinates if there is one
@@ -111,6 +116,7 @@ class GameBoard:
         pass
 
 
+    @abstractmethod
     def find_worker(self, pid, wid):
         """
         Method to find the x, y coordinates of the given Worker ID
@@ -125,6 +131,7 @@ class GameBoard:
         pass
 
 
+    @abstractmethod
     def find_player_workers(self, pid):
         """
         Find all workers of given player.
@@ -135,6 +142,7 @@ class GameBoard:
         pass
 
 
+    @abstractmethod
     def find_workers(self):
         """
         Method to find the x, y coordinates of all the workers on the board
