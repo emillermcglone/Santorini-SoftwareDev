@@ -12,9 +12,9 @@ from enum import Enum
 from timeout_decorator import timeout, TimeoutError
 
 from Admin.referee import Referee
-from Player.mock_players.random_player import Player
-from Player.mock_players.infinite_loop_player import InfiniteLoopPlayer
-from Player.mock_players.misbehaving_player import MisbehavingPlayer
+from Player.players.random_player import Player
+from Player.players.infinite_loop_player import InfiniteLoopPlayer
+from Player.players.misbehaving_player import MisbehavingPlayer
 
 
 class XObserver(IObserver):
@@ -108,7 +108,7 @@ class XObserver(IObserver):
 
 
 if __name__ == "__main__":
-    player_1 = MisbehavingPlayer("one")
+    player_1 = Player("one")
     player_2 = Player("two")
 
     Referee(player_1, player_2, time_limit=1, observers=[XObserver()]).run_games()

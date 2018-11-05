@@ -6,9 +6,9 @@ sys.path.insert(0, dir_path + '/../../')
 from Admin.referee import Referee
 from Admin.game_over import GameOverCondition
 from Admin.rule_checker import RuleChecker
-from Player.mock_players.random_player import Player as RandomPlayer
-from Player.mock_players.infinite_loop_player import InfiniteLoopPlayer
-from Player.mock_players.misbehaving_player import MisbehavingPlayer
+from Player.players.random_player import Player as RandomPlayer
+from Player.players.infinite_loop_player import InfiniteLoopPlayer
+from Player.players.misbehaving_player import MisbehavingPlayer
 
 from Observer.xobserver import XObserver
 

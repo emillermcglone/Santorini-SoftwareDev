@@ -1,0 +1,71 @@
+```
+---------------------------------------------------------------------------------------------------
+     tournament manager server                           +--------- player starts
+			      		  ||                             |                  |
+	     |                ||          AI client <--------+       	      	|
+	     |                ||            |                             		|
+	     |<-----------------------------| tcp connect                 		|
+	     |                ||            |                             		|
+	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| player name  	              		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive joined tournament			|
+	     |                ||            |---------------------------------->| print joined tournament
+	     |                ||            |                            		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive tournament starting       |
+	     |                ||            |---------------------------------->| print tournament starting 
+	     |                ||            |                            		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive match x/n starting   	    |
+	     |                ||            |---------------------------------->| print match x/n starting 
+	     |                ||            |                            		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive game x/n starting   	    |
+	     |                ||            |---------------------------------->| print game x/n starting 
+	     |                ||            |                            		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive prompt placement      	|
+	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send placement request			|
+	     |                ||            |                            		| 
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive prompt move		      	|
+	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send move request					|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive prompt build      		|
+	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send build request				|
+	     |                ||            | ...                            	|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive game winner	  	    	|
+	     |                ||            |---------------------------------->| print game winner 
+	     |                ||            |                            		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive game x/n starting   	    |
+	     |                ||            | ...                           	|
+	     |                ||            |---------------------------------->| print game winner  
+	     |                ||            |                            		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive match x/n starting   	    |
+	     |                ||            | ...                           	|
+	     |                ||            |                            		|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive tournament result  	    |
+	     |                ||            |---------------------------------->| print tournament result  
+	     |                ||            |                             		| 
+
+```
+
+The message formats are as follows: 
+	     
+|  message		 		  |  format						 
+| ----------------------- | ---------------------------------------------------- |
+| player name	    	  | string 						 
+| joined tournament 	  | string 										         |
+| tournament starting 	  | string 										         |
+| match x/n starting	  | string 										         |
+| game x/n starting  	  | string 										         |
+| game winner 			  | string 										         |
+| tournament result  	  | string 										         |
+| 	       	    	  	  |  			 	       								 |
+| build request			  |
+
+
+
+
+
+
+
+
+
+
+
+
+
