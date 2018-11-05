@@ -1,6 +1,9 @@
+import names
 
+from Admin.game_over import GameOver, GameOverCondition
+from Admin.referee import Referee
 
-class ITournamentManager:
+class TournamentManager:
     """
     Santorini tournament manager that runs games in a round robin fashion among 
     a fixed but arbitrary number of players. 
@@ -28,13 +31,96 @@ class ITournamentManager:
 
         :param configuration: Configuration, game configuration containing players
         """
-        self.players = configuration.players
+        self.__players = configuration.players
+        self.__change_duplicate_ids(self.__players)
 
+        self.__observers = configuration.observers
 
+        self.__misbehaved_players = []
+        self.__meet_ups = []
+
+    
+    def __handle_misbehaving_player(self, player):
+        """
+        Add the player to the misbehaved players list,
+        and change all past meet-ups involving the player to be counted as won by the opponent.
+
+        If the player lost in a past meet up, nothing is changed in the meetup. 
+
+        If a player breaks after winning past games due to its opponents' breakage, 
+        the game is eliminated from the tournament evaluation.
+        
+        :param player: Player, the player that misbehaved
+        """
+        self.__misbehaved_players.append(player)
+
+        new_meet_ups = []
+
+        for meet_up in self.__meet_ups:
+            winner = meet_up.winner
+            loser = meet_up.loser
+            condition = meet_up.condition
+
+            if condition is GameOverCondition.LoserBrokeInTournament:
+                continue
+
+            if winner.get_id() is player.get_id():
+                game_over = GameOver(loser, winner, GameOverCondition.LoserBrokeInTournament)
+                new_meet_ups.append(game_over)
+                continue
+
+            new_meet_ups.append(meet_up)
+
+        self.__meet_ups = new_meet_ups
+
+    
+    def __change_duplicate_ids(self, players):
+        """
+        Change the ids of duplicate players. 
+
+        :param players: [Player, ...], list of Players 
+        """
+
+        players_set = set()
+
+        for player in players:
+            player_id = player.get_id()
+            if player_id in players_set:
+                new_id = names.get_first_name()
+                while new_id in players_set:
+                    new_id = names.get_first_name()
+                player.set_id(new_id)
+                player_id = new_id
+            players_set.add(player_id)
+
+            
     def run_tournament(self):
         """
         Run a round robin tournament with the players.
 
+        Each meet-up between players runs a series of 3 Santorini games.
+
         :return: TournamentResult, result of tournament
         """
-        pass
+        for i in range(len(self.__players)):
+            player_1 = self.__players[i]
+
+            if player_1 in self.__misbehaved_players:
+                continue
+
+            for player_2 in self.__players[i + 1:]:
+
+                if player_2 in self.__misbehaved_players:
+                    continue
+
+                referee = Referee(player_1, player_2, observers=self.__observers)
+                game_result = referee.run_game(3)
+                if game_result.condition is not GameOverCondition.FairGame:
+                    self.__handle_misbehaving_player(game_result.loser)
+                self.__meet_ups.append(game_result)
+
+        return self.__misbehaved_players, self.__meet_ups
+                
+                
+
+

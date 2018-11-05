@@ -261,6 +261,7 @@ class Referee:
         for player, wid in zip(self.__players_iter, [0, 0, 1, 1]):
             self.__prompt_and_act(TurnPhase.PLACE, player, wid)
 
+
     def __run_steady_phase(self, board, checker, players):
         """
         Run the steady phase of the game by prompting each player for their

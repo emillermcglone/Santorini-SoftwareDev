@@ -30,7 +30,8 @@ class GameOverCondition(Enum):
     Condition for game over.
     """
 
-    Unresponsive = "Loser was unresponsive"
+    LoserBrokeInTournament = "Loser broke post match in the tournament, regardless of previous victory or defeat"
+    Crash = "Loser crashed at runtime"
     Timeout = "Loser timed out on action request"
     InvalidAction = "Loser specified invalid action"
     FairGame = "Winner won by game rules"

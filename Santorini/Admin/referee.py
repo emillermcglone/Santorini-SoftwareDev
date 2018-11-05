@@ -318,7 +318,7 @@ class Referee:
         except TimeoutError:
             raise BreakingPlayer(player, GameOverCondition.Timeout)
         except:
-            raise BreakingPlayer(player, GameOverCondition.Unresponsive)
+            raise BreakingPlayer(player, GameOverCondition.Crash)
 
         if not self.__check(turn_phase, player, action):
             raise BreakingPlayer(player, GameOverCondition.InvalidAction)
