@@ -78,16 +78,6 @@ class RuleChecker(ABC):
         :rtype    bool
         """
         pass
-
-
-    @abstractmethod
-    def get_winning_move(self, pid):
-        """
-        Get winning move.
-
-        :param pid
-        """
-        pass
     
 
     @abstractmethod

@@ -1,7 +1,7 @@
 # This file describes the high-level interactions that a `Player` will be responsible for
+from abc import ABC, abstractmethod
 
-
-class Player:
+class Player(ABC):
     """
     Class representing a Player with a unique string identifier.
 
@@ -17,6 +17,8 @@ class Player:
         """
         pass
 
+
+    @abstractmethod
     def get_id(self):
         """
         Getter for the Player's ID
@@ -25,6 +27,16 @@ class Player:
         """
         pass
 
+
+    @abstractmethod
+    def set_id(self, new_id):
+        """
+        Set the given id as the new id
+        """
+        pass
+
+
+    @abstractmethod
     def get_placement(self, board, wid, rule_checker):
         """
         Asks the player to place a worker on the board
@@ -37,6 +49,7 @@ class Player:
         """
         pass
 
+    @abstractmethod
     def get_move(self, board, rule_checker):
         """
         Asks the player to make a move
@@ -48,6 +61,7 @@ class Player:
         """
         pass
 
+    @abstractmethod
     def get_build(self, board, wid, rule_checker):
         """
         Asks the player to build a floor
@@ -60,6 +74,8 @@ class Player:
         """
         pass
 
+
+    @abstractmethod
     def game_over(self, status):
         """
         Alerts the player that the game is over with status
