@@ -1,44 +1,122 @@
 ```
 ---------------------------------------------------------------------------------------------------
-     tournament manager server                           +--------- player starts
-			      		  ||                             |                  |
-	     |                ||          AI client <--------+       	      	|
+     tournament manager server                                    +--------- AI player 
+			              ||                   					  |         |
+	     |                ||        player client <---------------+       	|
 	     |                ||            |                             		|
-	     |<-----------------------------| tcp connect                 		|
+	    |<------------------------------| tcp connect                 		|
 	     |                ||            |                             		|
-	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| player name  	              		|
-	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive joined tournament			|
-	     |                ||            |---------------------------------->| print joined tournament
+	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send player id 	              	|
+	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive joined tournament         |
+		 |				  ||			|	(& new player id if changed)	|	
+	     |                ||            |---------------------------------->| receive joined tournament (& new player id if changed)
 	     |                ||            |                            		|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive tournament starting       |
-	     |                ||            |---------------------------------->| print tournament starting 
+	     |                ||            |---------------------------------->| receive tournament starting 
 	     |                ||            |                            		|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive match x/n starting   	    |
-	     |                ||            |---------------------------------->| print match x/n starting 
+	     |                ||            |---------------------------------->| receive match x/n starting 
 	     |                ||            |                            		|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive game x/n starting   	    |
-	     |                ||            |---------------------------------->| print game x/n starting 
+	     |                ||            |---------------------------------->| receive game x/n starting
+		 |                ||            | 		                         	|
+		 
+		 =========================================================================================================
+
+		 Placement phase 
+
+		 =========================================================================================================
+
+
 	     |                ||            |                            		|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive prompt placement      	|
-	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send placement request			|
-	     |                ||            |                            		| 
+		 |                ||            |---------------------------------->| receive prompt placement  
+		 |                ||            |<----------------------------------| send rule checker place request
+		 |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send rulechecker place request	|
+		 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive rulechecker response      |
+	     |                ||            |---------------------------------->| receive rulechecker response
+		 |                ||            | ...                            	|
+		 |                ||            |                             		|
+	     |                ||            |<----------------------------------| send placement request
+		 |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send placement request			|
+		 |                ||            |                            		|
+
+
+		 =========================================================================================================
+
+		 Move and Build phase 
+
+    	 =========================================================================================================
+
+		 |                ||            | 		                         	|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive prompt move		      	|
+		 |                ||            |---------------------------------->| receive prompt move 
+		 |                ||            |<----------------------------------| send rule checker move request
+		 |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send rulechecker move request	|
+		 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive rulechecker response      |
+	     |                ||            |---------------------------------->| receive rulechecker response
+		 |                ||            | ...                            	|
+		 |                ||            |                             		|  
+	     |                ||            |<----------------------------------| send move request
 	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send move request					|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive prompt build      		|
+		 |                ||            |---------------------------------->| receive prompt build   
+		 |                ||            |<----------------------------------| send rule checker build request
+		 |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send rulechecker build request	|
+		 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive rulechecker response      |
+	     |                ||            |---------------------------------->| receive rulechecker response
+		 |                ||            | ...                            	|
+		 |                ||            |                             		|  
+	     |                ||            |<----------------------------------| send build request
 	     |<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| send build request				|
 	     |                ||            | ...                            	|
+		 |                ||            | 		                         	|
+
+
+		 =========================================================================================================
+
+		 Game Shutdown phase 
+
+    	 =========================================================================================================
+		
+		
+		 |                ||            | 		                         	|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive game winner	  	    	|
-	     |                ||            |---------------------------------->| print game winner 
+	     |                ||            |---------------------------------->| receive game winner 
 	     |                ||            |                            		|
-	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive game x/n starting   	    |
+
+		 =========================================================================================================
+
+		 Continue Game Series phase 
+
+    	 =========================================================================================================
+	     |                ||            | 		                         	|
+		 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive game x/n starting   	    |
 	     |                ||            | ...                           	|
-	     |                ||            |---------------------------------->| print game winner  
+	     |                ||            |---------------------------------->| receive game winner  
 	     |                ||            |                            		|
+
+
+		 =========================================================================================================
+
+		 Continue Round Robin phase 
+
+    	 =========================================================================================================
+
+		 |                ||            | 		                         	|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive match x/n starting   	    |
 	     |                ||            | ...                           	|
 	     |                ||            |                            		|
+
+		 =========================================================================================================
+
+		 Tournament Shutdown phase 
+
+    	 =========================================================================================================
+
+		 |                ||            |                            		|
 	     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>| receive tournament result  	    |
-	     |                ||            |---------------------------------->| print tournament result  
+	     |                ||            |---------------------------------->| receive tournament result  
 	     |                ||            |                             		| 
 
 ```
@@ -46,26 +124,42 @@
 The message formats are as follows: 
 	     
 |  message		 		  |  format						 
-| ----------------------- | ---------------------------------------------------- |
-| player name	    	  | string 						 
-| joined tournament 	  | string 										         |
-| tournament starting 	  | string 										         |
-| match x/n starting	  | string 										         |
-| game x/n starting  	  | string 										         |
-| game winner 			  | string 										         |
-| tournament result  	  | string 										         |
-| 	       	    	  	  |  			 	       								 |
-| build request			  |
-
-
-
-
-
-
-
-
-
-
-
-
-
+| ----------------------- | --------------------------------------------------------------------------- |
+| player name	    	  | JSON string 						 							 			|
+| joined tournament 	  | [JSON string, ...], list of player ids in tournament					    |
+| new player id 		  | JSON string 										           			    |	
+| tournament starting 	  | JSON string 										                 		|
+| match x/n starting	  | JSON string 										         	  			|
+| game x/n starting  	  | JSON string 										        	  			|
+| rule checker request 	  | JSON dictionary 										        	  		|
+| rule checker responce   | JSON boolean										        	  			|
+| game winner 			  | JSON string 										        	  			|
+| tournament starting 	  | JSON string 										                 		|
+| tournament result  	  | [[JSON string, ...], [[JSON string, JSON string], ...] 				        |
+| prompt place			  | { 'board': Board, 'wid': JSON string } 			 	       				    |
+| prompt move			  | Board 			 	       				    								|
+| prompt build			  | { 'board': Board, 'wid': JSON string } 			 	       				    |
+| place request			  | {'type': 'place', 'wid' <Worker_ID>, 'xy': [<Number>, <Number>],			|
+|						  |  'check': bool}																|
+| 	       	    	  	  | Anything between <> should be interpreted and is not the actual value. 	    |
+| 	       	    	  	  | check attribute requests the place to be checked by rule checker 			|
+| 	       	    	  	  | wid is id of the worker to be placed 										|
+| 	       	    	  	  | xy is the position to place worker on 										|
+| 	       	    	  	  |  			 	       								 	  			 	    |
+| move request			  | {'type': 'move', 'xy1': [<Number>, <Number>], 'xy2': [<Number>, <Number>]}  |
+|						  |  'check': bool}																|
+| 	       	    	  	  | Anything between <> should be interpreted and is not the actual value 	    |
+| 	       	    	  	  | check attribute requests the move to be checked by rule checker 			|
+| 	       	    	  	  | xy1 is the position of worker to be moved 									|
+| 	       	    	  	  | xy2 is the position of worker to be moved to 								|
+| 	       	    	  	  |  			 	       								 	  			 	    |
+| build request			  | {'type': 'build', 'xy1': [<Number>, <Number>], 'xy2': [<Number>, <Number>]} |
+| 	       	    	  	  | xy1 is the position of worker to build with           						|
+| 	       	    	  	  | xy2 is the position of building to build on 								|
+| 	       	    	  	  |  			 	       								 	  			 	    |
+| Board	         	      | refer to http://www.ccs.neu.edu/home/matthias/4500-f18/6.html	 	        |
+| 	       	    	  	  |  			 	       								 	  			 	    |
+| tournament result		  | JSON array of two pieces of information: 								    |
+| 	       	    	  	  | The first is a list of names of players that misbehaved in any way.         |
+|                         | 	They are listed in the order of failure.	                            |
+| 	       	    	  	  | The second lists all completed games where each piece of game information   |
