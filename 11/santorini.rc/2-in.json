@@ -1,0 +1,4 @@
+{ 
+    "players"   : [["infinite", "infinite_one", "Player.players.infinite_loop_player.InfiniteLoopPlayer"], ["good", "random_one", "Player.players.random_player.Player"], ["breaker", "breaker_one", "Player.players.misbehaving_player.MisbehavingPlayer"]],
+    "observers" : []
+}

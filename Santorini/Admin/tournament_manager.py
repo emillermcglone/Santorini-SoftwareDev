@@ -1,4 +1,5 @@
 import names
+import copy
 
 from Admin.game_over import GameOver, GameOverCondition
 from Admin.referee import Referee
@@ -31,13 +32,20 @@ class TournamentManager:
 
         :param configuration: Configuration, game configuration containing players
         """
-        self.__players = configuration.players
+        self.__players = configuration.players()
         self.__change_duplicate_ids(self.__players)
 
-        self.__observers = configuration.observers
+        self.__observers = configuration.observers()
 
         self.__misbehaved_players = []
         self.__meet_ups = []
+
+
+    def players(self):
+        return copy.deepcopy(self.__players)
+
+    def observers(self):
+        return copy.deepcopy(self.__observers)
 
     
     def __handle_misbehaving_player(self, player):
@@ -109,17 +117,21 @@ class TournamentManager:
                 continue
 
             for player_2 in self.__players[i + 1:]:
+                if player_1 in self.__misbehaved_players:
+                    break
 
                 if player_2 in self.__misbehaved_players:
                     continue
 
-                referee = Referee(player_1, player_2, observers=self.__observers)
-                game_result = referee.run_game(3)
+                referee = Referee(player_1, player_2, time_limit=3, observers=self.__observers)
+                game_result = referee.run_games(3)
                 if game_result.condition is not GameOverCondition.FairGame:
                     self.__handle_misbehaving_player(game_result.loser)
                 self.__meet_ups.append(game_result)
 
-        return self.__misbehaved_players, self.__meet_ups
+        meet_ups = list(map(lambda x: [x.winner.get_id(), x.loser.get_id()], self.__meet_ups))
+
+        return [list(map(lambda x: x.get_id(), self.__misbehaved_players)), meet_ups]
                 
                 
 

@@ -21,7 +21,6 @@ The specifications have the following meaning:
 
     PathString is a Linux Path to a dynamically loadable component that implements
     the respective player or observer.
-
 """
 
 from abc import ABC, abstractmethod

@@ -1,6 +1,23 @@
 # File containing utility functions
 import json
 import sys
+import importlib
+
+def import_cls(path):
+    """
+    Dynamically load a class from a string path.
+
+    :param path: string, path to python class
+    :return: cls, python class
+    """
+
+    class_data = path.split(".")
+    module_path = ".".join(class_data[:-1])
+    class_str = class_data[-1]
+
+    module = importlib.import_module(module_path)
+    
+    return getattr(module, class_str)
 
 
 def parse_json():
