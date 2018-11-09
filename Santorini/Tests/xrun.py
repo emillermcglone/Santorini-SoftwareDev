@@ -11,5 +11,5 @@ from Admin.tournament_manager import TournamentManager
 if __name__ == "__main__":
     conf = STDINConfiguration()
     manager = TournamentManager(conf)
-    print(manager.run_tournament())
+    print(json.dumps(manager.run_tournament()))
 
