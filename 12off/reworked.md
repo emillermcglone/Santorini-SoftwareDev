@@ -1,0 +1,1 @@
+- Reordered the methods in Referee to follow top down order

@@ -4,9 +4,9 @@ This is meant to be only used internally with the referee.
 """
 
 
-class BreakingPlayer(Exception):
+class BrokenPlayer(Exception):
     """
-    Error for when a player breaks in the context of cheating or unresponsiveness.
+    Error for when a player breaks in the context  of cheating or unresponsiveness.
     """
 
     def __init__(self, player, condition):

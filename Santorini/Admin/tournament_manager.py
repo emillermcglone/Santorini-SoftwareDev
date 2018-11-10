@@ -1,4 +1,4 @@
-import names
+import names, sys
 import copy
 
 from Admin.game_over import GameOver, GameOverCondition

@@ -343,6 +343,22 @@ class Referee:
         return player.get_build(self.board, wid, self.__checker)
 
 
+    def __get_turn_phase(self, phase_str):
+        """
+        Get TurnPhase from phase string.
+
+        :param phase_str: string, phase in string
+        :return: TurnPhase, the turn phase
+        """
+        phases = {
+            "place": TurnPhase.PLACE,
+            "move": TurnPhase.MOVE,
+            "build": TurnPhase.BUILD,
+        }
+
+        return phases[phase_str]
+
+
     def __check(self, turn_phase, player, action):
         """
         Method to check if a given action is valid
@@ -351,25 +367,16 @@ class Referee:
         :param player: Player, the player to check 
         :return: bool, True if action is valid, False otherwise
         """
-        action_type = action['type']
-
-        phases = {
-            "place": TurnPhase.PLACE,
-            "move": TurnPhase.MOVE,
-            "build": TurnPhase.BUILD,
-        }
-
-        if phases[action_type] is not turn_phase:
-            return False
 
         check_methods = {
-            "place": lambda a: self.__check_place(player.get_id(), a),
-            "move": self.__check_move,
-            "build": self.__check_build
+            TurnPhase.PLACE: lambda a: self.__check_place(player.get_id(), a),
+            TurnPhase.MOVE: self.__check_move,
+            TurnPhase.BUILD: self.__check_build
         }
 
         try:
-            return check_methods[action_type](action)
+            action_type = self.__get_turn_phase(action['type'])
+            return action_type is turn_phase and check_methods[action_type](action)
         except KeyError:
             return False
 

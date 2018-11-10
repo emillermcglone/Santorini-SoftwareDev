@@ -4,7 +4,7 @@ import copy
 from Admin.board import GameBoard
 from Admin.rule_checker import RuleChecker
 from Admin.player import Player
-from Admin.breaking_player import BreakingPlayer
+from Admin.broken_player import BrokenPlayer
 from Admin.game_over import GameOver, GameOverCondition
 from Common.turn_phase import TurnPhase
 from Lib.continuous_iterator import ContinuousIterator
@@ -147,8 +147,7 @@ class Referee:
         winners = []
 
         for _ in range(best_of):
-            game_over = self.__run_game(
-                self.__board, self.__checker, self.players)
+            game_over = self.__run_game(self.__board, self.__checker, self.players)
             if game_over.condition is not GameOverCondition.FairGame:
                 return game_over
             winners.append(game_over)
@@ -156,6 +155,7 @@ class Referee:
         winner = max(self.players, key=lambda p: winners.count(p))
         loser = self.__opponent_of(winner)
         return GameOver(winner.player, loser.player, GameOverCondition.FairGame)
+
 
     def __run_game(self, board, checker, players):
         """
@@ -178,13 +178,14 @@ class Referee:
             winner = self.__run_steady_phase(board, checker, players)
             loser = self.__opponent_of(winner)
 
-        except BreakingPlayer as e:
+        except BrokenPlayer as e:
             winner, loser, condition = self.__winner_loser_condition_from(e)
 
         # Notify players game has ended
         self.__game_over_players(winner, loser)
         self.__reset()
         return GameOver(winner, loser, condition)
+
 
     def _update_observers(self, func):
         """ 
@@ -200,6 +201,7 @@ class Referee:
             except:
                 pass
         self.observers = stable_observers
+        
 
     def __init_board_and_checker(self):
         """ 
@@ -217,10 +219,10 @@ class Referee:
         self.players = self.players[::-1]
 
     @update_observers_with_player_error
-    def __winner_loser_condition_from(self, breaking_player):
-        loser = breaking_player.player
+    def __winner_loser_condition_from(self, broken_player):
+        loser = broken_player.player
         winner = self.__opponent_of(loser)
-        condition = breaking_player.condition
+        condition = broken_player.condition
         return winner, loser, condition
 
     def __game_over_players(self, winner, loser):
@@ -239,12 +241,12 @@ class Referee:
 
         :param player: Player, player to notify
         :param message: string, message to send
-        :raise BreakingPlayer: if player times out
+        :raise BrokenPlayer: if player times out
         """
         try:
             timeout(10)(player.game_over)(message)
         except TimeoutError:
-            raise BreakingPlayer(player, GameOverCondition.Timeout)
+            raise BrokenPlayer(player, GameOverCondition.Timeout)
 
     @update_observers_with_state
     def __run_init_phase(self, board, checker, players):
@@ -308,13 +310,13 @@ class Referee:
         try:
             action = self.__prompt(turn_phase, player, wid)
             if not self.check(player, action):
-                raise BreakingPlayer(player, GameOverCondition.InvalidAction)
+                raise BrokenPlayer(player, GameOverCondition.InvalidAction)
 
             self.__act(player, action)
             return action
 
         except TimeoutError:
-            raise BreakingPlayer(player, GameOverCondition.Timeout)
+            raise BrokenPlayer(player, GameOverCondition.Timeout)
 
     def __act(self, player, action):
         """

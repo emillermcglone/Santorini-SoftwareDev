@@ -6,7 +6,7 @@ on different game over conditions.
 from enum import Enum
 
 class GameOver:
-    """ Game over state """
+    """ Game over state holding winning and losing players and condition of game over """
 
     def __init__(self, winner, loser, condition):
         """
@@ -26,9 +26,7 @@ class GameOver:
 
 
 class GameOverCondition(Enum):
-    """
-    Condition for game over.
-    """
+    """ Condition for game over. """
 
     LoserBrokeInTournament = "Loser broke post match in the tournament, regardless of previous victory or defeat"
     Crash = "Loser crashed at runtime"
