@@ -1,8 +1,8 @@
-import sys, copy
+import copy
 
 from Admin.board import GameBoard
 from Admin.rule_checker import RuleChecker
-from Admin.breaking_player import BreakingPlayer
+from Admin.broken_player import BrokenPlayer
 from Admin.game_over import GameOver, GameOverCondition
 from Common.turn_phase import TurnPhase
 from Lib.continuous_iterator import ContinuousIterator
@@ -42,102 +42,6 @@ class Referee:
         self.__init_board_and_checker()
 
     
-    def add_observer(self, observer):
-        """
-        Add another observer.
-
-        :param observer: Observer, observer of series of games.
-        """
-        self.observers.append(observer)
-
-
-    def __update_observers(self, func):
-        """
-        Update every observer and remove broken observers
-
-        :param func: (Observer) -> void, function used to update observer
-        """
-        stable_observers = []
-        for observer in self.observers:
-            try:
-                func(observer)
-                stable_observers.append(observer)
-            except:
-                pass
-        self.observers = stable_observers
-
-
-    def __update_state_observers(self, board):
-        """
-        Update observers about state of game.
-
-        :param board: GameBoard, state of game
-        """
-        self.__update_observers(lambda obs: obs.update_state_of_game(board))
-
-
-    def __update_action_observers(self, wid, move_action, build_action):
-        """
-        Update observers about recent action.
-
-        :param wid: string, worker id
-        :param move_action: Action, move specification
-        :param build_action: Action, build specification
-        """
-        def go(observer):
-            observer.update_action(wid, move_action, build_action)
-            observer.update_state_of_game(self.__board)
-
-        self.__update_observers(go)
-
-
-    def __give_up_observers(self, pid):
-        """
-        Update observers about player who gives up.
-
-        :param pid: string, id of player
-        """
-        self.__update_observers(lambda obs: obs.give_up(pid))
-
-
-    def __error_observers(self, pid, message):
-        """
-        Update observers about player error.
-
-        :param pid: string, player id
-        :param message: string, error message
-        """
-        self.__update_observers(lambda obs: obs.error(pid, message))
-
-
-    def __game_over_observers(self, pid, wid, move_action):
-        """
-        Update observers about game over.
-
-        :param pid: string, winner id
-        :param wid: string, winning move worker id
-        :param move_action: Action, winning move action
-        """
-        self.__update_observers(lambda obs: obs.game_over(pid, wid, move_action))
-
-
-    def __init_board_and_checker(self):
-        """ 
-        Initialize board with copy of originally given board, and
-        checker with originally given checker class.
-        """
-        self.__board = GameBoard()
-        self.__checker = self.__checker_cls(self.__board)
-
-
-    def __reset(self):
-        """
-        Reset board and checker, and reverse order of players. 
-        """
-        self.__init_board_and_checker()
-        self.players = self.players[::-1] 
-
-    
     @property
     def board(self):
         """
@@ -147,15 +51,14 @@ class Referee:
         """
         return copy.deepcopy(self.__board)
 
-
-    @property
-    def __players_iter(self):
+    
+    def add_observer(self, observer):
         """
-        Get continuous iterator of players.
+        Add another observer.
 
-        :return: iterator, continuous iterator of players
+        :param observer: Observer, observer of series of games.
         """
-        return iter(ContinuousIterator(self.players))
+        self.observers.append(observer)
 
 
     def run_games(self, best_of=1):
@@ -169,15 +72,14 @@ class Referee:
         if best_of % 2 is 0:
             best_of += 1
 
-        game_outcomes = []
+        winners = []
 
         for _ in range(best_of):
             game_over = self.__run_game(self.__board, self.__checker, self.players)
             if game_over.condition is not GameOverCondition.FairGame:
                 return game_over 
-            game_outcomes.append(game_over)   
+            winners.append(game_over.winner)   
         
-        winners = list(map(lambda game: game.winner, game_outcomes))
         overall_winner = max(self.players, key=lambda p: winners.count(p))
         loser = self.__opponent_of(overall_winner)
         return GameOver(overall_winner, loser, GameOverCondition.FairGame)
@@ -193,30 +95,40 @@ class Referee:
         :param players: [Player, Player], list of players 
         :return: Player, winner of game
         """
-        winner = None
-        loser = None
+        winner = loser = None
         condition = GameOverCondition.FairGame
 
         try:
             # Init: placement
             self.__run_init_phase(board, checker, players)
-            self.__update_state_observers(board)
+            self.__obs_update_state(board)
 
             # Steady: move and build
             winner = self.__run_steady_phase(board, checker, players)
             loser = self.__opponent_of(winner)
 
-        except BreakingPlayer as e:
-            loser = e.player
-            winner = self.__opponent_of(loser)
-            condition = e.condition
-
-            self.__error_observers(loser.get_id(), condition)
+        except BrokenPlayer as e:
+            winner, loser, condition = self.__winner_loser_condition_from(e)
+            self.__obs_error(loser.get_id(), condition)
 
         # Notify players game has ended
         self.__game_over_players(winner, loser)
         self.__reset()
         return GameOver(winner, loser, condition)
+
+
+    def __winner_loser_condition_from(self, broken_player):
+        """
+        Get winner, loser, and condition of game over from BrokenPlayer exception.
+
+        :param broken_player: BrokenPlayer, broken player exception
+        :return: (Player, Player, GameOverCondition) , winner, loesr and game over condition
+        """
+        loser = broken_player.player
+        winner = self.__opponent_of(loser)
+        condition = broken_player.condition
+
+        return winner, loser, condition
 
 
     def __game_over_players(self, winner, loser):
@@ -236,7 +148,7 @@ class Referee:
 
         :param player: Player, player to notify
         :param message: string, message to send
-        :raise BreakingPlayer: if player times out
+        :raise BrokenPlayer: if player times out
         """
         try:
             timeout(self.__time_limit)(player.game_over)(message)
@@ -276,7 +188,7 @@ class Referee:
                 winner_id = self.__is_game_over()
                 last_action = self.__turn_history[-1]
                 wid = self.__board.get_worker_id(*last_action['xy2'])
-                self.__game_over_observers(winner_id, wid, last_action)
+                self.__obs_game_over(winner_id, wid, last_action)
                 return self.__get_player_from_id(winner_id)
 
             wid = self.__prompt_and_act(TurnPhase.MOVE, player)
@@ -285,7 +197,7 @@ class Referee:
                 winner_id = self.__is_game_over()
                 last_action = self.__turn_history[-1]
                 wid = self.__board.get_worker_id(*last_action['xy2'])
-                self.__game_over_observers(winner_id, wid, last_action)
+                self.__obs_game_over(winner_id, wid, last_action)
                 return self.__get_player_from_id(winner_id)
 
             self.__prompt_and_act(TurnPhase.BUILD, player, wid)
@@ -302,7 +214,37 @@ class Referee:
             if p.get_id() is player_id:
                 return p
 
-    
+
+    def __is_game_over(self):
+        """
+        Check if current game is over.
+
+        :return: string | None, id of winner, else None
+        """
+        return self.__checker.check_game_over(*self.players)
+
+
+    @property
+    def __players_iter(self):
+        """
+        Get continuous iterator of players.
+
+        :return: iterator, continuous iterator of players
+        """
+        return iter(ContinuousIterator(self.players))
+
+
+    def __opponent_of(self, player):
+        """
+        Get opponent of given player.
+
+        :param player: Player, given player
+        :return: Player, opponent of given Player
+        """
+        for p in self.players:
+            if p.get_id() is not player.get_id():
+                return p
+
 
     def __prompt_and_act(self, turn_phase, player, wid=None):
         """
@@ -316,18 +258,18 @@ class Referee:
         try: 
             action = timeout(self.__time_limit)(self.__prompt)(turn_phase, player, wid)
         except TimeoutError:
-            raise BreakingPlayer(player, GameOverCondition.Timeout)
+            raise BrokenPlayer(player, GameOverCondition.Timeout)
         except:
-            raise BreakingPlayer(player, GameOverCondition.Crash)
+            raise BrokenPlayer(player, GameOverCondition.Crash)
 
         if not self.__check(turn_phase, player, action):
-            raise BreakingPlayer(player, GameOverCondition.InvalidAction)
+            raise BrokenPlayer(player, GameOverCondition.InvalidAction)
         self.__act(player, action)
 
         self.__turn_history.append(action)
 
         if turn_phase is TurnPhase.BUILD:
-            self.__update_action_observers(wid, self.__turn_history[-2], self.__turn_history[-1])
+            self.__obs_update_action(wid, self.__turn_history[-2], self.__turn_history[-1])
 
         if turn_phase is TurnPhase.MOVE:
             return self.__board.get_worker_id(*action['xy2'])
@@ -348,27 +290,6 @@ class Referee:
             self.__board.move_worker(*(action['xy1'] + action['xy2']))
         else:
             self.__board.build_floor(*action['xy2'])
-
-
-    def __is_game_over(self):
-        """
-        Check if current game is over.
-
-        :return: string | None, id of winner, else None
-        """
-        return self.__checker.check_game_over(*self.players)
-
-
-    def __opponent_of(self, player):
-        """
-        Get opponent of given player.
-
-        :param player: Player, given player
-        :return: Player, opponent of given Player
-        """
-        for p in self.players:
-            if p.get_id() is not player.get_id():
-                return p
 
 
     def __prompt(self, turn_phase, player, wid=None):
@@ -486,4 +407,91 @@ class Referee:
         """
         args = action['xy1'] + action['xy2']
         return self.__checker.check_build(*args)
+
+
+    def __init_board_and_checker(self):
+        """ 
+        Initialize board with copy of originally given board, and
+        checker with originally given checker class.
+        """
+        self.__board = GameBoard()
+        self.__checker = self.__checker_cls(self.__board)
+
+
+    def __reset(self):
+        """
+        Reset board and checker, and reverse order of players. 
+        """
+        self.__init_board_and_checker()
+        self.players = self.players[::-1] 
+
+
+    def __obs(self, func):
+        """
+        Update every observer and remove broken observers
+
+        :param func: (Observer) -> void, function used to update observer
+        """
+        stable_observers = []
+        for observer in self.observers:
+            try:
+                func(observer)
+                stable_observers.append(observer)
+            except:
+                pass
+        self.observers = stable_observers
+
+
+    def __obs_update_state(self, board):
+        """
+        Update observers about state of game.
+
+        :param board: GameBoard, state of game
+        """
+        self.__obs(lambda obs: obs.update_state_of_game(board))
+
+
+    def __obs_update_action(self, wid, move_action, build_action):
+        """
+        Update observers about recent action.
+
+        :param wid: string, worker id
+        :param move_action: Action, move specification
+        :param build_action: Action, build specification
+        """
+        def go(observer):
+            observer.update_action(wid, move_action, build_action)
+            observer.update_state_of_game(self.__board)
+
+        self.__obs(go)
+
+
+    def __obs_give_up(self, pid):
+        """
+        Update observers about player who gives up.
+
+        :param pid: string, id of player
+        """
+        self.__obs(lambda obs: obs.give_up(pid))
+
+
+    def __obs_error(self, pid, message):
+        """
+        Update observers about player error.
+
+        :param pid: string, player id
+        :param message: string, error message
+        """
+        self.__obs(lambda obs: obs.error(pid, message))
+
+
+    def __obs_game_over(self, pid, wid, move_action):
+        """
+        Update observers about game over.
+
+        :param pid: string, winner id
+        :param wid: string, winning move worker id
+        :param move_action: Action, winning move action
+        """
+        self.__obs(lambda obs: obs.game_over(pid, wid, move_action))
 
