@@ -5,6 +5,7 @@ from Admin.rule_checker import RuleChecker
 from Admin.broken_player import BrokenPlayer
 from Admin.game_over import GameOver, GameOverCondition
 from Admin.player import GuardedPlayer
+from Admin.constants import *
 from Common.turn_phase import TurnPhase
 from Lib.continuous_iterator import ContinuousIterator
 
@@ -149,8 +150,8 @@ class Referee:
         :param winner: Player, winner of game
         :param loser: Player, loser of game
         """
-        self.__game_over_player(winner, "WIN")
-        self.__game_over_player(loser, "LOSE")
+        self.__game_over_player(winner, WIN_MESSAGE)
+        self.__game_over_player(loser, LOSE_MESSAGE)
 
 
     def __game_over_player(self, player, message):
@@ -381,14 +382,14 @@ class Referee:
         """
 
         check_methods = {
-            TurnPhase.PLACE: lambda a: self.__check_place(player.get_id(), a),
-            TurnPhase.MOVE: lambda a: self.__check_move(player.get_id(), a),
-            TurnPhase.BUILD: lambda a: self.__check_build(player.get_id(), a)
+            TurnPhase.PLACE: self.__check_place,
+            TurnPhase.MOVE: self.__check_move,
+            TurnPhase.BUILD: self.__check_build
         }
 
         try:
             action_type = self.__get_turn_phase(action['type'])
-            return action_type is turn_phase and check_methods[action_type](action)
+            return action_type is turn_phase and check_methods[action_type](player.get_id(), action)
         except KeyError:
             return False
 
