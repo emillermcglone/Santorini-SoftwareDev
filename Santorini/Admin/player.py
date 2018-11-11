@@ -18,7 +18,7 @@ class GuardedPlayer(Player):
         """
         self.player = player
         self.id = player.get_id()
-
+        
 
     def get_id(self):
         """
@@ -49,7 +49,7 @@ class GuardedPlayer(Player):
 
     def get_build(self, *args, **kwargs):
         return self.player.get_build(*args, **kwargs)
-        
+
 
     def game_over(self, *args, **kwargs):
         return self.player.game_over(*args, **kwargs)

@@ -184,3 +184,7 @@ number of workers allowed on the game.
 
 
 -----------------------------------------------------------------------------------------
+11/11/18 Reworked
+
+- Rule checker, check move and check build, now take in the player's id to check that the 
+worker position that they have given in their action is the position of one of the player's workers. 

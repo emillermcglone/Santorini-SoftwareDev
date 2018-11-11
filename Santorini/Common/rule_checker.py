@@ -6,10 +6,12 @@ class RuleChecker(ABC):
     """Defines the Rule Checker interface"""
 
     @abstractmethod
-    def check_build(self, x1, y1, x2, y2):
+    def check_build(self, pid, x1, y1, x2, y2):
         """
         Determines whether building at the
         given coordinate is valid
+
+        :param pid: string, player id
 
         :param x1: Represents the x coordinate of the worker board cell
         :type x1:  int
@@ -25,10 +27,12 @@ class RuleChecker(ABC):
         pass
 
     @abstractmethod
-    def check_move(self, x1, y1, x2, y2):
+    def check_move(self, pid, x1, y1, x2, y2):
         """
         Determines whether moving a worker from the given
         coordinate to the other given coordinate is valid
+
+        :param pid: string, player id
 
         :param x1: Represents the x coordinate of the source board cell
         :type x1:  int

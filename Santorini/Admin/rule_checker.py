@@ -18,10 +18,12 @@ class RuleChecker(IRuleChecker):
         # The GameBoard that the RuleChecker will be using for operations
         self.__board = board  # type: GameBoard
 
-    def check_build(self, x1, y1, x2, y2):
+    def check_build(self, pid, x1, y1, x2, y2):
         """
         Determines whether building at the
         given coordinate is valid
+
+        :param pid: string, player id for build move
 
         :param x1: Represents the x coordinate of the worker board cell
         :type x1:  int
@@ -36,19 +38,23 @@ class RuleChecker(IRuleChecker):
         """
         # Check that the source cell is valid
         # Check that the destination cell is valid
+        # Check that the worker at origin belongs to given player
         # Check that there is not a worker in the board cell to build
         # Check that the worker is adjacent to the board cell to build
         # Check that the height of the targeted board cell is less than 4
         return self.check_valid_cell(x1, y1) \
                and self.check_valid_cell(x2, y2) \
+               and self.__board.get_player_id(x1, y1) is pid \
                and not self.__board.get_player_id(x2, y2) \
                and check_distance(x1, y1, x2, y2) \
                and self.__board.get_height(x2, y2) < 4
 
-    def check_move(self, x1, y1, x2, y2):
+    def check_move(self, pid, x1, y1, x2, y2):
         """
         Determines whether moving a worker from the given
         coordinate to the other given coordinate is valid
+
+        :param pid: string, player id for build move
 
         :param x1: Represents the x coordinate of the source board cell
         :type x1:  int
@@ -63,15 +69,18 @@ class RuleChecker(IRuleChecker):
         """
         # Check that the source cell is valid
         # Check that the destination cell is valid
+        # Check that the worker at origin belongs to given player
         # Check that the destination height is up to one higher than the source
         # Check that the destination does not already contain a player
         # Check that the worker is moving to an adjacent cell
         return self.check_valid_cell(x1, y1) \
                and self.check_valid_cell(x2, y2) \
+               and self.__board.get_player_id(x1, y1) is pid \
                and self.__board.get_height(x2, y2) < 4 \
                and self.__board.get_height(x1, y1) + 1 >= self.__board.get_height(x2, y2) \
                and not self.__board.get_player_id(x2, y2) \
                and check_distance(x1, y1, x2, y2)
+
 
     def check_place(self, pid, wid, x, y):
         """
@@ -144,13 +153,13 @@ class RuleChecker(IRuleChecker):
             for x2, y2 in get_adjacent(x1, y1):
 
                 # Determine whether the worker can move to this cell
-                if self.check_move(x1, y1, x2, y2):
+                if self.check_move(player, x1, y1, x2, y2):
 
                     # The worker can make a valid move, game is not over
                     can_move = True
 
                 # Determine whether the worker can build on this cell
-                if self.check_build(x1, y1, x2, y2):
+                if self.check_build(player, x1, y1, x2, y2):
                     # The worker can make a valid build, game is not over
                     can_build = True
 

@@ -31,7 +31,7 @@ class Referee:
         :param observers: [Observer, ...], list of observers for game
         :raise ValueError: if players are the same
         """
-        if player_1 == player_2:
+        if player_1.get_id() is player_2.get_id():
             raise ValueError("Players cannot be the same")
 
         self.__players = [GuardedPlayer(player_1), GuardedPlayer(player_2)]
@@ -52,6 +52,7 @@ class Referee:
         """
         return copy.deepcopy(list(map(lambda p: p.player, self.__players)))
     
+
     @property
     def board(self):
         """
@@ -262,7 +263,7 @@ class Referee:
 
         :param player: Player, player to prompt
         :param wid: string, id of worker to place
-        :raise TimeoutOrInvalidActionWinner: if player times out or makes an invalid move
+        :raise BrokenPlayer: if player times out or makes an invalid move
         :return: string, id of worker moved only if turn_phase is TurnPhase.MOVE
         """
         try: 
@@ -381,8 +382,8 @@ class Referee:
 
         check_methods = {
             TurnPhase.PLACE: lambda a: self.__check_place(player.get_id(), a),
-            TurnPhase.MOVE: self.__check_move,
-            TurnPhase.BUILD: self.__check_build
+            TurnPhase.MOVE: lambda a: self.__check_move(player.get_id(), a),
+            TurnPhase.BUILD: lambda a: self.__check_build(player.get_id(), a)
         }
 
         try:
@@ -405,26 +406,28 @@ class Referee:
         return self.__checker.check_place(pid, worker, *xy)
 
 
-    def __check_move(self, action):
+    def __check_move(self, pid, action):
         """
         Check if given move action is valid.
 
+        :param pid: string, player id
         :param action: MOVE, move specifications
         :return: bool, True if valid, False otherwise
         """
         args = action['xy1'] + action['xy2']
-        return self.__checker.check_move(*args)
+        return self.__checker.check_move(pid, *args)
 
 
-    def __check_build(self, action):
+    def __check_build(self, pid, action):
         """
         Check if given build action is valid.
 
+        :param pid: string, player id
         :param action: BUILD, build specifications
         :return: bool, True if valid, False otherwise
         """
         args = action['xy1'] + action['xy2']
-        return self.__checker.check_build(*args)
+        return self.__checker.check_build(pid, *args)
 
 
     def __init_board_and_checker(self):

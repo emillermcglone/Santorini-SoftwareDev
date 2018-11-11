@@ -152,7 +152,7 @@ def rule_move(cmd, client):
     client.checker.current_worker = wid
     client.checker.current_phase = TurnPhase.MOVE
 
-    if client.checker.check_move(wx, wy, tx, ty):
+    if client.checker.check_move(pid, wx, wy, tx, ty):
         client.board.move_worker(wx, wy, tx, ty)
         client.checker.current_phase = TurnPhase.BUILD
         return "yes"
@@ -171,7 +171,7 @@ def rule_build(cmd, client):
     tx = wx + dx
     ty = wy + dy
 
-    if client.checker.check_build(wx, wy, tx, ty):
+    if client.checker.check_build(pid, wx, wy, tx, ty):
         client.board.build_floor(tx, ty)
         return "yes"
     else:
