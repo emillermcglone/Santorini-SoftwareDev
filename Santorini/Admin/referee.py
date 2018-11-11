@@ -34,7 +34,7 @@ class Referee:
         if player_1 == player_2:
             raise ValueError("Players cannot be the same")
 
-        self.players = [GuardedPlayer(player_1), GuardedPlayer(player_2)]
+        self.__players = [GuardedPlayer(player_1), GuardedPlayer(player_2)]
         self.observers = observers
 
         self.__time_limit = time_limit
@@ -42,6 +42,15 @@ class Referee:
         self.__turn_history = []
         self.__init_board_and_checker()
 
+
+    @property
+    def players(self):
+        """
+        Get Player objects from internal guarded players. 
+
+        :return: [Player, ...], original Player objects
+        """
+        return copy.deepcopy(list(map(lambda p: p.player, self.__players)))
     
     @property
     def board(self):
@@ -76,12 +85,12 @@ class Referee:
         winners = []
 
         for _ in range(best_of):
-            game_over = self.__run_game(self.__board, self.__checker, self.players)
+            game_over = self.__run_game(self.__board, self.__checker, self.__players)
             if game_over.condition is not GameOverCondition.FairGame:
                 return game_over 
             winners.append(game_over.winner)   
         
-        overall_winner = max(self.players, key=lambda p: winners.count(p))
+        overall_winner = max(self.__players, key=lambda p: winners.count(p))
         loser = self.__opponent_of(overall_winner)
         return GameOver(overall_winner, loser, GameOverCondition.FairGame)
 
@@ -211,7 +220,7 @@ class Referee:
         :param player_id: id of player
         :return: Player, player
         """
-        for p in self.players:
+        for p in self.__players:
             if p.get_id() is player_id:
                 return p
 
@@ -222,7 +231,7 @@ class Referee:
 
         :return: string | None, id of winner, else None
         """
-        return self.__checker.check_game_over(*self.players)
+        return self.__checker.check_game_over(*self.__players)
 
 
     @property
@@ -232,7 +241,7 @@ class Referee:
 
         :return: iterator, continuous iterator of players
         """
-        return iter(ContinuousIterator(self.players))
+        return iter(ContinuousIterator(self.__players))
 
 
     def __opponent_of(self, player):
@@ -242,7 +251,7 @@ class Referee:
         :param player: Player, given player
         :return: Player, opponent of given Player
         """
-        for p in self.players:
+        for p in self.__players:
             if p.get_id() is not player.get_id():
                 return p
 
@@ -432,7 +441,7 @@ class Referee:
         Reset board and checker, and reverse order of players. 
         """
         self.__init_board_and_checker()
-        self.players = self.players[::-1] 
+        self.__players = self.__players[::-1] 
 
 
     def __obs(self, func):
