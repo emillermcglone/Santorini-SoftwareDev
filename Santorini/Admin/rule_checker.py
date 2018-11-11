@@ -141,6 +141,7 @@ class RuleChecker(IRuleChecker):
         for x1, y1 in self.__board.find_workers():
             height = self.__board.get_height(x1, y1)
             player = self.__board.get_player_id(x1, y1)
+            wid = self.__board.get_worker_id(x1, y1)
 
             # Check if current worker is on the third floor
             if height is 3:
@@ -162,7 +163,7 @@ class RuleChecker(IRuleChecker):
                     can_move = True
 
                 # Determine whether the worker can build on this cell
-                if self.check_build(player, x1, y1, x2, y2):
+                if self.check_build(player, wid, x1, y1, x2, y2):
                     # The worker can make a valid build, game is not over
                     can_build = True
 

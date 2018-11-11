@@ -171,7 +171,7 @@ def rule_build(cmd, client):
     tx = wx + dx
     ty = wy + dy
 
-    if client.checker.check_build(pid, wx, wy, tx, ty):
+    if client.checker.check_build(pid, wid, wx, wy, tx, ty):
         client.board.build_floor(tx, ty)
         return "yes"
     else:

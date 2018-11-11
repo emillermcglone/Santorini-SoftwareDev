@@ -104,7 +104,8 @@ def gen_builds(player, w, board, checker):
     :yield: a build action
     """
     for cell in get_adjacent(w[0], w[1]):
-        if checker.check_build(player, w[0], w[1], cell[0], cell[1]):
+        wid = board.get_worker_id(*w)
+        if checker.check_build(player, wid, w[0], w[1], cell[0], cell[1]):
             action = {'type': 'build', 'xy1': [w[0], w[1]], 'xy2': [cell[0], cell[1]], 'p': player}
             yield action
 

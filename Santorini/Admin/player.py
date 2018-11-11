@@ -18,6 +18,9 @@ class GuardedPlayer(Player):
         """
         self.player = player
         self.id = player.get_id()
+        self.__place_history = []
+        self.__move_history = []
+        self.__build_history = []
         
 
     def get_id(self):
@@ -39,18 +42,25 @@ class GuardedPlayer(Player):
         self.player.set_id(new_id)
 
 
-    def get_placement(self, *args, **kwargs):
-        return self.player.get_placement(*args, **kwargs)
+    def get_placement(self, board, wid, rule_checker):
+        place = self.player.get_placement(board, wid, rule_checker)
+        self.__place_history.append(place)
+        return place
 
 
-    def get_move(self, *args, **kwargs):
-        return self.player.get_move(*args, **kwargs)
+    def get_move(self, board, rule_checker):
+        move = self.player.get_move(board, rule_checker)
+        wid = board.get_worker_id(*move['xy1'])
+        self.__move_history.append((wid, move))
+        return move
 
 
-    def get_build(self, *args, **kwargs):
-        return self.player.get_build(*args, **kwargs)
+    def get_build(self, board, wid, rule_checker):
+        build = self.player.get_build(board, wid, rule_checker)
+        given_wid = board.get_worker_id(*build['xy1'])
+        self.__build_history.append((given_wid, build))
+        return build
 
 
-    def game_over(self, *args, **kwargs):
-        return self.player.game_over(*args, **kwargs)
-
+    def game_over(self, status):
+        return self.player.game_over(status)

@@ -186,5 +186,16 @@ number of workers allowed on the game.
 -----------------------------------------------------------------------------------------
 11/11/18 Reworked
 
-- Rule checker, check move and check build, now take in the player's id to check that the 
+- Rule checker, check_move and check_build, now take in the player's id to check that the 
 worker position that they have given in their action is the position of one of the player's workers. 
+
+- In referee, the game win and lose messages are now message constants stored in Admin.constants.py 
+
+- Implemented an observer manager to manage all communication to observers. 
+
+- Turn place/move/build turn history is kept in the guarded player instead of in the referee. 
+Turn history is needed explicitly for updating the observers, so the referee should not need to
+have any interaction with it. 
+
+- The ruler checker, check_build, should check that the worker position given in the build action is
+the same worker that they moved in the move action. Made changes in rule checker and referee to reflect this.

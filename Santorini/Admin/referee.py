@@ -274,7 +274,7 @@ class Referee:
         except:
             raise BrokenPlayer(player, GameOverCondition.Crash)
 
-        if not self.__check(turn_phase, player, action):
+        if not self.__check(turn_phase, player, action, wid):
             raise BrokenPlayer(player, GameOverCondition.InvalidAction)
             
         self.__act(player, action)
@@ -372,19 +372,21 @@ class Referee:
         return phases[phase_str]
 
 
-    def __check(self, turn_phase, player, action):
+    def __check(self, turn_phase, player, action, wid=None):
         """
         Method to check if a given action is valid
 
+        :param turn_phase: TurnPhase, the turn phase
         :param action: Action, the action to check
         :param player: Player, the player to check 
+        :param wid: string, the worker id
         :return: bool, True if action is valid, False otherwise
         """
 
         check_methods = {
             TurnPhase.PLACE: self.__check_place,
             TurnPhase.MOVE: self.__check_move,
-            TurnPhase.BUILD: self.__check_build
+            TurnPhase.BUILD: lambda p, a: self.__check_build(p, wid, a)
         }
 
         try:
@@ -419,16 +421,17 @@ class Referee:
         return self.__checker.check_move(pid, *args)
 
 
-    def __check_build(self, pid, action):
+    def __check_build(self, pid, wid, action):
         """
         Check if given build action is valid.
 
         :param pid: string, player id
+        :param wid: string, worker id that moved 
         :param action: BUILD, build specifications
         :return: bool, True if valid, False otherwise
         """
         args = action['xy1'] + action['xy2']
-        return self.__checker.check_build(pid, *args)
+        return self.__checker.check_build(pid, wid, *args)
 
 
     def __init_board_and_checker(self):
@@ -451,7 +454,6 @@ class Referee:
     def __obs(self, func):
         """
         Update every observer and remove broken observers
-
         :param func: (Observer) -> void, function used to update observer
         """
         stable_observers = []
@@ -467,7 +469,6 @@ class Referee:
     def __obs_update_state(self, board):
         """
         Update observers about state of game.
-
         :param board: GameBoard, state of game
         """
         self.__obs(lambda obs: obs.update_state_of_game(board))
@@ -476,7 +477,6 @@ class Referee:
     def __obs_update_action(self, wid, move_action, build_action):
         """
         Update observers about recent action.
-
         :param wid: string, worker id
         :param move_action: Action, move specification
         :param build_action: Action, build specification
@@ -491,7 +491,6 @@ class Referee:
     def __obs_give_up(self, pid):
         """
         Update observers about player who gives up.
-
         :param pid: string, id of player
         """
         self.__obs(lambda obs: obs.give_up(pid))
@@ -500,7 +499,6 @@ class Referee:
     def __obs_error(self, pid, message):
         """
         Update observers about player error.
-
         :param pid: string, player id
         :param message: string, error message
         """
@@ -510,10 +508,8 @@ class Referee:
     def __obs_game_over(self, pid, wid, move_action):
         """
         Update observers about game over.
-
         :param pid: string, winner id
         :param wid: string, winning move worker id
         :param move_action: Action, winning move action
         """
         self.__obs(lambda obs: obs.game_over(pid, wid, move_action))
-
