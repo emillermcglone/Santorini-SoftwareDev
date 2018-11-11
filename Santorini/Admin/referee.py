@@ -4,6 +4,7 @@ from Admin.board import GameBoard
 from Admin.rule_checker import RuleChecker
 from Admin.broken_player import BrokenPlayer
 from Admin.game_over import GameOver, GameOverCondition
+from Admin.player import GuardedPlayer
 from Common.turn_phase import TurnPhase
 from Lib.continuous_iterator import ContinuousIterator
 
@@ -33,7 +34,7 @@ class Referee:
         if player_1 == player_2:
             raise ValueError("Players cannot be the same")
 
-        self.players = [player_1, player_2]
+        self.players = [GuardedPlayer(player_1), GuardedPlayer(player_2)]
         self.observers = observers
 
         self.__time_limit = time_limit
@@ -264,6 +265,7 @@ class Referee:
 
         if not self.__check(turn_phase, player, action):
             raise BrokenPlayer(player, GameOverCondition.InvalidAction)
+            
         self.__act(player, action)
 
         self.__turn_history.append(action)

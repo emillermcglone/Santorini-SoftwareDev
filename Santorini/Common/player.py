@@ -48,6 +48,7 @@ class Player(ABC):
         :return: JSON that represents a place_worker action
         """
         pass
+        
 
     @abstractmethod
     def get_move(self, board, rule_checker):
@@ -60,6 +61,7 @@ class Player(ABC):
         :return: JSON that represents a move action
         """
         pass
+
 
     @abstractmethod
     def get_build(self, board, wid, rule_checker):
