@@ -5,22 +5,29 @@ class ObserverManager:
     Manage the observers for a referee by updating them.
     """
 
-    def __init__(self, observers, board, players):
+    def __init__(self, observers, board):
         """
         Initialize manager's observers, board state, and players
 
         :param observers: [Observer, ...], list of observers 
         :param board: GameBoard, copy of board
-        :param players: [Player, ...], list of players 
         """
         self.observers = observers
         self.__board = board
-        self.__players = players
 
 
     @property
     def board(self):
         return copy.deepcopy(self.__board)
+
+
+    def add_observer(self, observer):
+        """
+        Add another observer.
+
+        :param observer: Observer, observer of series of games.
+        """
+        self.observers.append(observer)
 
 
     def update_state(self):
@@ -30,16 +37,18 @@ class ObserverManager:
         self.__obs(lambda obs: obs.update_state_of_game(self.board))
 
 
-    def update_action(self, wid, move_action, build_action):
+    def update_action(self, player):
         """
         Update observers about recent action.
 
-        :param wid: string, worker id
-        :param move_action: Action, move specification
-        :param build_action: Action, build specification
+        :param player: GuardedPlayer, the player with the recent action
         """
+        last_move = player.last_move()
+        last_build = player.last_build()
+        wid = last_move[0]
+
         def go(observer):
-            observer.update_action(wid, move_action, build_action)
+            observer.update_action(wid, last_move[1], last_build[1])
             observer.update_state_of_game(self.__board)
 
         self.__obs(go)
@@ -64,14 +73,16 @@ class ObserverManager:
         self.__obs(lambda obs: obs.error(pid, message))
 
 
-    def game_over(self, pid, wid, move_action):
+    def game_over(self, winner):
         """
         Update observers about game over.
 
-        :param pid: string, winner id
-        :param wid: string, winning move worker id
-        :param move_action: Action, winning move action
+        :param winner: GuardedPlayer, winner of game
         """
+        pid = winner.get_id()
+        last_move = winner.last_move()
+        wid = last_move[0]
+        move_action = last_move[1]
         self.__obs(lambda obs: obs.game_over(pid, wid, move_action))
 
 

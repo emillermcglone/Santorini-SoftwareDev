@@ -197,5 +197,5 @@ worker position that they have given in their action is the position of one of t
 Turn history is needed explicitly for updating the observers, so the referee should not need to
 have any interaction with it. 
 
-- The ruler checker, check_build, should check that the worker position given in the build action is
-the same worker that they moved in the move action. Made changes in rule checker and referee to reflect this.
+- The ruler checker, check_build, checks that the worker position given in the build action is
+the same worker that they moved in the move action. 

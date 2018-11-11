@@ -94,9 +94,9 @@ class TournamentManager:
         for player in players:
             player_id = player.get_id()
             if player_id in players_set:
-                new_id = names.get_first_name()
+                new_id = names.get_first_name().lower()
                 while new_id in players_set:
-                    new_id = names.get_first_name()
+                    new_id = names.get_first_name().lower()
                 player.set_id(new_id)
                 player_id = new_id
             players_set.add(player_id)

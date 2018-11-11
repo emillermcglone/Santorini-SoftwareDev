@@ -5,6 +5,7 @@ from Admin.rule_checker import RuleChecker
 from Admin.broken_player import BrokenPlayer
 from Admin.game_over import GameOver, GameOverCondition
 from Admin.player import GuardedPlayer
+from Admin.observer_manager import ObserverManager
 from Admin.constants import *
 from Common.turn_phase import TurnPhase
 from Lib.continuous_iterator import ContinuousIterator
@@ -36,12 +37,13 @@ class Referee:
             raise ValueError("Players cannot be the same")
 
         self.__players = [GuardedPlayer(player_1), GuardedPlayer(player_2)]
-        self.observers = observers
 
         self.__time_limit = time_limit
         self.__checker_cls = checker_cls
         self.__turn_history = []
         self.__init_board_and_checker()
+
+        self.__obs_manager = ObserverManager(observers, self.__board)
 
 
     @property
@@ -64,13 +66,23 @@ class Referee:
         return copy.deepcopy(self.__board)
 
     
+    @property
+    def observers(self):
+        """
+        Get all observers of this match.
+
+        :return: [Observer, ...], list of observers
+        """
+        return self.__obs_manager.observers
+
+    
     def add_observer(self, observer):
         """
         Add another observer.
 
         :param observer: Observer, observer of series of games.
         """
-        self.observers.append(observer)
+        self.__obs_manager.add_observer(observer)
 
 
     def run_games(self, best_of=1):
@@ -113,7 +125,7 @@ class Referee:
         try:
             # Init: placement
             self.__run_init_phase(board, checker, players)
-            self.__obs_update_state(board)
+            self.__obs_manager.update_state()
 
             # Steady: move and build
             winner = self.__run_steady_phase(board, checker, players)
@@ -121,7 +133,7 @@ class Referee:
 
         except BrokenPlayer as e:
             winner, loser, condition = self.__winner_loser_condition_from(e)
-            self.__obs_error(loser.get_id(), condition)
+            self.__obs_manager.error(loser.get_id(), condition)
 
         # Notify players game has ended
         self.__game_over_players(winner, loser)
@@ -198,19 +210,17 @@ class Referee:
         for player in self.__players_iter: 
             if self.__is_game_over() is not None:
                 winner_id = self.__is_game_over()
-                last_action = self.__turn_history[-1]
-                wid = self.__board.get_worker_id(*last_action['xy2'])
-                self.__obs_game_over(winner_id, wid, last_action)
-                return self.__get_player_from_id(winner_id)
+                winner = self.__get_player_from_id(winner_id)
+                self.__obs_manager.game_over(winner)
+                return winner
 
             wid = self.__prompt_and_act(TurnPhase.MOVE, player)
 
             if self.__is_game_over() is not None:
                 winner_id = self.__is_game_over()
-                last_action = self.__turn_history[-1]
-                wid = self.__board.get_worker_id(*last_action['xy2'])
-                self.__obs_game_over(winner_id, wid, last_action)
-                return self.__get_player_from_id(winner_id)
+                winner = self.__get_player_from_id(winner_id)
+                self.__obs_manager.game_over(winner)
+                return winner
 
             self.__prompt_and_act(TurnPhase.BUILD, player, wid)
 
@@ -233,7 +243,8 @@ class Referee:
 
         :return: string | None, id of winner, else None
         """
-        return self.__checker.check_game_over(*self.__players)
+        player_ids = list(map(lambda p: p.get_id(), self.__players))
+        return self.__checker.check_game_over(*player_ids)
 
 
     @property
@@ -282,7 +293,7 @@ class Referee:
         self.__turn_history.append(action)
 
         if turn_phase is TurnPhase.BUILD:
-            self.__obs_update_action(wid, self.__turn_history[-2], self.__turn_history[-1])
+            self.__obs_manager.update_action(player)
 
         if turn_phase is TurnPhase.MOVE:
             return self.__board.get_worker_id(*action['xy2'])

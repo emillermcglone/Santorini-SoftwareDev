@@ -111,4 +111,4 @@ if __name__ == "__main__":
     player_1 = Player("one")
     player_2 = Player("two")
 
-    Referee(player_1, player_2, time_limit=1, observers=[XObserver()]).run_games()
+    Referee(player_1, player_2, time_limit=1, observers=[XObserver()]).run_games(5)
