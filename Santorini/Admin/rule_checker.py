@@ -18,12 +18,13 @@ class RuleChecker(IRuleChecker):
         # The GameBoard that the RuleChecker will be using for operations
         self.__board = board  # type: GameBoard
 
-    def check_build(self, pid, x1, y1, x2, y2):
+    def check_build(self, pid, wid, x1, y1, x2, y2):
         """
         Determines whether building at the
         given coordinate is valid
 
         :param pid: string, player id for build move
+        :param wid: string, worker id for build move
 
         :param x1: Represents the x coordinate of the worker board cell
         :type x1:  int
@@ -39,12 +40,14 @@ class RuleChecker(IRuleChecker):
         # Check that the source cell is valid
         # Check that the destination cell is valid
         # Check that the worker at origin belongs to given player
+        # Check that the worker at origin has the right id
         # Check that there is not a worker in the board cell to build
         # Check that the worker is adjacent to the board cell to build
         # Check that the height of the targeted board cell is less than 4
         return self.check_valid_cell(x1, y1) \
                and self.check_valid_cell(x2, y2) \
                and self.__board.get_player_id(x1, y1) is pid \
+               and self.__board.get_worker_id(x1, y1) is wid \
                and not self.__board.get_player_id(x2, y2) \
                and check_distance(x1, y1, x2, y2) \
                and self.__board.get_height(x2, y2) < 4
