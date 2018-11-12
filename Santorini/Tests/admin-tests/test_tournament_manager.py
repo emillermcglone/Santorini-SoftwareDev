@@ -15,19 +15,6 @@ from Observer.xobserver import XObserver
 
 from Tests.configuration import Configuration
 
-
-@pytest.fixture
-def random_player_one():
-    return RandomPlayer("random_one")
-
-@pytest.fixture
-def infinite_player_one():
-    return InfiniteLoopPlayer("infinite_one")
-
-@pytest.fixture
-def misbehaving_player_one():
-    return MisbehavingPlayer("misbehaving_one")
-
 @pytest.fixture
 def duplicate_players_conf(random_player_one, infinite_player_one, misbehaving_player_one):
     return Configuration([random_player_one, infinite_player_one, RandomPlayer("random_one"), misbehaving_player_one], [])
