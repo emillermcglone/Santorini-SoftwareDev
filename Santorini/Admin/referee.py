@@ -98,14 +98,18 @@ class Referee:
 
         winners = []
 
+        # Run through best_of number of games
         for _ in range(best_of):
             game_over = self.__run_game()
+
+            # If outcome isn't a fair game, cut short series
             if game_over.condition is not GameOverCondition.FairGame:
                 return game_over 
             winners.append(game_over.winner)   
         
         overall_winner = max(self.__players, key=lambda p: winners.count(p))
         loser = self.__opponent_of(overall_winner)
+        self.__reset()
         return GameOver(overall_winner, loser, GameOverCondition.FairGame)
 
     
@@ -140,7 +144,7 @@ class Referee:
             winner, loser, condition = self.__winner_loser_condition_from(e)
             self.__obs_manager.error(loser.get_id(), condition)
 
-        # Game Over: notify players of game over
+        # Game Over: notify players, and reset
         self.__game_over_players(winner, loser)
         self.__reset()
         return GameOver(winner, loser, condition)
@@ -189,9 +193,12 @@ class Referee:
 
         for player in self.__players_iter: 
             try:
+                # Get move and build actions from player
                 move_action = self.__prompt_act_raise(TurnPhase.MOVE, player)
                 wid = self.__board.get_worker_id(*move_action['xy2'])
                 self.__prompt_act_raise(TurnPhase.BUILD, player, wid)
+
+            # If a GameOver state is raised anytime, return winner
             except GameOver as e:
                 self.__obs_manager.game_over(e.winner)
                 return e
@@ -504,7 +511,6 @@ class Referee:
                 return p
 
 
-
     def __init_board_and_checker(self):
         """ 
         Initialize board with copy of originally given board, and
@@ -519,5 +525,7 @@ class Referee:
         Reset board and checker, and reverse order of players. 
         """
         self.__init_board_and_checker()
-        self.__players = self.__players[::-1] 
+        self.__players.reverse()
+        for player in self.__players:
+            player.reset()
 

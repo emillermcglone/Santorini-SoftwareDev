@@ -3,6 +3,7 @@ import copy
 
 from Admin.game_over import GameOver, GameOverCondition
 from Admin.referee import Referee
+from Admin.configurations.stdin_configuration import STDINConfiguration
 
 class TournamentManager:
     """
@@ -11,7 +12,8 @@ class TournamentManager:
 
     Policy on Names If the tournament manager discovers that several players with the same name are to participate in a tournament, it picks a unique name for all but one of the players and informs these players of the chosen names.
 
-    Policy on Broken Players When a tournament manager is informed that a player misbehaved, it acts as follows:
+    Policy on Broken Players 
+    When a tournament manager is informed that a player misbehaved, it acts as follows:
 
     - The player is removed from all future encounters; there are no second chances.
 
@@ -26,7 +28,7 @@ class TournamentManager:
     - The second lists all completed games where each piece of game information lists the winner’s and the loser’s name. The games are listed in the order of "first plays against rest, second plays against rest, etc."
     """
 
-    def __init__(self, configuration=None):
+    def __init__(self, configuration=STDINConfiguration()):
         """
         Initialize a tournament manager with configuration.
 

@@ -21,10 +21,13 @@ class GuardedPlayer(Player):
         """
         self.player = player
         self.id = player.get_id()
+        self.reset()
 
-        self.__place_history = [] # [(wid, Place), ...], where wid is the id of the worker placed and the Place action
-        self.__move_history = []  # [(wid, Move), ...], where wid is the id of the worker moved and the Move action
-        self.__build_history = [] # [(wid, Build), ...], where wid is the id of the worker built from and the Build action
+
+    def reset(self):
+        self.__place_history = []
+        self.__move_history = []
+        self.__build_history = []
 
 
     def last_place(self):
@@ -91,7 +94,6 @@ class GuardedPlayer(Player):
         given_wid = board.get_worker_id(*build['xy1'])
         self.__build_history.append((given_wid, build))
         return build
-
 
     def game_over(self, status):
         return self.player.game_over(status)

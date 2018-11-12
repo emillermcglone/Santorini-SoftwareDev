@@ -4,6 +4,7 @@ sys.path.append(sys.path[0] + "/../../")
 from Lib.util import import_cls
 
 class STDINConfiguration:
+    
     def __init__(self):
         """
         initialize the configuration

@@ -29,7 +29,7 @@ def infinite_player_one():
 def misbehaving_player_one():
     return MisbehavingPlayer("misbehaving_one")
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def random_random_referee(random_player_one, random_player_two):
     return Referee(random_player_one, random_player_two, time_limit=1)
 
@@ -48,6 +48,11 @@ def random_misbehaving_referee(random_player_one, misbehaving_player_one):
 @pytest.fixture
 def misbehaving_random_referee(random_player_one, misbehaving_player_one):
     return Referee(misbehaving_player_one, random_player_one)
+
+
+@pytest.fixture
+def even_numbers():
+    return [0, 2, 4, 6, 8, 10]
 
 
 class TestInit:
@@ -76,30 +81,37 @@ class TestAddObserver:
 
 class TestRunGames:
     def test_run_single(self, random_random_referee):
-        game_over = random_random_referee.run_games(5)
+        game_over = random_random_referee.run_games()
         assert game_over.condition is GameOverCondition.FairGame
         assert game_over.winner.get_id() is "random_two"
 
 
-    def test_run_random_and_infinite(self, random_infinite_referee):
+    def test_run_even_yields_winner(self, random_random_referee, even_numbers):
+        for num in even_numbers:
+            game_over = random_random_referee.run_games(num)
+            assert game_over.condition is GameOverCondition.FairGame
+            assert game_over.winner.get_id() is "random_two"
+
+
+    def test_run_single_random_and_infinite(self, random_infinite_referee):
         game_over = random_infinite_referee.run_games()
         assert game_over.condition is GameOverCondition.Timeout
         assert game_over.winner.get_id() is "random_one"
 
 
-    def test_run_infinite_and_random(self, infinite_random_referee):
+    def test_run_single_infinite_and_random(self, infinite_random_referee):
         game_over = infinite_random_referee.run_games()
         assert game_over.condition is GameOverCondition.Timeout
         assert game_over.winner.get_id() is "random_one"
 
 
-    def test_run_random_and_misbehaving(self, random_misbehaving_referee):
+    def test_run_single_random_and_misbehaving(self, random_misbehaving_referee):
         game_over = random_misbehaving_referee.run_games()
         assert game_over.condition is GameOverCondition.InvalidAction
         assert game_over.winner.get_id() is "random_one"
 
 
-    def test_run_misbehaving_and_random(self, misbehaving_random_referee):
+    def test_run_single_misbehaving_and_random(self, misbehaving_random_referee):
         game_over = misbehaving_random_referee.run_games()
         assert game_over.condition is GameOverCondition.InvalidAction
         assert game_over.winner.get_id() is "random_one"
