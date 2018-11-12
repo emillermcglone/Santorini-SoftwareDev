@@ -211,7 +211,7 @@ class Referee:
         try: 
             # Get action from player and impose time out
             action = timeout(self.__time_limit)(self.__prompt)(turn_phase, player, wid)
-            self.__act(turn_phase, player, action)
+            self.__act(turn_phase, player, action, wid)
 
         # Timeout error
         except TimeoutError:
@@ -229,7 +229,7 @@ class Referee:
         return action
 
 
-    def __act(self, turn_phase, player, action):
+    def __act(self, turn_phase, player, action, wid=None):
         """
         Act on given action by player.
 
@@ -239,7 +239,7 @@ class Referee:
         action_methods = {
             TurnPhase.PLACE: self.__act_place,
             TurnPhase.MOVE: self.__act_move,
-            TurnPhase.BUILD: self.__act_build
+            TurnPhase.BUILD: lambda p, a: self.__act_build(p, a, wid)
         }
 
         try:
@@ -276,7 +276,7 @@ class Referee:
         self.__board.move_worker(*(action['xy1'] + action['xy2']))
 
 
-    def __act_build(self, player, action):
+    def __act_build(self, player, action, wid):
         """
         Act on the given build action for player.
 
@@ -284,7 +284,7 @@ class Referee:
         :param action: BUILD, build action made by player
         """
         # Invalid build action by player
-        if not self.__check(TurnPhase.BUILD, player, action):
+        if not self.__check(TurnPhase.BUILD, player, action, wid):
             raise IllegalBuildException()
 
         self.__board.build_floor(*action['xy2'])
@@ -358,7 +358,7 @@ class Referee:
         return phases[phase_str]
 
 
-    def __check(self, turn_phase, player, action):
+    def __check(self, turn_phase, player, action, wid=None):
         """
         Method to check if a given action is valid
 
@@ -371,8 +371,8 @@ class Referee:
 
         check_methods = {
             TurnPhase.PLACE: lambda a: self.__check_place(player.get_id(), a),
-            TurnPhase.MOVE: self.__check_move,
-            TurnPhase.BUILD: self.__check_build
+            TurnPhase.MOVE: lambda a: self.__check_move(player.get_id(), a),
+            TurnPhase.BUILD: lambda a: self.__check_build(player.get_id(), a, wid)
         }
 
         try:
@@ -395,7 +395,7 @@ class Referee:
         return self.__checker.check_place(pid, worker, *xy)
 
 
-    def __check_move(self, action):
+    def __check_move(self, pid, action):
         """
         Check if given move action is valid.
 
@@ -404,10 +404,10 @@ class Referee:
         :return: bool, True if valid, False otherwise
         """
         args = action['xy1'] + action['xy2']
-        return self.__checker.check_move(*args)
+        return self.__checker.check_move(pid, *args)
 
 
-    def __check_build(self, action):
+    def __check_build(self, pid, action, wid):
         """
         Check if given build action is valid.
 
@@ -417,7 +417,7 @@ class Referee:
         :return: bool, True if valid, False otherwise
         """
         args = action['xy1'] + action['xy2']
-        return self.__checker.check_build(*args)
+        return self.__checker.check_build(pid, wid, *args)
 
 
     def __game_over_players(self, winner, loser):
