@@ -1,3 +1,10 @@
+"""
+ObserverManager manages the observers during a game. It updates them,
+removes them in case of breakage, and adds observers into a game if needed.
+
+Referee uses the ObserverManager to abstract out observer functionalities.
+"""
+
 import copy
 
 class ObserverManager:
