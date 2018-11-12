@@ -1,5 +1,7 @@
 """
-Admin Player is used throughout games. 
+GuardedPlayer is used throughout games as an internal representation of the
+external Player for safe use by the admin and some convenient query methods
+for the ObserverManager.
 """
 
 from Common.player import Player
