@@ -4,7 +4,7 @@ from Admin.board import GameBoard
 from Admin.rule_checker import RuleChecker
 from Admin.broken_player import BrokenPlayer
 from Admin.game_over import GameOver, GameOverCondition
-from Admin.player import GuardedPlayer
+from Admin.guarded_player import GuardedPlayer
 from Admin.observer_manager import ObserverManager
 from Admin.constants import *
 from Common.turn_phase import TurnPhase

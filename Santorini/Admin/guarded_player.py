@@ -25,6 +25,9 @@ class GuardedPlayer(Player):
 
 
     def reset(self):
+        """
+        Reset the history of this guarded player.
+        """
         self.__place_history = []
         self.__move_history = []
         self.__build_history = []
@@ -34,8 +37,10 @@ class GuardedPlayer(Player):
         """
         Get the last place action by this player from place history.
 
-        :return: PLACE, the last place action
+        :return: PLACE | None, the last place action
         """
+        if len(self.__place_history) is 0:
+            return None
         return self.__place_history[-1]
 
 
@@ -45,6 +50,8 @@ class GuardedPlayer(Player):
 
         :return: MOVE, the last move action
         """
+        if len(self.__move_history) is 0:
+            return None
         return self.__move_history[-1]
 
         
@@ -54,6 +61,8 @@ class GuardedPlayer(Player):
         
         :return: BUILD, the last build action
         """
+        if len(self.__build_history) is 0:
+            return None
         return self.__build_history[-1]
         
 

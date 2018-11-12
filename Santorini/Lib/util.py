@@ -3,6 +3,57 @@ import json
 import sys
 import importlib
 
+
+def make_place(wid, x, y):
+    """
+    Make a PLACE specification
+
+    :param wid: string, worker id
+    :param x: N, x coordinate
+    :param y: N, y coordinate
+    :return: PLACE, place specification
+    """
+    return { 
+        'type': 'place',
+        'wid': wid,
+        'xy': [x, y]
+    }
+
+
+def make_move(x1, y1, x2, y2):
+    """
+    Make a MOVE specification
+
+    :param x1: N, from x coordinate
+    :param y1: N, from y coordinate
+    :param x2: N, to x coordinate
+    :param y2: N, to y coordinate
+    :return: MOVE, move specification
+    """
+    return {
+        'type': 'move',
+        'xy1': [x1, y1],
+        'xy2': [x2, y2],
+    }
+
+
+def make_build(x1, y1, x2, y2):
+    """
+    Make a BUILD specification
+
+    :param x1: N, from x coordinate
+    :param y1: N, from y coordinate
+    :param x2: N, to x coordinate
+    :param y2: N, to y coordinate
+    :return: BUILD, build specification
+    """
+    return {
+        'type': 'build',
+        'xy1': [x1, y1],
+        'xy2': [x2, y2],
+    }
+
+
 def import_cls(path):
     """
     Dynamically load a class from a string path.
