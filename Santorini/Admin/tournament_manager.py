@@ -4,6 +4,7 @@ import copy
 from Admin.game_over import GameOver, GameOverCondition
 from Admin.referee import Referee
 from Admin.configurations.stdin_configuration import STDINConfiguration
+from Admin.guarded_player import GuardedPlayer
 
 class TournamentManager:
     """
@@ -51,14 +52,20 @@ class TournamentManager:
         """
         return copy.deepcopy(self.__players)
 
+
     def observers(self):
+        """
+        Get the observers in this tournament
+
+        :return: [Observer, ...], all the observers in this tournament
+        """
         return copy.deepcopy(self.__observers)
 
     
     def __handle_misbehaving_player(self, player):
         """
         Add the player to the misbehaved players list,
-        and change all past meet-ups involving the player to be counted as won by the opponent.
+        and change all past meet-ups involving the player to be counted as win for the opponent.
 
         If the player lost in a past meet up, nothing is changed in the meetup. 
 
@@ -76,9 +83,11 @@ class TournamentManager:
             loser = meet_up.loser
             condition = meet_up.condition
 
-            if condition is GameOverCondition.LoserBrokeInTournament:
+            # Leave out if misbehaved player is the winner due to opponent breakage
+            if winner.get_id() is player.get_id() and condition is GameOverCondition.LoserBrokeInTournament:
                 continue
 
+            # Switch winner and loser 
             if winner.get_id() is player.get_id():
                 game_over = GameOver(loser, winner, GameOverCondition.LoserBrokeInTournament)
                 new_meet_ups.append(game_over)
@@ -101,12 +110,22 @@ class TournamentManager:
         for player in players:
             player_id = player.get_id()
             if player_id in players_set:
-                new_id = names.get_first_name().lower()
-                while new_id in players_set:
-                    new_id = names.get_first_name().lower()
+                new_id = self.__get_unique_id(players_set)
                 player.set_id(new_id)
                 player_id = new_id
             players_set.add(player_id)
+
+        
+    def __get_unique_id(self, ids):
+        """
+        Get a new id unique from those in the given set.
+
+        :param ids: {}, set of existing ids
+        """
+        new_id = names.get_first_name().lower()
+        while new_id in ids:
+            new_id = names.get_first_name().lower()
+        return new_id
 
             
     def run_tournament(self):
@@ -117,28 +136,36 @@ class TournamentManager:
 
         :return: TournamentResult, result of tournament
         """
-        for i in range(len(self.__players)):
-            player_1 = self.__players[i]
-
-            if player_1 in self.__misbehaved_players:
+        for i, player in enumerate(self.__players):
+            if player in self.__misbehaved_players:
                 continue
-
-            for player_2 in self.__players[i + 1:]:
-                if player_1 in self.__misbehaved_players:
-                    break
-
-                if player_2 in self.__misbehaved_players:
-                    continue
-
-                referee = Referee(player_1, player_2, time_limit=3, observers=self.__observers)
-                game_result = referee.run_games(3)
-                if game_result.condition is not GameOverCondition.FairGame:
-                    self.__handle_misbehaving_player(game_result.loser.player)
-                self.__meet_ups.append(game_result)
-
+            self.__match_against_rest(player, self.__players[i + 1:])
+        
+        misbehaved_players = list(map(lambda x: x.get_id(), self.__misbehaved_players))
         meet_ups = list(map(lambda x: [x.winner.get_id(), x.loser.get_id()], self.__meet_ups))
 
-        return [list(map(lambda x: x.get_id(), self.__misbehaved_players)), meet_ups]
+        return [misbehaved_players, meet_ups]
+
+
+    def __match_against_rest(self, player, opponents):
+        """
+        Match given player to the given opponents, updating the meet ups.
+
+        :param player: Player, player 
+        :param opponents: [Player, ...], opponents of player 
+        """
+        for opponent in opponents:
+            if opponent in self.__misbehaved_players:
+                continue
+
+            referee = Referee(player, opponent, time_limit=3, observers=self.__observers)
+            series_result = referee.run_games(3)
+
+            # Penalize loser if game ended unfairly
+            if series_result.condition is not GameOverCondition.FairGame:
+                self.__handle_misbehaving_player(series_result.loser.player)
+
+            self.__meet_ups.append(series_result)
                 
                 
 

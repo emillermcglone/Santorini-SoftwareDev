@@ -12,8 +12,8 @@ class GameOver(Exception):
         """
         Hold winner, loser and condition of victory for game. 
 
-        :param winner: Player, winner
-        :param loser: Player, loser
+        :param winner: GuardedPlayer, winner
+        :param loser: GuardedPlayer, loser
         :param condition: GameOverCondition, condition for game over
         :raise ValueError: if winner and loser are same player
         """
