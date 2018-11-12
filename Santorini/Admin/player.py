@@ -35,6 +35,7 @@ class GuardedPlayer(Player):
         """
         return self.__place_history[-1]
 
+
     def last_move(self):
         """
         Get the last move action by this player from move history.

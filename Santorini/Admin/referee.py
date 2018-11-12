@@ -193,6 +193,7 @@ class Referee:
                 wid = self.__board.get_worker_id(*move_action['xy2'])
                 self.__prompt_act_raise(TurnPhase.BUILD, player, wid)
             except GameOver as e:
+                self.__obs_manager.game_over(e.winner)
                 return e
 
 
@@ -463,11 +464,11 @@ class Referee:
 
         :raise GameOver: if game is over
         """
-        if self.__is_game_over() is not None:
-            winner_id = self.__is_game_over()
-            winner = self.__get_player_from_id(winner_id)
+        winner_if_any = self.__is_game_over()
+
+        if winner_if_any is not None:
+            winner = self.__get_player_from_id(winner_if_any)
             loser = self.__opponent_of(winner)
-            self.__obs_manager.game_over(winner)
             raise GameOver(winner, loser, GameOverCondition.FairGame)
 
 
