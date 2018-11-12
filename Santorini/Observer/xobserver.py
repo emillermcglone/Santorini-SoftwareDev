@@ -16,6 +16,8 @@ from Player.players.random_player import Player
 from Player.players.infinite_loop_player import InfiniteLoopPlayer
 from Player.players.misbehaving_player import MisbehavingPlayer
 
+from pprint import pprint
+
 
 class XObserver(IObserver):
     """
@@ -43,7 +45,7 @@ class XObserver(IObserver):
 
     def update_state_of_game(self, board):
         json_board = [[self.__cell(board.get_height(x, y), board.get_player_id(x, y), board.get_worker_id(x, y)) for x in range(6)] for y in range(6)]
-        self.write_to_output(json_board)
+        pprint(json_board)
 
 
     def update_action(self, wid, move_action, build_action):
@@ -95,7 +97,7 @@ class XObserver(IObserver):
     def __east_west(self, from_x, to_x):
         if to_x is from_x:
             return "PUT"
-        elif to_x > to_x:
+        elif to_x > from_x:
             return "EAST"
         else:
             return "WEST"
@@ -111,4 +113,4 @@ if __name__ == "__main__":
     player_1 = Player("one")
     player_2 = Player("two")
 
-    Referee(player_1, player_2, time_limit=1, observers=[XObserver()]).run_games(5)
+    Referee(player_1, player_2, time_limit=1, observers=[XObserver()]).run_games()

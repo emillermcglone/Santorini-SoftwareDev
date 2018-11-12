@@ -13,12 +13,6 @@ class ObserverManager:
         :param board: GameBoard, copy of board
         """
         self.observers = observers
-        self.__board = board
-
-
-    @property
-    def board(self):
-        return copy.deepcopy(self.__board)
 
 
     def add_observer(self, observer):
@@ -30,14 +24,14 @@ class ObserverManager:
         self.observers.append(observer)
 
 
-    def update_state(self):
+    def update_state(self, board):
         """
         Update observers about state of game.
         """
-        self.__obs(lambda obs: obs.update_state_of_game(self.board))
+        self.__obs(lambda obs: obs.update_state_of_game(board))
 
 
-    def update_action(self, player):
+    def update_action(self, player, board):
         """
         Update observers about recent action.
 
@@ -49,7 +43,7 @@ class ObserverManager:
 
         def go(observer):
             observer.update_action(wid, last_move[1], last_build[1])
-            observer.update_state_of_game(self.__board)
+            observer.update_state_of_game(board)
 
         self.__obs(go)
 

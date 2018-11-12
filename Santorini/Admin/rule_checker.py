@@ -18,7 +18,7 @@ class RuleChecker(IRuleChecker):
         # The GameBoard that the RuleChecker will be using for operations
         self.__board = board  # type: GameBoard
 
-    def check_build(self, pid, wid, x1, y1, x2, y2):
+    def check_build(self, x1, y1, x2, y2):
         """
         Determines whether building at the
         given coordinate is valid
@@ -46,13 +46,11 @@ class RuleChecker(IRuleChecker):
         # Check that the height of the targeted board cell is less than 4
         return self.check_valid_cell(x1, y1) \
                and self.check_valid_cell(x2, y2) \
-               and self.__board.get_player_id(x1, y1) is pid \
-               and self.__board.get_worker_id(x1, y1) is wid \
                and not self.__board.get_player_id(x2, y2) \
                and check_distance(x1, y1, x2, y2) \
                and self.__board.get_height(x2, y2) < 4
 
-    def check_move(self, pid, x1, y1, x2, y2):
+    def check_move(self, x1, y1, x2, y2):
         """
         Determines whether moving a worker from the given
         coordinate to the other given coordinate is valid
@@ -78,7 +76,6 @@ class RuleChecker(IRuleChecker):
         # Check that the worker is moving to an adjacent cell
         return self.check_valid_cell(x1, y1) \
                and self.check_valid_cell(x2, y2) \
-               and self.__board.get_player_id(x1, y1) is pid \
                and self.__board.get_height(x2, y2) < 4 \
                and self.__board.get_height(x1, y1) + 1 >= self.__board.get_height(x2, y2) \
                and not self.__board.get_player_id(x2, y2) \
@@ -157,13 +154,13 @@ class RuleChecker(IRuleChecker):
             for x2, y2 in get_adjacent(x1, y1):
 
                 # Determine whether the worker can move to this cell
-                if self.check_move(player, x1, y1, x2, y2):
+                if self.check_move(x1, y1, x2, y2):
 
                     # The worker can make a valid move, game is not over
                     can_move = True
 
                 # Determine whether the worker can build on this cell
-                if self.check_build(player, wid, x1, y1, x2, y2):
+                if self.check_build(x1, y1, x2, y2):
                     # The worker can make a valid build, game is not over
                     can_build = True
 
