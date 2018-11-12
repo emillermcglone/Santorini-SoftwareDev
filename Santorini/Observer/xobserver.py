@@ -63,6 +63,7 @@ class XObserver(IObserver):
     def give_up(self, pid):
         self.write_to_output("Player gave up: {}.".format(pid))
       
+      
     def error(self, pid, message):
         self.write_to_output("Player error by: {}. {}".format(pid, message.value))
 

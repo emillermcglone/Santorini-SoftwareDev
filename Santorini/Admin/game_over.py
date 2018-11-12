@@ -5,7 +5,7 @@ on different game over conditions.
 
 from enum import Enum
 
-class GameOver:
+class GameOver(Exception):
     """ Game over state holding winning and losing players and condition of game over """
 
     def __init__(self, winner, loser, condition):

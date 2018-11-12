@@ -8,6 +8,7 @@ from Admin.player import GuardedPlayer
 from Admin.observer_manager import ObserverManager
 from Admin.constants import *
 from Common.turn_phase import TurnPhase
+from Common.exception import *
 from Lib.continuous_iterator import ContinuousIterator
 
 from timeout_decorator import timeout, TimeoutError
@@ -127,8 +128,9 @@ class Referee:
             self.__obs_manager.update_state(board)
 
             # Steady: move and build
-            winner = self.__run_steady_phase(board, checker, players)
-            loser = self.__opponent_of(winner)
+            game_over = self.__run_steady_phase(board, checker, players)
+            winner = game_over.winner
+            loser = game_over.loser
 
         except BrokenPlayer as e:
             winner, loser, condition = self.__winner_loser_condition_from(e)
@@ -166,7 +168,7 @@ class Referee:
         """
 
         for player, wid in zip(self.__players_iter, [0, 0, 1, 1]):
-            self.__prompt_and_act(TurnPhase.PLACE, player, wid)
+            self.__prompt_act_raise(TurnPhase.PLACE, player, wid)
 
 
     def __run_steady_phase(self, board, checker, players):
@@ -182,64 +184,107 @@ class Referee:
         """
 
         for player in self.__players_iter: 
-            if self.__is_game_over() is not None:
-                winner_id = self.__is_game_over()
-                winner = self.__get_player_from_id(winner_id)
-                self.__obs_manager.game_over(winner)
-                return winner
-
-            wid = self.__prompt_and_act(TurnPhase.MOVE, player)
-
-            if self.__is_game_over() is not None:
-                winner_id = self.__is_game_over()
-                winner = self.__get_player_from_id(winner_id)
-                self.__obs_manager.game_over(winner)
-                return winner
-
-            self.__prompt_and_act(TurnPhase.BUILD, player, wid)
+            try:
+                move_action = self.__prompt_act_raise(TurnPhase.MOVE, player)
+                wid = self.__board.get_worker_id(*move_action['xy2'])
+                self.__prompt_act_raise(TurnPhase.BUILD, player, wid)
+            except GameOver as e:
+                return e
 
 
-    def __prompt_and_act(self, turn_phase, player, wid=None):
+    def __prompt_act_raise(self, turn_phase, player, wid=None):
         """
-        Prompt player for placement and make placement on board.
+        Prompt player for action, make the action, and raise game over
+        state if game is over after move.
 
+        :param turn_phase: TurnPhase, the phase in the game
         :param player: Player, player to prompt
         :param wid: string, id of worker to place
-        :raise BrokenPlayer: if player times out or makes an invalid move
+        :raise BrokenPlayer: if player times out, makes an invalid move, or crashes
+        :raise GameOver: if game is over after action
         :return: string, id of worker moved only if turn_phase is TurnPhase.MOVE
         """
         try: 
+            # Get action from player and impose time out
             action = timeout(self.__time_limit)(self.__prompt)(turn_phase, player, wid)
+            self.__act(turn_phase, player, action)
+
+        # Timeout error
         except TimeoutError:
             raise BrokenPlayer(player, GameOverCondition.Timeout)
 
-        if not self.__check(turn_phase, player, action, wid):
+        # Illegal action by player
+        except IllegalActionException:
             raise BrokenPlayer(player, GameOverCondition.InvalidAction)
-            
-        self.__act(player, action)
 
-        if turn_phase is TurnPhase.BUILD:
-            self.__obs_manager.update_action(player, self.__board)
+        # Player breaks in any way
+        except:
+            raise BrokenPlayer(player, GameOverCondition.Crash)
 
-        if turn_phase is TurnPhase.MOVE:
-            return self.__board.get_worker_id(*action['xy2'])
+        self.__raise_game_over()
+        return action
 
 
-    def __act(self, player, action):
+    def __act(self, turn_phase, player, action):
         """
         Act on given action by player.
 
         :param player: Player, player that acts
         :param action: Action, action made by player
         """
-        action_type = action['type']
+        action_methods = {
+            TurnPhase.PLACE: self.__act_place,
+            TurnPhase.MOVE: self.__act_move,
+            TurnPhase.BUILD: self.__act_build
+        }
 
-        if action_type is "place":
-            self.__board.place_worker(player.get_id(), action['wid'], *action['xy'])
-        elif action_type is "move":
-            self.__board.move_worker(*(action['xy1'] + action['xy2']))
-        else:
-            self.__board.build_floor(*action['xy2'])
+        try:
+            action_methods[turn_phase](player, action)
+        except KeyError:
+            raise IllegalActionException()
+
+
+    def __act_place(self, player, action):
+        """
+        Act on the given place action for player.
+
+        :param player: Player, player that acts
+        :param action: PLACE, place action made by player
+        """
+        # Invalid place action by player
+        if not self.__check(TurnPhase.PLACE, player, action):
+            raise IllegalPlaceException()
+
+        self.__board.place_worker(player.get_id(), action['wid'], *action['xy'])
+
+
+    def __act_move(self, player, action):
+        """
+        Act on the given move action for player.
+
+        :param player: Player, player that acts
+        :param action: MOVE, move action made by player
+        """
+        # Invalid move action by player
+        if not self.__check(TurnPhase.MOVE, player, action):
+            raise IllegalMoveException()
+
+        self.__board.move_worker(*(action['xy1'] + action['xy2']))
+
+
+    def __act_build(self, player, action):
+        """
+        Act on the given build action for player.
+
+        :param player: Player, player that acts
+        :param action: BUILD, build action made by player
+        """
+        # Invalid build action by player
+        if not self.__check(TurnPhase.BUILD, player, action):
+            raise IllegalBuildException()
+
+        self.__board.build_floor(*action['xy2'])
+        self.__obs_manager.update_action(player, self.__board)
 
 
     def __prompt(self, turn_phase, player, wid=None):
@@ -309,7 +354,7 @@ class Referee:
         return phases[phase_str]
 
 
-    def __check(self, turn_phase, player, action, wid=None):
+    def __check(self, turn_phase, player, action):
         """
         Method to check if a given action is valid
 
@@ -371,8 +416,6 @@ class Referee:
         return self.__checker.check_build(*args)
 
 
-    
-
     def __game_over_players(self, winner, loser):
         """
         Notify winner and loser of game over.
@@ -408,6 +451,20 @@ class Referee:
         for p in self.__players:
             if p.get_id() is player_id:
                 return p
+
+    
+    def __raise_game_over(self):
+        """
+        Raise GameOver state if game is over.
+
+        :raise GameOver: if game is over
+        """
+        if self.__is_game_over() is not None:
+            winner_id = self.__is_game_over()
+            winner = self.__get_player_from_id(winner_id)
+            loser = self.__opponent_of(winner)
+            self.__obs_manager.game_over(winner)
+            raise GameOver(winner, loser, GameOverCondition.FairGame)
 
 
     def __is_game_over(self):
