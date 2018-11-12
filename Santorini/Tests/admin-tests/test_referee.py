@@ -78,7 +78,7 @@ class TestRunGames:
     def test_run_single(self, random_random_referee):
         game_over = random_random_referee.run_games(5)
         assert game_over.condition is GameOverCondition.FairGame
-        assert game_over.winner.get_id() is "random_one"
+        assert game_over.winner.get_id() is "random_two"
 
 
     def test_run_random_and_infinite(self, random_infinite_referee):

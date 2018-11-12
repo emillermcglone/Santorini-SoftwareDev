@@ -102,8 +102,7 @@ class RuleChecker(IRuleChecker):
         # Check that the destination cell is valid
         # Check that the destination does not already contain a player
         # Check that the given worker ID has not already been placed on the board
-        return wid in range(0, 2) \
-               and self.check_valid_cell(x, y) \
+        return self.check_valid_cell(x, y) \
                and self.__board.get_player_id(x, y) is None \
                and self.__board.find_worker(pid, wid) is None
 

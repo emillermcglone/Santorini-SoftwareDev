@@ -43,7 +43,7 @@ class Referee:
         self.__checker_cls = checker_cls
         self.__init_board_and_checker()
 
-        self.__obs_manager = ObserverManager(observers, self.__board)
+        self.__obs_manager = ObserverManager(observers)
 
 
     @property
@@ -99,7 +99,7 @@ class Referee:
         winners = []
 
         for _ in range(best_of):
-            game_over = self.__run_game(self.__board, self.__checker, self.__players)
+            game_over = self.__run_game()
             if game_over.condition is not GameOverCondition.FairGame:
                 return game_over 
             winners.append(game_over.winner)   
@@ -109,7 +109,7 @@ class Referee:
         return GameOver(overall_winner, loser, GameOverCondition.FairGame)
 
     
-    def __run_game(self, board, checker, players):
+    def __run_game(self):
         """
         Run a game of Santorini between given players and reset the
         Referee after running game.
@@ -119,13 +119,17 @@ class Referee:
         :param players: [Player, Player], list of players 
         :return: Player, winner of game
         """
+        board = self.__board
+        checker = self.__checker
+        players = self.__players
+
         winner = loser = None
         condition = GameOverCondition.FairGame
 
         try:
             # Init: placement
             self.__run_init_phase(board, checker, players)
-            self.__obs_manager.update_state(board)
+            self.__obs_manager.update_state(copy.deepcopy(self.board))
 
             # Steady: move and build
             game_over = self.__run_steady_phase(board, checker, players)
@@ -167,7 +171,7 @@ class Referee:
         :raise TimeoutOrInvalidActionWinner: if a player times out or makes an invalid action
         """
 
-        for player, wid in zip(self.__players_iter, [0, 0, 1, 1]):
+        for player, wid in zip(self.__players_iter, [WORKER_ONE_ID] * 2 + [WORKER_TWO_ID] * 2):
             self.__prompt_act_raise(TurnPhase.PLACE, player, wid)
 
 
@@ -284,7 +288,7 @@ class Referee:
             raise IllegalBuildException()
 
         self.__board.build_floor(*action['xy2'])
-        self.__obs_manager.update_action(player, self.__board)
+        self.__obs_manager.update_action(player, self.board)
 
 
     def __prompt(self, turn_phase, player, wid=None):

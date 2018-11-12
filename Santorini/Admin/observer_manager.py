@@ -5,7 +5,7 @@ class ObserverManager:
     Manage the observers for a referee by updating them.
     """
 
-    def __init__(self, observers, board):
+    def __init__(self, observers):
         """
         Initialize manager's observers, board state, and players
 
