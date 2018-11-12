@@ -2,7 +2,53 @@
 import json
 import sys
 import importlib
+import pprint
 
+def make_action(wid, move_action, build_action):
+    move_from_xy = move_action['xy1']
+    move_to_xy = move_action['xy2']
+
+    build_from_xy = build_action['xy1']
+    build_to_xy = build_action['xy2']
+
+    move_direction = __get_direction(move_from_xy, move_to_xy)
+    build_direction = __get_direction(build_from_xy, build_to_xy)
+    return str([wid, *move_direction, *build_direction])
+
+
+def __get_direction(from_xy, to_xy):
+        from_x, from_y = from_xy
+        to_x, to_y = to_xy
+    
+        return [__east_west(from_x, to_x), __north_south(from_y, to_y)]
+
+    
+def __north_south(from_y, to_y):
+    if to_y is from_y:
+        return "PUT"
+    elif to_y > from_y:
+        return "SOUTH"
+    else:
+        return "NORTH"
+
+def __east_west(from_x, to_x):
+    if to_x is from_x:
+        return "PUT"
+    elif to_x > from_x:
+        return "EAST"
+    else:
+        return "WEST"
+
+
+def xboard(board):
+    json_board = [[cell(board.get_height(x, y), board.get_player_id(x, y), board.get_worker_id(x, y)) for x in range(6)] for y in range(6)]
+    return pprint.pformat(json_board) + "\n"
+
+
+def cell(height, player_id, worker_id):
+    if player_id is None:
+        return height
+    return "{}{}{}".format(height, player_id, worker_id)
 
 def make_place(wid, x, y):
     """

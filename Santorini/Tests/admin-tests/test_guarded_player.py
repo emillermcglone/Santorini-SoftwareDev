@@ -6,18 +6,6 @@ from Admin.guarded_player import GuardedPlayer
 from Lib.util import make_place, make_move, make_build
 
 
-@pytest.fixture
-def board():
-    return GameBoard()
-
-@pytest.fixture
-def rule_checker(board):
-    return RuleChecker(board)
-
-@pytest.fixture
-def guarded_player(random_player_one):
-    return GuardedPlayer(random_player_one)
-
 """ Test init """
 def test_has_external_player(guarded_player, random_player_one):
     assert guarded_player.player == random_player_one
@@ -53,7 +41,7 @@ def test_set_external_player_id(guarded_player, random_player_one):
 
 
 """ test get_placement and last_place """
-def test_none_after_init(guarded_player):
+def test_none_after_init_for_last_place(guarded_player):
     assert guarded_player.last_place() is None
 
 def test_place_action_after_get_place(guarded_player, board, rule_checker):
@@ -62,7 +50,7 @@ def test_place_action_after_get_place(guarded_player, board, rule_checker):
     
 
 """ test get_move and last_move """
-def test_none_after_init(guarded_player):
+def test_none_after_init_for_last_move(guarded_player):
     assert guarded_player.last_move() is None
 
 def test_move_action_after_get_move(guarded_player, board, rule_checker):
@@ -74,7 +62,7 @@ def test_move_action_after_get_move(guarded_player, board, rule_checker):
 
 
 """ test get_build and last_build """
-def test_none_after_init(guarded_player):
+def test_none_after_init_for_last_build(guarded_player):
     assert guarded_player.last_build() is None
 
 def test_build_action_after_get_build(guarded_player, board, rule_checker):

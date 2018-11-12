@@ -45,7 +45,7 @@ class XObserver(IObserver):
 
     def update_state_of_game(self, board):
         json_board = [[self.__cell(board.get_height(x, y), board.get_player_id(x, y), board.get_worker_id(x, y)) for x in range(6)] for y in range(6)]
-        pprint(json_board)
+        pprint(json_board, stream=self.output)
 
 
     def update_action(self, wid, move_action, build_action):
@@ -61,11 +61,11 @@ class XObserver(IObserver):
 
 
     def give_up(self, pid):
-        self.write_to_output("Player gave up: {}.".format(pid))
+        self.write_to_output("Player gave up: " + pid)
       
       
     def error(self, pid, message):
-        self.write_to_output("Player error by: {}. {}".format(pid, message.value))
+        self.write_to_output("Player error by: " + pid + ". " + message.value)
 
 
     def game_over(self, pid, wid, move_action):

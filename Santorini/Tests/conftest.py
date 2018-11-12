@@ -7,6 +7,8 @@ sys.path.insert(0, dir_path + '/../')
 from Admin.referee import Referee
 from Admin.game_over import GameOverCondition
 from Admin.rule_checker import RuleChecker
+from Admin.guarded_player import GuardedPlayer
+from Admin.board import GameBoard
 from Player.players.random_player import Player as RandomPlayer
 from Player.players.infinite_loop_player import InfiniteLoopPlayer
 from Player.players.misbehaving_player import MisbehavingPlayer
@@ -65,8 +67,14 @@ def even_numbers():
     return [2, 4, 6, 8, 10]
 
 
-class MockObserver(XObserver):
-    def __init__(self, output = io.StringIO()):
-        super().__init__(output)
+@pytest.fixture
+def guarded_player(random_player_one):
+    return GuardedPlayer(random_player_one)
 
-    
+@pytest.fixture
+def board():
+    return GameBoard()
+
+@pytest.fixture
+def rule_checker(board):
+    return RuleChecker(board)
