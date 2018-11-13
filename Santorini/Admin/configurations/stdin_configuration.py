@@ -4,6 +4,9 @@ sys.path.append(sys.path[0] + "/../../")
 from Lib.util import import_cls
 
 class STDINConfiguration:
+    """
+    Configuration that extracts players and observers from stdin JSON values. 
+    """
     
     def __init__(self):
         """
@@ -11,15 +14,17 @@ class STDINConfiguration:
         """
         self.configuration = None
 
+
     def __set_configuration(self):
         """
-        sets the configuration to JSON
+        Set the configuration to stdin JSON values if
+        the configuration has not been set. 
         """
         if self.configuration is None:
             lines = ""
             for line in fileinput.input():
                 lines += line
-        
+                
             self.configuration = json.loads(lines)
 
 
@@ -29,16 +34,22 @@ class STDINConfiguration:
 
         :return: [Observer, ...], list of obserbers
         """
-        self.__set_configuration()
-        json_observers = self.configuration['observers']
 
-        observers = []
+        try:
+            self.__set_configuration()
+            json_observers = self.configuration['observers']
+            
+            observers = []
 
-        for observer in json_observers: 
-            observer_cls = import_cls(observer[1])
-            observers.append(observer_cls())
+            for observer in json_observers: 
+                observer_cls = import_cls(observer[1])
+                observers.append(observer_cls())
 
-        return observers
+            return observers
+        except:
+            print("No valid configuration found. Try again")
+            self.configuration = None
+            return self.observers()
 
 
     def players(self):
@@ -47,14 +58,20 @@ class STDINConfiguration:
 
         :return: [Observer, ...], list of obserbers
         """
-        self.__set_configuration()
-        json_players = self.configuration['players']
 
-        players = []
+        try:
+            self.__set_configuration()
+            json_players = self.configuration['players']
         
-        for player in json_players:
-            player_id = player[1]
-            player_cls = import_cls(player[2])
-            players.append(player_cls(player_id))
+            players = []
 
-        return players
+            for player in json_players:
+                player_id = player[1]
+                player_cls = import_cls(player[2])
+                players.append(player_cls(player_id))
+
+            return players
+        except:
+            print("No valid configuration found. Try again")
+            self.configuration = None
+            return self.players()

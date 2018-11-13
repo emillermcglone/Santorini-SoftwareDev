@@ -46,25 +46,44 @@
 * Cleaned up Referee by abstracting out methods
 	* Extended GameOver to Exception. This makes the flow within Referee much more controllable, but not sure if it's the best design. This way however, the run_steady_phase method is much cleaner, inevitable code duplication is avoided, and the code makes more sense. 
 	* Broke the __act method into separate parts for place, move, and build.
+
+
 * Updated tests
 	* side irrelevant change: ObserverManager no longer takes in a board
 	* Fixed test_referee to deem random_two as winner
+
+
 * Readded pid and wid to check methods in RuleChecker
 	* Previous commit regarding adding pid and wid caused a lot of bugs. Had to remove the changes before and refactor the code again for this commit.
+
+
 * ObserverManager purpose
 	* Purpose statement for ObserverManager
+
+
 * GuardedPlayer purpose
 	* Purpose statement for GuardedPlayer
+
+
 * Moved where observers are updated about game over in steady phase
 	* ObserverManager is updated at the end of run_steady_phase method instead of raise_game_over.
+
+
 * Fixed tournament reset
 	* At the end of a series, the order of players doesn't go back to its original player. Now every series resets not just after every game, but also after each series.
+
+
 * conftest.py file
 	* Abstracted all common pytest fixtures into a single file for access by every test file.
+
+
 * GuardedPlayer tests
 	* Wrote tests for GuardedPlayer.
+
 * Admin tests
 	* Finished tests for all admin components.
+
+
 * Refactoried tournament_manager, abstracting out code into separate methods
 	* Removed code duplication
 	* Abstracted out code into separate methods for readability and reduced method length.
