@@ -11,7 +11,7 @@ class Proxy:
     Proxy for Players to connect to Santorini game server. 
     """
 
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, buffer_size = 1024):
         """
         Initialize Proxy and connect to IP address at given port.
 
@@ -20,7 +20,7 @@ class Proxy:
         """
         self.ip = ip
         self.port = port
-        self.buffer_size = 1024
+        self.buffer_size = buffer_size
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.ip, self.port))
 
