@@ -17,10 +17,10 @@ def make_action(wid, move_action, build_action):
 
 
 def __get_direction(from_xy, to_xy):
-        from_x, from_y = from_xy
-        to_x, to_y = to_xy
+    from_x, from_y = from_xy
+    to_x, to_y = to_xy
     
-        return [__east_west(from_x, to_x), __north_south(from_y, to_y)]
+    return [__east_west(from_x, to_x), __north_south(from_y, to_y)]
 
     
 def __north_south(from_y, to_y):

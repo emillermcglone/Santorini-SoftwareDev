@@ -88,5 +88,8 @@
 	* Removed code duplication
 	* Abstracted out code into separate methods for readability and reduced method length.
 
+* Implemented error check in STDINConfiguration 
+	* Any invalid configuration JSON values would result in STDINConfiguration prompting user for another configuration
+
 
 
