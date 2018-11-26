@@ -38,6 +38,13 @@ class CrashingPlayer(IPlayer):
         """
         self.__player_id = new_id
 
+    def notify_of_opponent(self, opponent_id):
+        """
+        Notify the player of who they are playing for the next game.
+
+        :param opponent_id: string, id of opponent 
+        """
+        pass
 
     def get_placement(self, board, wid, rule_checker):
         """

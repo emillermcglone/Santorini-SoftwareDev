@@ -64,6 +64,10 @@ class GuardedPlayer(Player):
         if len(self.__build_history) is 0:
             return None
         return self.__build_history[-1]
+
+
+    def notify_of_opponent(self, opponent_id):
+        return self.player.notify_of_opponent(opponent_id)
         
 
     def get_id(self):

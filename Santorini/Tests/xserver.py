@@ -18,6 +18,8 @@ from Admin.tournament_manager import TournamentManager
 from Admin.configuration import IConfiguration
 from Remote.remote_player import RemotePlayer
 
+from pprint import pprint
+
 class TournamentManagerConfiguration(IConfiguration):
     def __init__(self, players):
         self.players = players
@@ -77,7 +79,6 @@ class XServer:
         self.__accept_connections()
 
         if len(self.players) < self.min_players:
-            print("Not enough players")
             self.__reset()
             return self.start() # return to avoid stack overflow
 
@@ -85,6 +86,7 @@ class XServer:
         result = tournament_manager.run_tournament()
         self.notify_tournament_end(result)
         self.__reset()
+        pprint(result)
         return self.start()
 
 

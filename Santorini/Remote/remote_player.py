@@ -23,6 +23,13 @@ class RemotePlayer(IPlayer):
     def set_id(self, new_id):
         self.__id = new_id
         self.__send(["playing as", new_id])
+
+
+    def notify_of_opponent(self, opponent_id):
+        try:
+            self.__send(opponent_id)
+        except:
+            return
             
 
     def get_placement(self, board, wid, rule_checker):

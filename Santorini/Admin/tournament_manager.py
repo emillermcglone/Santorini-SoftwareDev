@@ -4,7 +4,6 @@ import copy
 from Admin.game_over import GameOver, GameOverCondition
 from Admin.referee import Referee
 from Admin.configurations.stdin_configuration import STDINConfiguration
-from Admin.guarded_player import GuardedPlayer
 
 class TournamentManager:
     """
@@ -159,6 +158,7 @@ class TournamentManager:
                 continue
 
             referee = Referee(player, opponent, time_limit=3, observers=self.__observers)
+            self.__notify_of_opponents(player, opponent)
             series_result = referee.run_games(3)
 
             # Penalize loser if game ended unfairly
@@ -167,6 +167,15 @@ class TournamentManager:
 
             self.__meet_ups.append(series_result)
                 
-                
+    
+    def __notify_of_opponents(self, player_one, player_two):
+        """
+        Notify the given matched up players of each other's ids.
+
+        :param player_one: Player, player one
+        :param player_two: Player, player two
+        """
+        player_one.notify_of_opponent(player_two.get_id())
+        player_two.notify_of_opponent(player_one.get_id())
 
 
