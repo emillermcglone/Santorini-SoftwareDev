@@ -46,6 +46,9 @@ class STDINConfiguration:
                 observers.append(observer_cls())
 
             return observers
+        except KeyboardInterrupt:
+            print("No valid configuration found.")            
+            sys.exit()
         except:
             print("No valid configuration found. Try again")
             self.configuration = None
@@ -71,6 +74,9 @@ class STDINConfiguration:
                 players.append(player_cls(player_id))
 
             return players
+        except KeyboardInterrupt:
+            print("No valid configuration found.")    
+            sys.exit()
         except:
             print("No valid configuration found. Try again")
             self.configuration = None

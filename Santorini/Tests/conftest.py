@@ -17,6 +17,11 @@ from Player.players.crashing_player import CrashingPlayer
 from Observer.observer import Observer
 from Observer.xobserver import XObserver
 
+from Remote.proxy import ClientProxy
+
+from Tests.echo_server import EchoServer
+from Tests.subscriber import Subscriber
+
 
 @pytest.fixture
 def random_player_one():
@@ -78,3 +83,34 @@ def board():
 @pytest.fixture
 def rule_checker(board):
     return RuleChecker(board)
+
+
+@pytest.fixture
+def ip():
+    return '127.0.0.1'
+
+
+@pytest.fixture
+def port():
+    return 5005
+
+
+@pytest.fixture
+def buffer_size():
+    return 1024
+
+@pytest.fixture
+def echo_server(ip, port, buffer_size):
+    server = EchoServer(ip, port, buffer_size)
+    server.start()
+    return server
+
+@pytest.fixture
+def client_proxy(ip, port, buffer_size):
+    proxy = ClientProxy(ip, port, buffer_size)
+    yield proxy
+    proxy.close()
+
+@pytest.fixture
+def subscriber():
+    return Subscriber()

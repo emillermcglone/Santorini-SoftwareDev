@@ -1,50 +1,30 @@
-import fileinput, json
+import fileinput, json, sys
 import math
 
-from Admin.server_configuration import IServerConfiguration
-
-class STDINServerConfiguration(IServerConfiguration):
+def stdin():
     """
-    Server configuration that reads from STDIN.
+    Read all lines from fileinput.
+
+    :return: string, input from fileinput
+    """
+    lines = ""
+    for line in fileinput.input():
+        lines += line
+    return lines
+
+class ServerConfiguration:
+    """
+    Server configuration that reads from given a readable.
+    If no valid configuration is found, program exits. 
     """
 
-    def __init__(self):
+    def __init__(self, readable=stdin):
         """
         Initialize STDINServerConfiguration.
         """
         self.configuration = None
+        self.readable = readable
 
-
-    def __set_configuration(self):
-        """
-        Set the configuration to stdin JSON values if
-        the configuration has not been set. 
-        """
-        if self.configuration is None:
-            lines = ""
-            for line in fileinput.input():
-                lines += line
-                
-            self.configuration = json.loads(lines)
-
-
-    def __extract_from_configuration(self, key, fallback):
-        """
-        Extract value from configuration from given key. 
-        If no valid configuration is found, use fallback function
-
-        :param key: string, key in configuration
-        :param fallback: () -> Any, fallback function
-        :return: Any, value from configuration
-        """
-        try:
-            self.__set_configuration()
-            return self.configuration[key]
-        except:
-            print("No valid configuration found. Try again")
-            self.configuration = None
-            return fallback()
-    
 
     def min_players(self):
         """
@@ -52,12 +32,7 @@ class STDINServerConfiguration(IServerConfiguration):
 
         :return: N, minimum number of players accepted
         """
-        value = self.__extract_from_configuration('min players', self.min_players)
-        if not isinstance(value, int) or value < 0:
-            print("No valid configuration found. Try again")
-            self.configuration = None
-            return self.min_players()
-
+        return self.__extract_from_configuration('min players', self.__natural)
 
     
     def port(self):
@@ -66,11 +41,7 @@ class STDINServerConfiguration(IServerConfiguration):
 
         :return: N, port to start server on
         """
-        value = self.__extract_from_configuration('port', self.port)
-        if not isinstance(value, int) or value < 0:
-            print("No valid configuration found. Try again")
-            self.configuration = None
-            return self.port()
+        return self.__extract_from_configuration('port', self.__valid_port)
 
 
     def waiting_for(self):
@@ -79,11 +50,7 @@ class STDINServerConfiguration(IServerConfiguration):
 
         :return: N > 0, positive number of seconds to wait for remote players
         """
-        value = self.__extract_from_configuration('waiting for', self.waiting_for)
-        if not isinstance(value, int) or value <= 0:
-            print("No valid configuration found. Try again")
-            self.configuration = None
-            return self.waiting_for()
+        return self.__extract_from_configuration('waiting for', lambda v: self.__natural(v) and v > 0)
 
 
     def repeat(self):
@@ -92,10 +59,61 @@ class STDINServerConfiguration(IServerConfiguration):
 
         :return: bool, True if repeat, False otherwise
         """
-        value = self.__extract_from_configuration('repeat', self.repeat)
-        if value is not 0 and value is not 1:
-            print("No valid configuration found. Try again")
-            self.configuration = None
-            return self.repeat()
-
+        value = self.__extract_from_configuration('repeat', lambda v: v is 0 or v is 1)
         return value is 1
+
+
+    def __set_configuration(self):
+        """
+        Set the configuration to stdin JSON values if
+        the configuration has not been set. 
+        """
+        if self.configuration is None:
+            self.configuration = json.loads(self.readable())
+        
+
+
+    def __extract_from_configuration(self, key, qualifier):
+        """
+        Extract value from configuration from given key. 
+        If no valid configuration is found, use fallback function
+
+        :param key: string, key in configuration
+        :param qualifier: (Any) -> bool, qualifier to determine if value is valid
+        :return: Any, value from configuration
+        """
+        value = None
+
+        try:
+            self.__set_configuration()
+            value = self.configuration[key]
+
+            if not qualifier(value):
+                raise Exception()
+
+        except:
+            print("No valid configuration found.")
+            sys.exit()
+
+        return value
+
+
+    def __valid_port(self, value):
+        """
+        Is given port number valid?
+
+        :param value: Any, value to check
+        :return bool, True if valid port number, False otherwise
+        """
+        return self.__natural(value) and value >= 50000 and value <= 60000
+
+
+    def __natural(self, value):
+        """ 
+        Is given value a natural number?
+
+        :param value: Any, value to check
+        :return: bool, True if natural number, False otherwise
+        """
+        return not isinstance(value, bool) and isinstance(value, int) and value >= 0
+

@@ -2,7 +2,20 @@
 import json
 import sys
 import importlib
+import fileinput
 import pprint
+
+def stdin():
+    """
+    Read all lines from fileinput.
+
+    :return: string, input from fileinput
+    """
+    lines = ""
+    for line in fileinput.input():
+        lines += line
+    return lines
+    
 
 def make_action(wid, move_action, build_action):
     move_from_xy = move_action['xy1']
