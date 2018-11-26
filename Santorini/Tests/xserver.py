@@ -17,6 +17,7 @@ from Admin.server_configurations.stdin_server_configuration import ServerConfigu
 from Admin.tournament_manager import TournamentManager
 from Player.players.remote_player import RemotePlayer
 
+
 class XServer:
     """ Server to host Santorini game among remote players connected through TCP. """
 
