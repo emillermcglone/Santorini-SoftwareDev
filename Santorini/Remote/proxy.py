@@ -45,18 +45,19 @@ class ClientProxy:
         self.__live = True
 
 
-    def subscribe(self, subscriber):
+    def subscribe(self, subscriber, end_handler):
         """
-        Subscribe handler to socket connection.
+        Subscribe subscriber to socket connection.
 
-        :param handler: (string) -> void, function that handles messages from socket
+        :param subscriber: (string) -> void, function that handles messages from socket
+        :param end_handler: () -> void, function that handles connection close or loss
         """
         self.connect()
-        thread = threading.Thread(target=self.__run_subscription, args=(subscriber,))
+        thread = threading.Thread(target=self.__run_subscription, args=(subscriber, end_handler))
         thread.start()
 
 
-    def __run_subscription(self, handler):
+    def __run_subscription(self, handler, end_handler):
         """
         Run the subscription for given handler.
 
@@ -64,8 +65,9 @@ class ClientProxy:
         """
         while self.__live:
             data = self.receive()                
-            if data is not "":
-                handler(data)    
+            handler(data)
+        
+        end_handler()
 
 
     def send(self, message):
@@ -77,7 +79,11 @@ class ClientProxy:
         """
         self.connect()
         message = message.encode()
-        self.__socket.sendall(message)
+
+        try:
+            self.__socket.sendall(message)
+        except ConnectionError:
+            self.__live = False
 
     
     def receive(self):
@@ -87,7 +93,11 @@ class ClientProxy:
         :return: string, message from socket
         """
         self.connect()
-        return self.__socket.recv(self.buffer_size).decode()
+
+        try:
+            return self.__socket.recv(self.buffer_size).decode()
+        except ConnectionError:
+            self.__live = False
 
 
     def close(self):

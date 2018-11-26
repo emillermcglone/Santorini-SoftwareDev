@@ -109,7 +109,7 @@ class TournamentManager:
 
         for player in players:
             player_id = player.get_id()
-            if player_id in players_set:
+            if player_id in players_set or any(c.isupper() for c in player_id):
                 new_id = self.__get_unique_id(players_set)
                 player.set_id(new_id)
                 player_id = new_id
