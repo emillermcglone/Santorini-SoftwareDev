@@ -15,25 +15,6 @@ class RemotePlayer(IPlayer):
         self.__connection = connection
         self.buffer_size = buffer_size
 
-    
-    def __send(self, message):
-        """
-        Send message over TCP.
-
-        :param message: string, message to send
-        """
-        message = json.dumps(message)
-        self.__connection.sendall(message.encode())
-
-
-    def __receive(self):
-        """
-        Receive message from TCP.
-
-        :return: string, message received from TCP.
-        """
-        return json.loads(self.__connection.recv(self.buffer_size).decode())
-
 
     def get_id(self):
         return self.__id
@@ -62,7 +43,37 @@ class RemotePlayer(IPlayer):
         return self.last_build
 
     def game_over(self, status):
-        self.__send(status)
+        try:
+            self.__send(status)
+        except:
+            return
+
+
+    def disconnect(self):
+        """ 
+        Disconnect TCP from this Player.
+        """
+        self.__connection.close()    
+
+    
+    def __send(self, message):
+        """
+        Send message over TCP.
+
+        :param message: string, message to send
+        """
+        message = json.dumps(message)
+        self.__connection.sendall(message.encode())
+
+
+    def __receive(self):
+        """
+        Receive message from TCP.
+
+        :return: string, message received from TCP.
+        """
+        return json.loads(self.__connection.recv(self.buffer_size).decode())
+
 
     def __get_worker_place(self, board, x, y):
         """

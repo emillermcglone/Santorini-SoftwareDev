@@ -15,7 +15,18 @@ sys.path.append('../Santorini/')
 
 from Admin.server_configurations.stdin_server_configuration import ServerConfiguration
 from Admin.tournament_manager import TournamentManager
-from Player.players.remote_player import RemotePlayer
+from Admin.configuration import IConfiguration
+from Remote.remote_player import RemotePlayer
+
+class TournamentManagerConfiguration(IConfiguration):
+    def __init__(self, players):
+        self.players = players
+    
+    def players(self):
+        return self.players
+
+    def observers(self):
+        return []
 
 
 class XServer:
@@ -41,6 +52,21 @@ class XServer:
         self.players = []
 
 
+    def __reset(self):
+        """
+        Reset the server after a tournament has ended or when not enough players connect.
+
+        Players are disconnected. The socket is closed if the tournament should not be repeated, repeat is 0. 
+        """
+        for p in self.players:
+            p.disconnect()
+        self.players = []
+
+        if not self.repeat:
+            self.close()
+            sys.exit()
+
+
     def start(self):
         """
         Start server and spin up a new thread for it. 
@@ -48,8 +74,23 @@ class XServer:
         self.__socket.listen(3)
         self.live = True
 
-        thread = Thread(target=self.__accept_connections)
-        thread.start()
+        self.__accept_connections()
+
+        if len(self.players) < self.min_players:
+            print("Not enough players")
+            self.__reset()
+            return self.start() # return to avoid stack overflow
+
+        tournament_manager = TournamentManager(TournamentManagerConfiguration(self.players))
+        result = tournament_manager.run_tournament()
+        self.notify_tournament_end(result)
+        self.__reset()
+        return self.start()
+
+
+    def notify_tournament_end(self, result):
+        for p in self.players:
+            p.game_over(result)
 
 
     def __accept_connections(self):
@@ -83,4 +124,9 @@ class XServer:
 
 
     def close(self):
-        pass
+        self.__socket.close()
+
+
+if __name__ == "__main__":
+    server = XServer()
+    server.start()
