@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
+from Admin.server_configuration import IServerConfiguration
 
-class IServerConfiguration(ABC):
+class STDINServerConfiguration(IServerConfiguration):
     """
-    Server configuration specifying minimum number of players, port number,
-    wait time for remote components to connect, and whether server should
-    run an indefinite number of tournaments or not. 
+    Configuration that provides the tournament manager with the list of
+    players and observers involved.
     """
 
     @abstractmethod
