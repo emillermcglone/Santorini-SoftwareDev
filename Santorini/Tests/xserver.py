@@ -6,6 +6,8 @@ through TCP connections.
 import sys
 import socket
 import json
+import fileinput
+
 
 from threading import Thread
 from timeout_decorator import timeout, TimeoutError
