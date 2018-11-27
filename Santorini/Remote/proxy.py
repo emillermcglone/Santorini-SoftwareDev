@@ -4,8 +4,7 @@ tournament manager and referee on a Santorini game server.
 """
 
 import socket
-import threading
-
+from threading import Thread
 
 class ClientProxy:
     """ Proxy to connect to a remote server through TCP. """
@@ -45,19 +44,19 @@ class ClientProxy:
         self.__live = True
 
 
-    def subscribe(self, subscriber, end_handler):
+    def subscribe(self, subscriber, connection_loss_handler):
         """
         Subscribe subscriber to socket connection.
 
         :param subscriber: (string) -> void, function that handles messages from socket
-        :param end_handler: () -> void, function that handles connection close or loss
+        :param connection_loss_handler: () -> void, function that handles connection close or loss
         """
         self.connect()
-        thread = threading.Thread(target=self.__run_subscription, args=(subscriber, end_handler))
+        thread = Thread(target=self.__run_subscription, args=(subscriber, connection_loss_handler))
         thread.start()
 
 
-    def __run_subscription(self, handler, end_handler):
+    def __run_subscription(self, handler, connection_loss_handler):
         """
         Run the subscription for given handler.
 
@@ -67,7 +66,7 @@ class ClientProxy:
             data = self.receive()                
             handler(data)
         
-        end_handler()
+        connection_loss_handler()
 
 
     def send(self, message):

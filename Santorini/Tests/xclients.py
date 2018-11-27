@@ -1,12 +1,17 @@
+"""
+XClients runs the client side of a Santorini game server. It configures itself with the 
+player components and connect them to the server. 
+"""
+
 import sys
 import socket
 import json
 import fileinput
+
 from threading import Thread
 from timeout_decorator import timeout, TimeoutError
-import names
-from pprint import pprint
 
+# Access to all modules
 sys.path.append('./Santorini/')
 sys.path.append('./gija-emmi/Santorini/')
 sys.path.append('../Santorini/')
@@ -17,13 +22,12 @@ from Remote.proxy_player import ProxyPlayer
 
 
 class XClients:
-    """
-    Client side of a Santorini tournament for a configuration.
-    """
+    """ Client side of a Santorini tournament. """
 
     def __init__(self, configuration=STDINRemoteConfiguration()):
         """
-        Initialize XClients with given configuration. 
+        Initialize XClients with given configuration, which provides, players, observers, ip
+        address and port number.
 
         :param configuration: Configuration, configuration for xclients.
         """
@@ -37,7 +41,7 @@ class XClients:
 
     def run(self):
         """
-        Run client side Santorini for each ProxyPlayer.
+        Run client side Santorini and spin up a new thread for each ProxyPlayer.
         """
         for p in self.proxy_players:
             thread = Thread(target=p.run)

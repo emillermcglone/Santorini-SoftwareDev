@@ -63,6 +63,12 @@ class ProxyPlayer:
 
         
     def __handle_message(self, response):
+        """
+        Handle message from server. If message doesn't correspond to any 
+        qualifier, send server player id to give up.
+
+        :param response: Any, message from server.
+        """
         qualifier_to_handlers = {
             self.__playing_as_qualifier: self.__playing_as_handler,
             self.__opponent_qualifier: self.__opponent_handler,
@@ -76,6 +82,7 @@ class ProxyPlayer:
                 handler(response)
                 return
 
+        # if no qualifier validates message, give up.
         self.__send(self.player_id)
 
 
@@ -95,15 +102,18 @@ class ProxyPlayer:
     
     def __results_handler(self, value):
         """
-        Handle Results message.
+        Handle Results message by doing nothing.
 
-        :param value: Results,  results message
+        :param value: Results, results message
         """
         pass
 
 
-    def __handle_connection_loss():
-        pass
+    def __handle_connection_loss(self):
+        """
+        Handle connection loss by closing proxy.
+        """
+        self.proxy.close()
             
 
     def __playing_as_qualifier(self, value):
@@ -163,16 +173,21 @@ class ProxyPlayer:
         """
         Handle Placement message.
 
+        Replace all the workers in the board. 
+
         :param value: Placement, placement message
         """
 
+        # if there's more than 2 workers, add second last worker to list
         if len(value) >= 2:
             self.workers.append(value[-2][0])
+        
+        # if there's less than 2, reset worker list
         else:
             self.workers = []
 
-        for w in value:
-            wid, x, y = w
+        for worker_place in value:
+            wid, x, y = worker_place
             if wid in self.workers:
                 self.board.place_worker(self.player_id, wid, x, y)
             else:
@@ -197,6 +212,8 @@ class ProxyPlayer:
         """
         Handle turn message.
 
+        Remake board according to Board specification from server.
+
         :param value: Board, board
         """
         self.board = self.__make_game_board(value)
@@ -216,11 +233,21 @@ class ProxyPlayer:
 
 
     def __make_game_board(self, board):
+        """
+        Make a GameBoard from the Board specification.
+
+        :param board: Board, board state specification from server.
+        :return: GameBoard, the GameBoard from the Board specification
+        """
         gb = GameBoard()
         for y, row in enumerate(board):
             for x, el in enumerate(row):
+
+                # if there's no worker
                 if isinstance(el, int):
                     gb.build_floor(x, y, el)
+
+                # if there's a worker
                 elif isinstance(el, str):
                     height = int(el[0])
                     pid = el[1:-1]
@@ -231,13 +258,23 @@ class ProxyPlayer:
 
 
     def __natural_under_five(self, value):
+        """
+        Is given value a natural number under five?
+
+        :param value: Any, value to check
+        :return: bool, True if natural number under five, False otherwise
+        """
         return isinstance(value, int) and value >= 0 and value <= 5
 
 
-
-
-
     def __get_direction(self, from_xy, to_xy):
+        """
+        Get directions from coordinates.
+
+        :param from_xy: (N, N), from coordinates
+        :param to_xy: (N, N), to coordinates
+        :return: [string, string], directions 
+        """
         from_x, from_y = from_xy
         to_x, to_y = to_xy
     
@@ -245,6 +282,13 @@ class ProxyPlayer:
 
     
     def __north_south(self, from_y, to_y):
+        """
+        Get y direction.
+
+        :param from_y: N, y from coordinate
+        :param to_y: N, y to coordinate
+        :return: string, direction
+        """
         if to_y is from_y:
             return "PUT"
         elif to_y > from_y:
@@ -254,11 +298,16 @@ class ProxyPlayer:
 
 
     def __east_west(self, from_x, to_x):
+        """
+        Get x direction.
+
+        :param from_x: N, x from coordinate
+        :param to_x: N, x to coordinate
+        :return: string, direction
+        """
         if to_x is from_x:
             return "PUT"
         elif to_x > from_x:
             return "EAST"
         else:
             return "WEST"
-
-

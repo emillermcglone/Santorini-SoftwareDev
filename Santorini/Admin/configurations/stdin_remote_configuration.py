@@ -4,16 +4,97 @@ sys.path.append(sys.path[0] + "/../../")
 from Lib.util import import_cls
 from Admin.configurations.stdin_configuration import STDINConfiguration
 
+def stdin():
+    """
+    Read all lines from fileinput.
+
+    :return: string, input from fileinput
+    """
+    lines = ""
+    for line in fileinput.input():
+        lines += line
+    return lines
+
 class STDINRemoteConfiguration(STDINConfiguration):
     """
     Configuration that extracts players and observers from stdin JSON values. 
     """
     
-    def __init__(self):
+    def __init__(self, readable=stdin):
         """
         initialize the configuration
         """
         self.configuration = None
+        self.readable = readable
+
+
+    def observers(self):
+        """
+        Create a list of observers from the given configuration path for each observer
+
+        :return: [Observer, ...], list of obserbers
+        """
+        json_observers = self.__extract_from_configuration('observers', self.__observers_conf_qualifier)
+
+        try:
+            observers = []
+
+            for observer in json_observers: 
+                observer_cls = import_cls(observer[1])
+                observers.append(observer_cls())
+
+            return observers
+        except:
+            self.__exit()
+
+    
+    def __observers_conf_qualifier(self, value):
+        """
+        Check if given value is a valid observers configuration.
+
+        :param value: Any, value to check
+        :return: bool, True if valid, False otherwise
+        """
+        def is_name_pathstring(value):
+            return isinstance(value, list) and len(value) == 2 \
+                    and all(map(lambda e: isinstance(e, str), value))
+
+        return isinstance(value, list) and all(map(is_name_pathstring, value))
+
+
+    def players(self):
+        """
+        Create a list of player from the given configuration path for each player
+
+        :return: [Player, ...], list of obserbers
+        """
+        json_players = self.__extract_from_configuration('players', self.__players_conf_qualifier)
+
+        try:
+            players = []
+
+            for player in json_players:
+                player_id = player[1]
+                player_cls = import_cls(player[2])
+                players.append(player_cls(player_id))
+
+            return players
+        except:
+            self.__exit()
+
+    
+    def __players_conf_qualifier(self, value):
+        """
+        Check if given value is a valid players configuration.
+
+        :param value: Any, value to check
+        :return: bool, True if valid, False otherwise
+        """
+        def is_kind_name_pathstring(value):
+            return isinstance(value, list) and len(value) == 3 \
+                    and all(map(lambda e: isinstance(e, str), value))
+
+        return isinstance(value, list) and all(map(is_kind_name_pathstring, value))
 
 
     def ip(self):
@@ -22,18 +103,7 @@ class STDINRemoteConfiguration(STDINConfiguration):
 
         :return: string, IP address
         """
-        try:
-            self._set_configuration()
-            ip = self.configuration['ip']
-
-            if not isinstance(ip, str):
-                raise Exception()
-
-            return ip
-
-        except:
-            print("No valid configuration found. Try again")
-            sys.exit()
+        return self.__extract_from_configuration('ip', lambda v: isinstance(v, str))
             
 
     def port(self):
@@ -42,18 +112,49 @@ class STDINRemoteConfiguration(STDINConfiguration):
 
         :return: N, port number
         """
-        try:
-            self._set_configuration()
-            port = self.configuration['port']
+        return self.__extract_from_configuration('port', self.__valid_port)
 
-            if not self.__valid_port(port):
+
+    def __set_configuration(self):
+        """
+        Set the configuration to stdin JSON values if
+        the configuration has not been set. 
+        """
+        if self.configuration is None:
+            self.configuration = json.loads(self.readable())
+        
+
+
+    def __extract_from_configuration(self, key, qualifier):
+        """
+        Extract value from configuration from given key. 
+        If no valid configuration is found, use fallback function
+
+        :param key: string, key in configuration
+        :param qualifier: (Any) -> bool, qualifier to determine if value is valid
+        :return: Any, value from configuration
+        """
+        value = None
+
+        try:
+            self.__set_configuration()
+            value = self.configuration[key]
+
+            if not qualifier(value):
                 raise Exception()
 
-            return port
-
         except:
-            print("No valid configuration found. Try again")
-            sys.exit()
+            self.__exit()
+
+        return value
+
+
+    def __exit(self):
+        """
+        Notify of invalid configuration and exit program.
+        """
+        print("No valid configuration found.")
+        sys.exit()
 
 
 
