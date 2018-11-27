@@ -86,13 +86,9 @@ class XServer:
 
         tournament_manager = TournamentManager(TournamentManagerConfiguration(self.players))
         result = tournament_manager.run_tournament()
-        result = str(self.__reformat_tournament_result(result))
-        result = result.replace('(', '')
-        result = result.replace(')', '')
-        result = result.replace('"', '')
-        result = result.replace('\'', '"')
+        result = self.__reformat_tournament_result(result)
         self.notify_tournament_end(result)
-        pprint(str(result))
+        pprint(result)
         self.__reset()
         return self.start()
 
