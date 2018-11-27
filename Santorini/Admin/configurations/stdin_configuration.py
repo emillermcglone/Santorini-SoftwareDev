@@ -15,7 +15,7 @@ class STDINConfiguration:
         self.configuration = None
 
 
-    def __set_configuration(self):
+    def _set_configuration(self):
         """
         Set the configuration to stdin JSON values if
         the configuration has not been set. 
@@ -36,7 +36,7 @@ class STDINConfiguration:
         """
 
         try:
-            self.__set_configuration()
+            self._set_configuration()
             json_observers = self.configuration['observers']
             
             observers = []
@@ -63,7 +63,7 @@ class STDINConfiguration:
         """
 
         try:
-            self.__set_configuration()
+            self._set_configuration()
             json_players = self.configuration['players']
         
             players = []

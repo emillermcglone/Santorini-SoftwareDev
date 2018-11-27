@@ -84,10 +84,22 @@ class XServer:
 
         tournament_manager = TournamentManager(TournamentManagerConfiguration(self.players))
         result = tournament_manager.run_tournament()
+        result = self.__reformat_tournament_result(result)
         self.notify_tournament_end(result)
         self.__reset()
         pprint(result)
         return self.start()
+
+    
+    def __reformat_tournament_result(self, result):
+        def modify(misbehavors, meet_up):
+            loser = meet_up[1]
+            if loser in misbehavors:
+                return meet_up + ["irregular"]
+            return meet_up
+
+        return list(map(lambda m: modify(result[0], m), result[1]))
+        
 
 
     def notify_tournament_end(self, result):

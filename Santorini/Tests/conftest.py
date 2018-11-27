@@ -92,7 +92,7 @@ def ip():
 
 @pytest.fixture
 def port():
-    return 5005
+    return 5000
 
 
 @pytest.fixture
