@@ -22,7 +22,7 @@ class RemotePlayer(IPlayer):
 
     def set_id(self, new_id):
         self.__id = new_id
-        self.__send(["playing as", new_id])
+        self.__send(["playing-as", new_id])
 
 
     def notify_of_opponent(self, opponent_id):

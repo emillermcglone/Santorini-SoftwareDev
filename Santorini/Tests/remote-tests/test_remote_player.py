@@ -54,7 +54,7 @@ class TestSetId:
     def test_sends_new_id_to_connection(self, connection, remote_player):
         new_id = "new"
         remote_player.set_id(new_id)
-        assert connection.message == f'["playing as", "{new_id}"]'
+        assert connection.message == f'["playing-as", "{new_id}"]'
 
 
 class TestGetPlacement:

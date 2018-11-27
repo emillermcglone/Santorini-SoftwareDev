@@ -15,7 +15,13 @@ class STDINRemoteConfiguration(STDINConfiguration):
         """
         self.configuration = None
 
+
     def ip(self):
+        """
+        Get the IP address from STDIN.
+
+        :return: string, IP address
+        """
         try:
             self._set_configuration()
             ip = self.configuration['ip']
@@ -28,8 +34,14 @@ class STDINRemoteConfiguration(STDINConfiguration):
         except:
             print("No valid configuration found. Try again")
             sys.exit()
+            
 
     def port(self):
+        """
+        Get the port number from STDIN.
+
+        :return: N, port number
+        """
         try:
             self._set_configuration()
             port = self.configuration['port']
