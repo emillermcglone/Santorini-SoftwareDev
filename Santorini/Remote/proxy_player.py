@@ -28,12 +28,19 @@ class ProxyPlayer:
 
     @property
     def player_id(self):
+        """
+        Player id of this player.
+
+        :return: string, id of player
+        """
         return self.player.get_id()
 
 
     def run(self):
+        """ Run ProxyPlayer, sending player id and subscribing to ClientProxy. """
         self.__send(self.player.get_id())
-        self.proxy.subscribe(self.__handle_message, )
+        self.proxy.subscribe(self.__handle_message, self.__handle_connection_loss)
+
 
     def __send(self, value):
         """
@@ -61,6 +68,7 @@ class ProxyPlayer:
             self.__opponent_qualifier: self.__opponent_handler,
             self.__placement_qualifier: self.__placement_handler,
             self.__turn_qualifier: self.__turn_handler,
+            self.__results_qualifier: self.__results_handler,
         }
 
         for qualifier, handler in qualifier_to_handlers.items():
@@ -69,6 +77,33 @@ class ProxyPlayer:
                 return
 
         self.__send(self.player_id)
+
+
+    def __results_qualifier(self, value):
+        """
+        Check if given value is a Results message.
+        
+        :param value: Any, value to check
+        :return: bool, True if value is a Results message, False otherwise
+        """
+        def is_encounter_outcome(value):
+            return isinstance(value, list) and (len(value) == 2 or len(value) == 3) \
+                and isinstance(value[0], str) and isinstance(value[1], str)
+
+        return isinstance(value, list) and all(map(is_encounter_outcome, value))
+
+    
+    def __results_handler(self, value):
+        """
+        Handle Results message.
+
+        :param value: Results,  results message
+        """
+        pass
+
+
+    def __handle_connection_loss():
+        pass
             
 
     def __playing_as_qualifier(self, value):
@@ -130,9 +165,11 @@ class ProxyPlayer:
 
         :param value: Placement, placement message
         """
-        if len(value) >= 2:
-            self.workers.append(value[])
 
+        if len(value) >= 2:
+            self.workers.append(value[-2][0])
+        else:
+            self.workers = []
 
         for w in value:
             wid, x, y = w
@@ -197,8 +234,7 @@ class ProxyPlayer:
         return isinstance(value, int) and value >= 0 and value <= 5
 
 
-    def __handle_connection_loss():
-        pass
+
 
 
     def __get_direction(self, from_xy, to_xy):

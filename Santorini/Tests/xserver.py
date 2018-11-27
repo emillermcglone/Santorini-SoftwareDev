@@ -5,9 +5,11 @@ through TCP connections.
 
 import sys
 import socket
+import json
 
 from threading import Thread
 from timeout_decorator import timeout, TimeoutError
+import names
 
 sys.path.append('./Santorini/')
 sys.path.append('./gija-emmi/Santorini/')
@@ -20,12 +22,12 @@ from Remote.remote_player import RemotePlayer
 
 from pprint import pprint
 
-class TournamentManagerConfiguration(IConfiguration):
+class TournamentManagerConfiguration:
     def __init__(self, players):
-        self.players = players
+        self.__players = players
     
     def players(self):
-        return self.players
+        return self.__players
 
     def observers(self):
         return []
@@ -84,15 +86,23 @@ class XServer:
 
         tournament_manager = TournamentManager(TournamentManagerConfiguration(self.players))
         result = tournament_manager.run_tournament()
-        result = self.__reformat_tournament_result(result)
+        result = str(self.__reformat_tournament_result(result))
+        result = result.replace('(', '')
+        result = result.replace(')', '')
+        result = result.replace('"', '')
+        result = result.replace('\'', '"')
         self.notify_tournament_end(result)
+        pprint(str(result))
         self.__reset()
-        pprint(result)
         return self.start()
 
     
     def __reformat_tournament_result(self, result):
         def modify(misbehavors, meet_up):
+            meet_up = list(map(lambda p: p.replace('b\'', ''), meet_up))
+            meet_up = list(map(lambda p: p.replace('\'', ''), meet_up))
+            meet_up = list(map(lambda p: p.replace('"', ''), meet_up))
+
             loser = meet_up[1]
             if loser in misbehavors:
                 return meet_up + ["irregular"]
@@ -133,7 +143,7 @@ class XServer:
         :param connection: conn, TCP connection
         """
         name = connection.recv(self.buffer_size)
-        player = RemotePlayer(name, connection)
+        player = RemotePlayer(str(name), connection)
         self.players.append(player)
 
 
