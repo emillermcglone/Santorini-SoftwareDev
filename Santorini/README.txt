@@ -199,3 +199,19 @@ have any interaction with it.
 
 - The ruler checker, check_build, checks that the worker position given in the build action is
 the same worker that they moved in the move action. 
+
+
+
+-----------------------------------------------------------------------------------------
+11/26/18 XServer and XClients
+
+XServer
+- Assignment specification has different flow than our design. We get move and build 
+specifications from players separately, and we ask players the id of worker to be placed.
+
+XClients
+- Did not implement updating observers
+- Do not put Game logic in Proxy
+- Had to remake board and rulechecker everytime we get a Board message
+- Still can't import Players and Observers from Linux path
+- Fix: Had to replace all workers on the Board when we get a Placement message. 

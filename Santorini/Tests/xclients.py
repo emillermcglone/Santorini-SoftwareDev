@@ -7,6 +7,7 @@ import sys
 import socket
 import json
 import fileinput
+import time
 
 from threading import Thread
 from timeout_decorator import timeout, TimeoutError
@@ -46,7 +47,8 @@ class XClients:
         for p in self.proxy_players:
             thread = Thread(target=p.run)
             thread.start()
-
+            time.sleep(0.5)
+            
 
     def __make_proxy(self):
         """
@@ -55,6 +57,7 @@ class XClients:
         :return: ClientProxy, client proxy
         """
         return ClientProxy(self.ip, self.port)
+
 
 
 if __name__ == "__main__":

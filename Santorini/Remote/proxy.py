@@ -81,6 +81,7 @@ class ClientProxy:
 
         try:
             self.__socket.sendall(message)
+            print("SEND: " + message.decode())
         except ConnectionError:
             self.__live = False
 
@@ -94,7 +95,9 @@ class ClientProxy:
         self.connect()
 
         try:
-            return self.__socket.recv(self.buffer_size).decode()
+            response = self.__socket.recv(self.buffer_size).decode()
+            print("RECEIVE: " + response)
+            return response
         except ConnectionError:
             self.__live = False
 

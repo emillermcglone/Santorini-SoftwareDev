@@ -1,0 +1,22 @@
+{
+    "players": [
+        [
+            "good",
+            "random",
+            "Player.players.random_player.Player"
+        ],
+        [
+            "infinite",
+            "infinitemove",
+            "Player.players.infinite_loop_player.InfiniteLoopPlayer"
+        ],
+        [
+            "infinite",
+            "infiniteplace",
+            "Player.players.place_infinite_loop_player.PlaceInfiniteLoopPlayer"
+        ]
+    ],
+    "observers": [],
+    "ip": "localhost",
+    "port": 55555
+}

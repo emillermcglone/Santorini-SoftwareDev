@@ -195,6 +195,7 @@ class ProxyPlayer:
 
         spec = self.player.get_placement(self.board, "id", self.rule_checker)
         self.__send(spec['xy'])
+        print(f"send placement spec as {spec['xy']}")
 
 
     def __turn_qualifier(self, value):

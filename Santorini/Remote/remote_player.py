@@ -79,7 +79,9 @@ class RemotePlayer(IPlayer):
 
         :return: string, message received from TCP.
         """
-        return json.loads(self.__connection.recv(self.buffer_size).decode())
+        response = json.loads(self.__connection.recv(self.buffer_size).decode())
+        print(response)
+        return response
 
 
     def __get_worker_place(self, board, x, y):

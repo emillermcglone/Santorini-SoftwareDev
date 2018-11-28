@@ -35,10 +35,9 @@ class TournamentManager:
         :param configuration: Configuration, game configuration containing players
         """
         self.__players = configuration.players()
-        self.__change_duplicate_ids(self.__players)
-
         self.__observers = configuration.observers()
 
+        self.__change_duplicate_ids(self.__players)
         self.__misbehaved_players = []
         self.__meet_ups = []
 
@@ -60,6 +59,24 @@ class TournamentManager:
         """
         return copy.deepcopy(self.__observers)
 
+   
+    def run_tournament(self):
+        """
+        Run a round robin tournament with the players.
+
+        Each meet-up between players runs a series of 3 Santorini games.
+
+        :return: TournamentResult, result of tournament
+        """
+        # Run round robin game
+        for i, player in enumerate(self.__players):
+            self.__match_against_rest(player, self.__players[i + 1:])
+
+        # Reformat all meet ups
+        meet_ups = list(map(lambda x: [x.winner.get_id(), x.loser.get_id()], self.__meet_ups))
+        
+        return [self.__misbehaved_players, meet_ups]
+
     
     def __handle_misbehaving_player(self, player):
         """
@@ -73,8 +90,7 @@ class TournamentManager:
         
         :param player: Player, the player that misbehaved
         """
-        self.__misbehaved_players.append(player)
-
+        self.__misbehaved_players.append(player.get_id())
         new_meet_ups = []
 
         for meet_up in self.__meet_ups:
@@ -82,18 +98,17 @@ class TournamentManager:
             loser = meet_up.loser
             condition = meet_up.condition
 
-            # Leave out if misbehaved player is the winner due to opponent breakage
-            if winner.get_id() is player.get_id() and condition is GameOverCondition.LoserBrokeInTournament:
+            # Leave out if both winner and loser are broken
+            if winner.get_id() == player.get_id() and condition is not GameOverCondition.FairGame:
                 continue
 
-            # Switch winner and loser 
-            if winner.get_id() is player.get_id():
+            # Switch winner and loser if winner is broken player
+            if winner.get_id() == player.get_id() and condition is GameOverCondition.FairGame:
                 game_over = GameOver(loser, winner, GameOverCondition.LoserBrokeInTournament)
                 new_meet_ups.append(game_over)
                 continue
 
             new_meet_ups.append(meet_up)
-
         self.__meet_ups = new_meet_ups
 
     
@@ -126,25 +141,6 @@ class TournamentManager:
             new_id = names.get_first_name().lower()
         return new_id
 
-            
-    def run_tournament(self):
-        """
-        Run a round robin tournament with the players.
-
-        Each meet-up between players runs a series of 3 Santorini games.
-
-        :return: TournamentResult, result of tournament
-        """
-        for i, player in enumerate(self.__players):
-            if player in self.__misbehaved_players:
-                continue
-            self.__match_against_rest(player, self.__players[i + 1:])
-        
-        misbehaved_players = list(map(lambda x: x.get_id(), self.__misbehaved_players))
-        meet_ups = list(map(lambda x: [x.winner.get_id(), x.loser.get_id()], self.__meet_ups))
-
-        return [misbehaved_players, meet_ups]
-
 
     def __match_against_rest(self, player, opponents):
         """
@@ -154,10 +150,14 @@ class TournamentManager:
         :param opponents: [Player, ...], opponents of player 
         """
         for opponent in opponents:
-            if opponent in self.__misbehaved_players:
-                continue
 
-            referee = Referee(player, opponent, time_limit=3, observers=self.__observers)
+            if player.get_id() in self.__misbehaved_players:
+                break
+
+            if opponent.get_id() in self.__misbehaved_players:
+                continue
+            
+            referee = Referee(player, opponent, time_limit=5, observers=self.__observers)
             self.__notify_of_opponents(player, opponent)
             series_result = referee.run_games(3)
 
