@@ -42,12 +42,12 @@ class STDINConfiguration:
             observers = []
 
             for observer in json_observers: 
-                observer_cls = import_cls(observer[1])
+                observer_cls = import_cls(observer[1]).Observer
                 observers.append(observer_cls())
 
             return observers
         except KeyboardInterrupt:
-            print("No valid configuration found.")            
+            print("No valid configuration found.")
             sys.exit()
         except:
             print("No valid configuration found. Try again")
@@ -70,14 +70,15 @@ class STDINConfiguration:
 
             for player in json_players:
                 player_id = player[1]
-                player_cls = import_cls(player[2])
+                player_cls = import_cls(player[2]).Player
                 players.append(player_cls(player_id))
 
             return players
         except KeyboardInterrupt:
             print("No valid configuration found.")    
             sys.exit()
-        except:
+        except Exception as e:
+            print(e.message)
             print("No valid configuration found. Try again")
             self.configuration = None
             return self.players()

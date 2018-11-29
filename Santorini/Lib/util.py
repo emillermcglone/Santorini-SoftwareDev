@@ -1,7 +1,7 @@
 # File containing utility functions
 import json
 import sys
-import importlib
+import importlib.util
 import fileinput
 import pprint
 
@@ -113,6 +113,13 @@ def make_build(x1, y1, x2, y2):
     }
 
 
+def path_import(absolute_path):
+   spec = importlib.util.spec_from_file_location(absolute_path, absolute_path)
+   module = importlib.util.module_from_spec(spec)
+   spec.loader.exec_module(module)
+   return module
+
+
 def import_cls(path):
     """
     Dynamically load a class from a string path.
@@ -120,14 +127,7 @@ def import_cls(path):
     :param path: string, path to python class
     :return: cls, python class
     """
-
-    class_data = path.split(".")
-    module_path = ".".join(class_data[:-1])
-    class_str = class_data[-1]
-
-    module = importlib.import_module(module_path)
-    
-    return getattr(module, class_str)
+    return path_import(path)
 
 
 def parse_json():
