@@ -40,7 +40,7 @@ class STDINRemoteConfiguration(STDINConfiguration):
             observers = []
 
             for observer in json_observers: 
-                observer_cls = import_cls(observer[1])
+                observer_cls = import_cls(observer[1]).Observer
                 observers.append(observer_cls())
 
             return observers
@@ -75,7 +75,7 @@ class STDINRemoteConfiguration(STDINConfiguration):
 
             for player in json_players:
                 player_id = player[1]
-                player_cls = import_cls(player[2])
+                player_cls = import_cls(player[2]).Player
                 players.append(player_cls(player_id))
 
             return players
