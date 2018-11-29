@@ -51,8 +51,8 @@ class XClients:
             threads.append(thread)
             time.sleep(1)
 
-        for thread in threads:
-            thread.join()
+        sys.exit()
+        
             
 
     def __make_proxy(self):

@@ -3,6 +3,7 @@ import copy
 from Admin.board import GameBoard
 from Admin.rule_checker import RuleChecker
 import sys
+import threading
 
 from pprint import pprint
 
@@ -109,8 +110,6 @@ class ProxyPlayer:
 
         :param value: Results, results message
         """
-        print(f"RESULTS: {value}")
-        print(value)
         sys.exit()
 
 
@@ -137,7 +136,6 @@ class ProxyPlayer:
 
         :param value: ["playing-as", string], playing as message
         """
-        print(f"PLAYING AS: {value}")
         self.player.set_id(value[1])
 
     
@@ -157,7 +155,6 @@ class ProxyPlayer:
 
         :param value: string, opponent id message
         """
-        print(f"OPPONENTS: {value}")
         self.opponent = value
 
 
@@ -184,7 +181,6 @@ class ProxyPlayer:
 
         :param value: Placement, placement message
         """
-        print(f"PLACEMENT: {value}")
 
         # if there's more than 2 workers, add second last worker to list
         if len(value) >= 2:
@@ -225,12 +221,10 @@ class ProxyPlayer:
 
         :param value: Board, board
         """
-        print(f"TURNS: {value}")
         self.board = self.__make_game_board(value)
         self.rule_checker = RuleChecker(self.board)
 
         move = self.player.get_move(self.board, self.rule_checker)
-        print(self.player_id)
 
         copy_board = copy.deepcopy(self.board)
         copy_rule_checker = RuleChecker(copy_board)
@@ -241,8 +235,6 @@ class ProxyPlayer:
         move_EW, move_NS = self.__get_direction(move['xy1'], move['xy2'])
         build_EW, build_NS = self.__get_direction(build['xy1'], build['xy2'])
         request = [wid, move_EW, move_NS, build_EW, build_NS]
-        print(move)
-        print(build)
         self.__send(request)
 
 

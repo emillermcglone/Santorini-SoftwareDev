@@ -92,7 +92,6 @@ class ClientProxy:
 
         try:
             self.__socket.sendall(message)
-            print("SEND: " + message.decode())
         except ConnectionError:
             self.__live = False
 

@@ -78,7 +78,6 @@ class STDINConfiguration:
             print("No valid configuration found.")    
             sys.exit()
         except Exception as e:
-            print(e.message)
             print("No valid configuration found. Try again")
             self.configuration = None
             return self.players()
