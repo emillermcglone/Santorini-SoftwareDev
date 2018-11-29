@@ -1,12 +1,1 @@
-[
-    [
-        "random",
-        "infinitemove",
-        "irregular"
-    ],
-    [
-        "random",
-        "infiniteplace",
-        "irregular"
-    ]
-]
+[["foobar", "barfoo", "irregular"], ["foobar", "barfus", "irregular"]]
