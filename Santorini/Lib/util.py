@@ -217,6 +217,11 @@ def gen_builds(player, w, board, checker):
         wid = board.get_worker_id(*w)
         if checker.check_build(player, wid, w[0], w[1], cell[0], cell[1]):
             action = {'type': 'build', 'xy1': [w[0], w[1]], 'xy2': [cell[0], cell[1]], 'p': player}
+
+            if (w[0], w[1]) == (1, 2) and (cell[0], cell[1]) == (2, 1):
+                print(xboard(board))
+            
+
             yield action
 
 

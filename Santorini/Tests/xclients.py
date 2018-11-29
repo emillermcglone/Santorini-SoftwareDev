@@ -44,10 +44,15 @@ class XClients:
         """
         Run client side Santorini and spin up a new thread for each ProxyPlayer.
         """
+        threads = []
         for p in self.proxy_players:
             thread = Thread(target=p.run)
             thread.start()
-            time.sleep(0.5)
+            threads.append(thread)
+            time.sleep(1)
+
+        for thread in threads:
+            thread.join()
             
 
     def __make_proxy(self):

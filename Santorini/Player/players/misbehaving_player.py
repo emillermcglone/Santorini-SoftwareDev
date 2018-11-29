@@ -105,3 +105,5 @@ class MisbehavingPlayer(IPlayer):
         :param status: one of "WIN" | "LOSE" depending on the outcome of the board
         """
         pass
+
+Player = MisbehavingPlayer

@@ -74,7 +74,6 @@ class TournamentManager:
 
         # Reformat all meet ups
         meet_ups = list(map(lambda x: [x.winner.get_id(), x.loser.get_id()], self.__meet_ups))
-        
         return [self.__misbehaved_players, meet_ups]
 
     

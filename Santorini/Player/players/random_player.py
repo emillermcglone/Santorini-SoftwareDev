@@ -8,6 +8,8 @@ from Lib.util import gen_moves, gen_builds
 
 from Common.player import Player as IPlayer
 
+from Lib.util import xboard
+
 class Player(IPlayer):
     """
     Class representing a Player with a unique string identifier.
@@ -60,6 +62,9 @@ class Player(IPlayer):
 
         :return: JSON that represents a place_worker action
         """
+
+        print(xboard(board))
+
         place_diagonal_strategy = PlaceDiagonalStrategy(self.__player_id, rule_checker, board)
         
         to_xy = place_diagonal_strategy.decide_place(wid)

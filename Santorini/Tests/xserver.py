@@ -8,6 +8,7 @@ import socket
 import json
 import names
 import fileinput
+import names
 
 sys.path.append('./Santorini/')
 sys.path.append('./gija-emmi/Santorini/')
@@ -21,8 +22,6 @@ from Admin.server_configurations.stdin_server_configuration import ServerConfigu
 from Admin.tournament_manager import TournamentManager
 from Admin.configurations.standard_configuration import StandardConfiguration
 from Remote.remote_player import RemotePlayer
-
-from Observer.xobserver import XObserver
 
 
 class XServer:
@@ -73,11 +72,11 @@ class XServer:
         # Run TournamentManager
         tournament_manager = TournamentManager(StandardConfiguration(self.players, []))
         result = tournament_manager.run_tournament()
-        print(result)
 
         # Print result and notify players
         result = self.__reformat_tournament_result(result)
         self.notify_tournament_end(result)
+        print(json.dumps(result))
 
         # Reset and start again
         self.__reset()
@@ -108,7 +107,7 @@ class XServer:
         :param result: Results, results of tournament
         """
         for p in self.players:
-            p.game_over(result)
+            p.tournament_end(result)
 
 
     def __accept_connections(self):

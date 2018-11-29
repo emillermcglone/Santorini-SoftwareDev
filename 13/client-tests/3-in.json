@@ -1,0 +1,17 @@
+{
+    "players": [
+        [
+            "good",
+            "randomone",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
+        ],
+        [
+            "good",
+            "randomtwo",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
+        ]
+    ],
+    "observers": [],
+    "ip": "localhost",
+    "port": 55555
+}

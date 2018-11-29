@@ -46,8 +46,8 @@ class RuleChecker(IRuleChecker):
         # Check that the height of the targeted board cell is less than 4
         return self.check_valid_cell(x1, y1) \
                and self.check_valid_cell(x2, y2) \
-               and self.__board.get_player_id(x1, y1) is pid \
-               and self.__board.get_worker_id(x1, y1) is wid \
+               and self.__board.get_player_id(x1, y1) == pid \
+               and self.__board.get_worker_id(x1, y1) == wid \
                and not self.__board.get_player_id(x2, y2) \
                and check_distance(x1, y1, x2, y2) \
                and self.__board.get_height(x2, y2) < 4
@@ -70,6 +70,7 @@ class RuleChecker(IRuleChecker):
         :return:   True if valid move, else False
         :rtype     bool
         """
+
         # Check that the source cell is valid
         # Check that the destination cell is valid
         # Check that the worker at origin belongs to given player
@@ -78,7 +79,7 @@ class RuleChecker(IRuleChecker):
         # Check that the worker is moving to an adjacent cell
         return self.check_valid_cell(x1, y1) \
                and self.check_valid_cell(x2, y2) \
-               and self.__board.get_player_id(x1, y1) is pid \
+               and self.__board.get_player_id(x1, y1) == pid \
                and self.__board.get_height(x2, y2) < 4 \
                and self.__board.get_height(x1, y1) + 1 >= self.__board.get_height(x2, y2) \
                and not self.__board.get_player_id(x2, y2) \
@@ -107,7 +108,6 @@ class RuleChecker(IRuleChecker):
         # Check that the given worker ID has not already been placed on the board
         return self.check_valid_cell(x, y) \
                and self.__board.get_player_id(x, y) is None \
-               and self.__board.find_worker(pid, wid) is None
 
     def check_valid_cell(self, x, y):
         """

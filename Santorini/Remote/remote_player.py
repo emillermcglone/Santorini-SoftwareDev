@@ -50,10 +50,16 @@ class RemotePlayer(IPlayer):
         return self.last_build
 
     def game_over(self, status):
-        try:
-            self.__send(status)
-        except:
-            return
+        pass
+
+
+    def tournament_end(self, results):
+        """
+        Notify player of end of tournament.
+
+        :param results: Results, results of tournament
+        """
+        self.__send(results)
 
 
     def disconnect(self):
@@ -80,7 +86,6 @@ class RemotePlayer(IPlayer):
         :return: string, message received from TCP.
         """
         response = json.loads(self.__connection.recv(self.buffer_size).decode())
-        print(response)
         return response
 
 

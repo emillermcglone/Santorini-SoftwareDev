@@ -175,7 +175,7 @@ class Referee:
         :raise TimeoutOrInvalidActionWinner: if a player times out or makes an invalid action
         """
 
-        for player, wid in zip(self.__players_iter, [WORKER_ONE_ID] * 2 + [WORKER_TWO_ID] * 2):
+        for player, wid in zip(self.__players_iter, ["1", "1", "2", "2"]):
             self.__prompt_act_raise(TurnPhase.PLACE, player, wid)
 
 
@@ -400,7 +400,8 @@ class Referee:
         """
         worker = action['wid']
         xy = action['xy']
-        return self.__checker.check_place(pid, worker, *xy)
+        result = self.__checker.check_place(pid, worker, *xy)
+        return result
 
 
     def __check_move(self, pid, action):

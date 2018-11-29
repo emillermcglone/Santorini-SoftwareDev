@@ -3,20 +3,20 @@
         [
             "good",
             "random",
-            "Player.players.random_player.Player"
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
         ],
         [
             "infinite",
             "infinitemove",
-            "Player.players.infinite_loop_player.InfiniteLoopPlayer"
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/infinite_loop_player.py"
         ],
         [
             "infinite",
             "infiniteplace",
-            "Player.players.place_infinite_loop_player.PlaceInfiniteLoopPlayer"
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/place_infinite_loop_player.py"
         ]
     ],
     "observers": [],
     "ip": "127.0.0.1",
-    "port": 55556
+    "port": 55555
 }

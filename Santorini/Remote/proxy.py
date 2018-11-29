@@ -4,6 +4,9 @@ tournament manager and referee on a Santorini game server.
 """
 
 import socket
+import time
+import json
+import sys
 from threading import Thread
 
 class ClientProxy:
@@ -40,7 +43,15 @@ class ClientProxy:
             return
 
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__socket.connect((self.ip, self.port))
+
+        try:
+            self.__socket.connect((self.ip, self.port))
+            
+        # If server is not live yet, wait for one second and try again
+        except ConnectionRefusedError:
+            time.sleep(1)
+            return self.connect()
+
         self.__live = True
 
 
@@ -96,8 +107,9 @@ class ClientProxy:
 
         try:
             response = self.__socket.recv(self.buffer_size).decode()
-            print("RECEIVE: " + response)
-            return response
+            if response == "":
+                sys.exit()
+            return json.loads(response)
         except ConnectionError:
             self.__live = False
 

@@ -2,7 +2,9 @@ import json
 import copy
 from Admin.board import GameBoard
 from Admin.rule_checker import RuleChecker
+import sys
 
+from pprint import pprint
 
 class ProxyPlayer:
     """
@@ -59,6 +61,7 @@ class ProxyPlayer:
         :return: Any, JSON loaded value from server
         """
         response = self.proxy.receive()
+        json_resp = json.loads(response)
         return json.loads(response)
 
         
@@ -78,7 +81,7 @@ class ProxyPlayer:
         }
 
         for qualifier, handler in qualifier_to_handlers.items():
-            if qualifier(response):
+            if qualifier(response): 
                 handler(response)
                 return
 
@@ -106,7 +109,9 @@ class ProxyPlayer:
 
         :param value: Results, results message
         """
-        pass
+        print(f"RESULTS: {value}")
+        print(value)
+        sys.exit()
 
 
     def __handle_connection_loss(self):
@@ -123,7 +128,7 @@ class ProxyPlayer:
         :param value: Any, value to check
         :return: bool, True if value is a playing as message, False otherwise
         """
-        return isinstance(value, list) and value[0] == "playing-as" and isinstance(value[1], str)
+        return isinstance(value, list) and len(value) == 2 and value[0] == "playing-as" and isinstance(value[1], str)
 
 
     def __playing_as_handler(self, value):
@@ -132,6 +137,7 @@ class ProxyPlayer:
 
         :param value: ["playing-as", string], playing as message
         """
+        print(f"PLAYING AS: {value}")
         self.player.set_id(value[1])
 
     
@@ -151,6 +157,7 @@ class ProxyPlayer:
 
         :param value: string, opponent id message
         """
+        print(f"OPPONENTS: {value}")
         self.opponent = value
 
 
@@ -177,6 +184,7 @@ class ProxyPlayer:
 
         :param value: Placement, placement message
         """
+        print(f"PLACEMENT: {value}")
 
         # if there's more than 2 workers, add second last worker to list
         if len(value) >= 2:
@@ -195,7 +203,6 @@ class ProxyPlayer:
 
         spec = self.player.get_placement(self.board, "id", self.rule_checker)
         self.__send(spec['xy'])
-        print(f"send placement spec as {spec['xy']}")
 
 
     def __turn_qualifier(self, value):
@@ -205,8 +212,9 @@ class ProxyPlayer:
         :param value: Any, value to check
         :return: bool, True if value is a turn request, False otherwise
         """
-        len_six_internally = all(map(lambda v: len(v) == 6, value))
-        return isinstance(value, list) and len(value) == 6 and len_six_internally
+        def len_six_internally(row):
+            return all(map(lambda v: len(v) == 6, row))
+        return isinstance(value, list) and len(value) == 6 and len_six_internally(value)
 
 
     def __turn_handler(self, value):
@@ -217,9 +225,12 @@ class ProxyPlayer:
 
         :param value: Board, board
         """
+        print(f"TURNS: {value}")
         self.board = self.__make_game_board(value)
         self.rule_checker = RuleChecker(self.board)
+
         move = self.player.get_move(self.board, self.rule_checker)
+        print(self.player_id)
 
         copy_board = copy.deepcopy(self.board)
         copy_rule_checker = RuleChecker(copy_board)
@@ -230,6 +241,8 @@ class ProxyPlayer:
         move_EW, move_NS = self.__get_direction(move['xy1'], move['xy2'])
         build_EW, build_NS = self.__get_direction(build['xy1'], build['xy2'])
         request = [wid, move_EW, move_NS, build_EW, build_NS]
+        print(move)
+        print(build)
         self.__send(request)
 
 
@@ -253,8 +266,8 @@ class ProxyPlayer:
                     height = int(el[0])
                     pid = el[1:-1]
                     wid = el[-1]
-                    self.board.build_floor(x, y, height)
-                    self.board.place_worker(pid, wid, x, y)
+                    gb.build_floor(x, y, height)
+                    gb.place_worker(pid, wid, x, y)
         return gb
 
 
@@ -278,7 +291,7 @@ class ProxyPlayer:
         """
         from_x, from_y = from_xy
         to_x, to_y = to_xy
-    
+
         return [self.__east_west(from_x, to_x), self.__north_south(from_y, to_y)]
 
     
@@ -290,7 +303,7 @@ class ProxyPlayer:
         :param to_y: N, y to coordinate
         :return: string, direction
         """
-        if to_y is from_y:
+        if to_y == from_y:
             return "PUT"
         elif to_y > from_y:
             return "SOUTH"
@@ -306,7 +319,7 @@ class ProxyPlayer:
         :param to_x: N, x to coordinate
         :return: string, direction
         """
-        if to_x is from_x:
+        if to_x == from_x:
             return "PUT"
         elif to_x > from_x:
             return "EAST"
