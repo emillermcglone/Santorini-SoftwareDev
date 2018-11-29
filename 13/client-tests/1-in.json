@@ -1,22 +1,15 @@
 {
-    "players": [
-        [
-            "good",
-            "random",
-            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
-        ],
-        [
-            "infinite",
-            "infinitemove",
-            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/infinite_loop_player.py"
-        ],
-        [
-            "infinite",
-            "infiniteplace",
-            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/place_infinite_loop_player.py"
-        ]
-    ],
-    "observers": [],
-    "ip": "127.0.0.1",
-    "port": 55555
-}
+
+    "players"   : [["good",     "foobar", "../Santorini/Player/players/random_player.py"],
+
+                   ["infinite", "barfoo", "../Santorini/Player/players/infinite_loop_player.py"],
+
+                   ["infinite", "barfus", "../Santorini/Player/players/place_infinite_loop_player.py"]],
+
+    "observers" : [],
+
+    "ip"        : "127.0.0.1",
+
+    "port"      : 55556
+
+   }
