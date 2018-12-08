@@ -70,9 +70,9 @@ class TestSend:
 
 class TestReceive:
     def test_receive_message(self, holder, echo_server, client_proxy):
-        client_proxy.send("Message")
+        client_proxy.send('"Message"')
         time.sleep(1)
-        assert client_proxy.receive() == json.loads("Message")
+        assert client_proxy.receive() == "Message"
 
     def test_wait_for_next_message(self, holder, echo_server, client_proxy):
         timeout_receive = timeout(2)(client_proxy.receive)

@@ -9,7 +9,7 @@ from Player.players.random_player import Player
 
 @pytest.fixture
 def valid_conf():
-    return '{ "players": [["infinite", "infinite_move", "Player.players.infinite_loop_player.InfiniteLoopPlayer"], ["good", "random_one", "Player.players.random_player.Player"], ["infinite", "infinite_place", "Player.players.place_infinite_loop_player.PlaceInfiniteLoopPlayer"]], "observers": [], "ip": "localhost", "port": 55556 }'
+    return '{ "players": [["infinite", "infinite_move", "Player/players/infinite_loop_player.py"], ["good", "random_one", "Player/players/random_player.py"], ["infinite", "infinite_place", "Player/players/place_infinite_loop_player.py"]], "observers": [], "ip": "localhost", "port": 55556 }'
 
 @pytest.fixture
 def players():
