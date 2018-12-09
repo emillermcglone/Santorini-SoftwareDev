@@ -2,14 +2,18 @@
     "players": [
         [
             "good",
-            "randomone",
+            "good_one",
             "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
         ],
         [
             "good",
-            "randomtwo",
+            "good_two",
             "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
-        ]
+        ],
+
+
+        ["breaker", "breaker_one", "../Santorini/Player/players/misbehaving_player.py"],
+        ["breaker", "breaker_two", "../Santorini/Player/players/misbehaving_player.py"]
     ],
     "observers": [],
     "ip": "localhost",

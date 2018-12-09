@@ -2,33 +2,23 @@
     "players": [
         [
             "good",
-            "random",
+            "one",
             "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
-        ],
-        [
-            "infinite",
-            "infinitemove",
-            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/infinite_loop_player.py"
-        ],
-        [
-            "infinite",
-            "infiniteplace",
-            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/place_infinite_loop_player.py"
         ],
         [
             "good",
-            "randomtwo",
+            "two",
             "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
         ],
         [
-            "infinite",
-            "infinitemovetwo",
-            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/infinite_loop_player.py"
+            "good",
+            "three",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
         ],
         [
-            "infinite",
-            "infiniteplacetwo",
-            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/place_infinite_loop_player.py"
+            "good",
+            "four",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
         ]
     ],
     "observers": [],

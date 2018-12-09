@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python3 Tests/xserver.py $1 & python3 Tests/xclients.py $2

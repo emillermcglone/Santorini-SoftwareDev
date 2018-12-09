@@ -1,0 +1,37 @@
+{
+    "players": [
+        [
+            "good",
+            "randomone",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
+        ],
+        [
+            "infinite",
+            "infinitemove",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/infinite_loop_player.py"
+        ],
+        [
+            "infinite",
+            "infiniteplace",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/place_infinite_loop_player.py"
+        ],
+        [
+            "good",
+            "randomtwo",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/random_player.py"
+        ],
+        [
+            "infinite",
+            "crashing",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/crashing_player.py"
+        ],
+        [
+            "infinite",
+            "misbehaving",
+            "/Users/gino/Developer/gija-emmi/Santorini/Player/players/misbehaving_player.py"
+        ]
+    ],
+    "observers": [],
+    "ip": "localhost",
+    "port": 55556
+}
