@@ -7,7 +7,8 @@ import pprint
 
 def stdin():
     """
-    Read all lines from fileinput.
+    Read all lines from fileinput, either from a file if given or
+    from STDIN as default.
 
     :return: string, input from fileinput
     """
@@ -18,34 +19,63 @@ def stdin():
     
 
 def make_action(wid, move_action, build_action):
+    """
+    Make remote action specification.
+
+    :param wid: string, worker id
+    :param move_action: MOVE, move specification
+    :param build_action: BUILD, build specification
+    :return: Action, remote action
+    """
     move_from_xy = move_action['xy1']
     move_to_xy = move_action['xy2']
 
     build_from_xy = build_action['xy1']
     build_to_xy = build_action['xy2']
 
-    move_direction = __get_direction(move_from_xy, move_to_xy)
-    build_direction = __get_direction(build_from_xy, build_to_xy)
+    move_direction = get_direction(move_from_xy, move_to_xy)
+    build_direction = get_direction(build_from_xy, build_to_xy)
     return str([wid, *move_direction, *build_direction])
 
 
-def __get_direction(from_xy, to_xy):
+def get_direction(from_xy, to_xy):
+    """
+    Which direction is given coordinate change going?
+
+    :param from_xy: (N, N), x y origins
+    :param to_xy: (N, N), x y destination
+    :return: Direction: direction of coordinate change
+    """
     from_x, from_y = from_xy
     to_x, to_y = to_xy
     
-    return [__east_west(from_x, to_x), __north_south(from_y, to_y)]
+    return [east_or_west(from_x, to_x), north_or_south(from_y, to_y)]
 
     
-def __north_south(from_y, to_y):
-    if to_y is from_y:
+def north_or_south(from_y, to_y):
+    """
+    Is y coordinate change going North or South?
+
+    :param from_y: N, y origin
+    :param to_y: N, y destination
+    :return: NorthSouth, direction of coordinate change
+    """
+    if to_y == from_y:
         return "PUT"
     elif to_y > from_y:
         return "SOUTH"
     else:
         return "NORTH"
 
-def __east_west(from_x, to_x):
-    if to_x is from_x:
+def east_or_west(from_x, to_x):
+    """
+    Is x coordinate change going East or West?
+
+    :param from_x: N, x origin
+    :param to_x: N, x destination
+    :return: EastWest, direction of coordinate change
+    """
+    if to_x == from_x:
         return "PUT"
     elif to_x > from_x:
         return "EAST"
@@ -54,14 +84,33 @@ def __east_west(from_x, to_x):
 
 
 def xboard(board):
-    json_board = [[cell(board.get_height(x, y), board.get_player_id(x, y), board.get_worker_id(x, y)) for x in range(6)] for y in range(6)]
+    """
+    Make a Board out of GameBoard.
+
+    :param board: GameBoard, game board to translate to Board
+    :return: string, Board
+    """
+    json_board = [[cell(board, x, y) for x in range(6)] for y in range(6)]
     return pprint.pformat(json_board) + "\n"
 
 
-def cell(height, player_id, worker_id):
+def cell(board, x, y):
+    """
+    Make an external Cell representation from the board at x and y
+
+    :param board: GameBoard, the board
+    :param x: N, x coordinate
+    :param y: N, y coordinate
+    :return: string, Cell
+    """
+    height = board.get_height(x, y)
+    player_id = board.get_player_id(x, y)
+    worker_id = board.get_worker_id(x, y)
+
     if player_id is None:
         return height
-    return "{}{}{}".format(height, player_id, worker_id)
+    return f"{height}{player_id}{worker_id}"
+
 
 def make_place(wid, x, y):
     """
@@ -114,10 +163,16 @@ def make_build(x1, y1, x2, y2):
 
 
 def path_import(absolute_path):
-   spec = importlib.util.spec_from_file_location(absolute_path, absolute_path)
-   module = importlib.util.module_from_spec(spec)
-   spec.loader.exec_module(module)
-   return module
+    """
+    Import a Python file from the given absolute path. 
+
+    :param absolute_path: string, the absolute path to Python file.
+    :return: Python module
+    """
+    spec = importlib.util.spec_from_file_location(absolute_path, absolute_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def import_cls(path):
