@@ -18,8 +18,8 @@ sys.path.append('./gija-emmi/Santorini/')
 sys.path.append('../Santorini/')
 
 from Admin.configurations.stdin_remote_configuration import STDINRemoteConfiguration
-from Remote.proxy import ClientProxy
-from Remote.proxy_player import ProxyPlayer
+from Remote.relay import Relay
+from Remote.relay_player import RelayPlayer
 
 
 class XClients:
@@ -37,19 +37,22 @@ class XClients:
         self.ip = configuration.ip()
         self.port = configuration.port()
 
-        self.proxy_players = list(map(lambda p: ProxyPlayer(p, self.__make_proxy()), self.players))
+        self.relay_players = list(map(lambda p: RelayPlayer(p, self.__make_proxy()), self.players))
 
 
     def run(self):
         """
-        Run client side Santorini and spin up a new thread for each ProxyPlayer.
+        Run client side Santorini and spin up a new thread for each RelayPlayer.
         """
         threads = []
-        for p in self.proxy_players:
+        for p in self.relay_players:
             thread = Thread(target=p.run)
             thread.start()
             threads.append(thread)
             time.sleep(1)
+
+        for thread in threads:
+            thread.join()
 
         sys.exit()
         
@@ -57,11 +60,11 @@ class XClients:
 
     def __make_proxy(self):
         """
-        Make a new ClientProxy with ip address and port number.
+        Make a new Relay with ip address and port number.
 
-        :return: ClientProxy, client proxy
+        :return: Relay, client proxy
         """
-        return ClientProxy(self.ip, self.port)
+        return Relay(self.ip, self.port)
 
 
 

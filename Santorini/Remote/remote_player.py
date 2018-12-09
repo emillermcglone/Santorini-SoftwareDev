@@ -26,10 +26,7 @@ class RemotePlayer(IPlayer):
 
 
     def notify_of_opponent(self, opponent_id):
-        try:
-            self.__send(opponent_id)
-        except:
-            return
+        self.__send(opponent_id)
             
 
     def get_placement(self, board, wid, rule_checker):
@@ -120,7 +117,6 @@ class RemotePlayer(IPlayer):
         move_north_south = move_and_build[2]
         build_east_west = move_and_build[3]
         build_north_south = move_and_build[4]
-
         
         move_from, move_to = self.__get_origin_and_next_position(board, wid, move_east_west, move_north_south)
         move = {'type': 'move', 'xy1': list(move_from), 'xy2': list(move_to)}

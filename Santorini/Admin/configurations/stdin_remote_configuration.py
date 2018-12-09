@@ -1,19 +1,9 @@
 import json, fileinput, sys
 sys.path.append(sys.path[0] + "/../../")
 
-from Lib.util import import_cls
+from Lib.util import import_cls, stdin
 from Admin.configurations.stdin_configuration import STDINConfiguration
 
-def stdin():
-    """
-    Read all lines from fileinput.
-
-    :return: string, input from fileinput
-    """
-    lines = ""
-    for line in fileinput.input():
-        lines += line
-    return lines
 
 class STDINRemoteConfiguration(STDINConfiguration):
     """
@@ -22,7 +12,7 @@ class STDINRemoteConfiguration(STDINConfiguration):
     
     def __init__(self, readable=stdin):
         """
-        initialize the configuration
+        Initialize the configuration
         """
         self.configuration = None
         self.readable = readable

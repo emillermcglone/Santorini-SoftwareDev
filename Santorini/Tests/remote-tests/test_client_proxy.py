@@ -2,7 +2,7 @@ import pytest
 import time
 import json
 from timeout_decorator import timeout, TimeoutError
-from Remote.proxy import ClientProxy
+from Remote.relay import Relay
 
 from Tests.echo_server import EchoServer
 

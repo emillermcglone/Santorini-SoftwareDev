@@ -18,7 +18,7 @@ from threading import Thread
 from timeout_decorator import timeout, TimeoutError
 from pprint import pprint
 
-from Admin.server_configurations.stdin_server_configuration import ServerConfiguration
+from Remote.server_configurations.stdin_server_configuration import ServerConfiguration
 from Admin.tournament_manager import TournamentManager
 from Admin.configurations.standard_configuration import StandardConfiguration
 from Remote.remote_player import RemotePlayer
@@ -80,7 +80,10 @@ class XServer:
 
         # Reset and start again
         self.__reset()
-        self.start()
+        if not self.repeat:
+            sys.exit()
+        else:
+            self.start()
 
     
     def __reformat_tournament_result(self, result):
@@ -135,7 +138,10 @@ class XServer:
 
         :param connection: conn, TCP connection
         """
-        name = connection.recv(self.buffer_size).decode()
+        try:
+            name = connection.recv(self.buffer_size).decode()
+        except:
+            return
         player = RemotePlayer(json.loads(name), connection)
         self.players.append(player)
 
@@ -149,10 +155,6 @@ class XServer:
             p.disconnect()
 
         self.players = []
-
-        if not self.repeat:
-            self.close()
-            sys.exit()
 
 
     def close(self):

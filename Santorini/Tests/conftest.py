@@ -17,7 +17,7 @@ from Player.players.crashing_player import CrashingPlayer
 from Observer.observer import Observer
 from Observer.xobserver import XObserver
 
-from Remote.proxy import ClientProxy
+from Remote.relay import Relay
 
 from Tests.echo_server import EchoServer
 from Tests.subscriber import Subscriber
@@ -107,7 +107,7 @@ def echo_server(ip, port, buffer_size):
 
 @pytest.fixture
 def client_proxy(ip, port, buffer_size):
-    proxy = ClientProxy(ip, port, buffer_size)
+    proxy = Relay(ip, port, buffer_size)
     yield proxy
     proxy.close()
 
