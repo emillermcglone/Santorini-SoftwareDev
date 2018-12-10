@@ -183,8 +183,12 @@ class RelayPlayer:
         """
 
         # if there's more than 2 workers, add second last worker to list
+        # because that's the worker this player owns.
+        # This is necessary because our player is designed to receive
+        # worker ids for placement request but instead, the server
+        # assigns the worker id AFTER the placement. 
         if len(value) >= 2:
-            self.workers.append(value[-2][0])
+            self.workers.append(self.__get_second_to_last(value)[0])
         
         # if there's less than 2, reset worker list
         else:
@@ -199,6 +203,16 @@ class RelayPlayer:
 
         spec = self.player.get_placement(self.board, "id", self.rule_checker)
         self.__send(spec['xy'])
+
+
+    def __get_second_to_last(self, l):
+        """
+        Get the second to last element from given list.
+
+        :param l: [Any, ...], list
+        :return: Any, the second to last element
+        """
+        return l[-2]
 
 
     def __turn_qualifier(self, value):

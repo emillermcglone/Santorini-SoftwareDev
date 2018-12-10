@@ -61,7 +61,30 @@ class ServerConfiguration:
         """
         if self.configuration is None:
             self.configuration = json.loads(self.readable())
-        
+
+    # TODO
+    def __validate_configuration(self, conf):
+        """
+        Validate the given configuration. If invalid, exit program.
+
+        :param conf: dict, configuration object
+        """
+        key_to_qualifier = {
+            'min players': self.__natural,
+            'port': self.__valid_port,
+            'waiting for': lambda v: self.__natural(v) and v > 0,
+            'repeat': lambda v: v is 0 or v is 1,
+        }
+
+        try:
+            for key, qualifier in key_to_qualifier.items():
+                value = key_to_qualifier[key]
+                if qualifier(value):
+                    raise Exception()
+
+        except:
+            print("No valid configuration found.")
+            sys.exit()
 
 
     def __extract_from_configuration(self, key, qualifier):
