@@ -47,7 +47,7 @@ class XServer:
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__socket.bind((self.ip, self.port))
 
-        # Remote players connected
+        # Remote players
         self.players = []
 
 
@@ -80,10 +80,7 @@ class XServer:
 
         # Reset and start again
         self.__reset()
-        if not self.repeat:
-            sys.exit()
-        else:
-            self.start()
+        self.start()
 
     
     def __reformat_tournament_result(self, result):
@@ -155,6 +152,10 @@ class XServer:
             p.disconnect()
 
         self.players = []
+
+        if not self.repeat:
+            self.close()
+            sys.exit()
 
 
     def close(self):

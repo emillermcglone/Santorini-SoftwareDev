@@ -2,7 +2,7 @@ import pytest
 import copy
 import json
 
-from Admin.server_configurations.stdin_server_configuration import ServerConfiguration
+from Remote.server_configurations.stdin_server_configuration import ServerConfiguration
 
 @pytest.fixture
 def valid_conf():

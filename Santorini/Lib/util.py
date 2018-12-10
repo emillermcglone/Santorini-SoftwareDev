@@ -90,8 +90,8 @@ def xboard(board):
     :param board: GameBoard, game board to translate to Board
     :return: string, Board
     """
-    json_board = [[cell(board, x, y) for x in range(6)] for y in range(6)]
-    return pprint.pformat(json_board) + "\n"
+    board = [[cell(board, x, y) for x in range(6)] for y in range(6)]
+    return board
 
 
 def cell(board, x, y):
@@ -109,7 +109,8 @@ def cell(board, x, y):
 
     if player_id is None:
         return height
-    return f"{height}{player_id}{worker_id}"
+    return "{}{}{}".format(height, player_id, worker_id)
+
 
 
 def make_place(wid, x, y):

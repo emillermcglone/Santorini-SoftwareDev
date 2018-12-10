@@ -1,16 +1,7 @@
 import fileinput, json, sys
 import math
 
-def stdin():
-    """
-    Read all lines from fileinput.
-
-    :return: string, input from fileinput
-    """
-    lines = ""
-    for line in fileinput.input():
-        lines += line
-    return lines
+from Lib.util import stdin
 
 class ServerConfiguration:
     """

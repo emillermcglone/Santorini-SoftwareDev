@@ -1,6 +1,7 @@
 import json
 
 from Common.player import Player as IPlayer
+from Lib.util import xboard
 
 class RemotePlayer(IPlayer):
     """ Remote player over TCP connection """
@@ -43,8 +44,10 @@ class RemotePlayer(IPlayer):
         self.last_build = build
         return move
 
+
     def get_build(self, board, wid, rule_checker):
         return self.last_build
+
 
     def game_over(self, status):
         pass
@@ -108,7 +111,7 @@ class RemotePlayer(IPlayer):
         
         :return: MoveAction, BuildAction
         """
-        json_board = self.__make_board(board)
+        json_board = xboard(board)
         self.__send(json_board)
         move_and_build = self.__receive()
 
@@ -189,26 +192,3 @@ class RemotePlayer(IPlayer):
         elif eastwest == "WEST":
             return x - 1
         
-    def __make_board(self, board):
-        """
-        Given a GameBoard, make a JSON representation of it. 
-
-        :param board: GameBoard, game board
-        :return: Board, as specified in remote protocol
-        """
-        board = [[self.__cell(board.get_height(x, y), board.get_player_id(x, y), board.get_worker_id(x, y)) for x in range(6)] for y in range(6)]
-        return board
-
-    
-    def __cell(self, height, player_id, worker_id):
-        """
-        Given cell information, reformat into JSON representation.
-
-        :param height: N, height of cell
-        :param player_id: string, id of player
-        :param worker_id: string, id of worker
-        :return: Cell, as specified in remote protocol
-        """
-        if player_id is None:
-            return height
-        return "{}{}{}".format(height, player_id, worker_id)

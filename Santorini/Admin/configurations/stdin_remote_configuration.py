@@ -124,19 +124,16 @@ class STDINRemoteConfiguration(STDINConfiguration):
         :param qualifier: (Any) -> bool, qualifier to determine if value is valid
         :return: Any, value from configuration
         """
-        value = None
-
         try:
             self.__set_configuration()
             value = self.configuration[key]
 
-            if not qualifier(value):
-                raise Exception()
+            if qualifier(value):
+                return value
 
         except:
             self.__exit()
-
-        return value
+        self.__exit()
 
 
     def __exit(self):
