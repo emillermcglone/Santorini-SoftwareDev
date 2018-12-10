@@ -16,6 +16,6 @@
         ["breaker", "breaker_two", "../Santorini/Player/players/misbehaving_player.py"]
     ],
     "observers": [],
-    "ip": "localhost",
+    "ip": "antarctica.ccs.neu.edu",
     "port": 55556
 }

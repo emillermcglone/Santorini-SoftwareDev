@@ -77,7 +77,7 @@ class MisbehavingPlayer(IPlayer):
         for i in moves:
             
             if self.__count is 2:
-                i['type'] = "build"
+                i['xy1'] = [-1, 0]
 
             self.__count += 1
             return i
