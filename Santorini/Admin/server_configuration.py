@@ -1,3 +1,6 @@
+
+# Used to configure servers, providing the necessary attributes for the 
+# server to run: minimum players, port number, time to wait for, and repeat or not
 from abc import ABC, abstractmethod
 
 class IServerConfiguration(ABC):

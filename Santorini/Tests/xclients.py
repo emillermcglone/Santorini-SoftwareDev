@@ -17,7 +17,7 @@ sys.path.append('./Santorini/')
 sys.path.append('./gija-emmi/Santorini/')
 sys.path.append('../Santorini/')
 
-from Admin.configurations.stdin_remote_configuration import STDINRemoteConfiguration
+from Remote.stdin_remote_configuration import STDINRemoteConfiguration
 from Remote.relay import Relay
 from Remote.relay_player import RelayPlayer
 

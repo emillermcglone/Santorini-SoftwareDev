@@ -1,3 +1,4 @@
+# Used by TournamentManager to hold Santorini game between two players. 
 import copy
 
 from Admin.board import GameBoard
